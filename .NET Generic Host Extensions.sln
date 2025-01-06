@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "..root", "..root", "{44D9D5C0-3449-40A7-B999-C3DAD78810A4}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+		Directroy.Build.targets = Directroy.Build.targets
+		LICENSE = LICENSE
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{43756C5C-1E0D-42FF-B7CA-FA60616EC204}"
+	ProjectSection(SolutionItems) = preProject
+		.github\dependabot.yml = .github\dependabot.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8474E364-FF2E-42B3-86F5-56C33E2192EE}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtDependencyInjection.SharePointOnline", "src\FredrikHr.MsExtDependencyInjection.SharePointOnline\FredrikHr.MsExtDependencyInjection.SharePointOnline.csproj", "{F17FF9C7-2701-4FF0-B588-60958A0BD2A2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{17F0BDF0-8F7A-41A1-AA71-BABAD3C0A718}"
+	ProjectSection(SolutionItems) = preProject
+		test\Directory.Build.props = test\Directory.Build.props
+		test\Directory.Packages.props = test\Directory.Packages.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtDependencyInjection.SharePointOnline.TUnit", "test\FredrikHr.MsExtDependencyInjection.SharePointOnline.TUnit\FredrikHr.MsExtDependencyInjection.SharePointOnline.TUnit.csproj", "{90CE86DC-4D0F-4727-B9A8-465ED8755383}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F17FF9C7-2701-4FF0-B588-60958A0BD2A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F17FF9C7-2701-4FF0-B588-60958A0BD2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F17FF9C7-2701-4FF0-B588-60958A0BD2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F17FF9C7-2701-4FF0-B588-60958A0BD2A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90CE86DC-4D0F-4727-B9A8-465ED8755383}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90CE86DC-4D0F-4727-B9A8-465ED8755383}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90CE86DC-4D0F-4727-B9A8-465ED8755383}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90CE86DC-4D0F-4727-B9A8-465ED8755383}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F17FF9C7-2701-4FF0-B588-60958A0BD2A2} = {8474E364-FF2E-42B3-86F5-56C33E2192EE}
+		{90CE86DC-4D0F-4727-B9A8-465ED8755383} = {17F0BDF0-8F7A-41A1-AA71-BABAD3C0A718}
+	EndGlobalSection
+EndGlobal
