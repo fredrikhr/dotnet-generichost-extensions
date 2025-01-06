@@ -10,7 +10,7 @@
       <PrivateAssets>all</PrivateAssets>
     </GlobalPackageReference>
     <GlobalPackageReference Include="PolySharp">
-      <Version>1.14.1</Version>
+      <Version>1.15.0</Version>
       <PrivateAssets>All</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </GlobalPackageReference>
