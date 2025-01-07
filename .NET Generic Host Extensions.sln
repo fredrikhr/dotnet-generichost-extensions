@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -8,8 +8,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "..root", "..root", "{44D9D5
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
 		Directory.Packages.props = Directory.Packages.props
-		Directroy.Build.targets = Directroy.Build.targets
 		LICENSE = LICENSE
 	EndProjectSection
 EndProject
@@ -21,6 +21,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8474E364-FF2E-42B3-86F5-56C33E2192EE}"
 	ProjectSection(SolutionItems) = preProject
 		src\Directory.Build.props = src\Directory.Build.props
+		src\Directory.Packages.props = src\Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtDependencyInjection.SharePointOnline", "src\FredrikHr.MsExtDependencyInjection.SharePointOnline\FredrikHr.MsExtDependencyInjection.SharePointOnline.csproj", "{F17FF9C7-2701-4FF0-B588-60958A0BD2A2}"

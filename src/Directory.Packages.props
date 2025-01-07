@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project>
+  <!-- Import Directory.Build file from parent directory -->
+  <PropertyGroup>
+    <MSBuildAllProjects>
+      $(MSBuildAllProjects);$(MSBuildThisFileDirectory)..\$(MSBuildThisFileName)$(MSBuildThisFileExtension)</MSBuildAllProjects>
+  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)..\$(MSBuildThisFileName)$(MSBuildThisFileExtension)" />
+
+  <ItemGroup>
+    <PackageVersion
+      Condition="$([MSBuild]::GetTargetFrameworkIdentifier('$(TargetFramework)')) == '.NETFramework'"
+      Include="System.Net.Http"
+    >
+      <Version>[4.3.4, 5.0.0)</Version>
+    </PackageVersion>
+
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection">
+      <Version>[7.0.0, 10.0.0)</Version>
+      <Version Condition="'$(TargetFramework)' == 'net461'">[6.0.0, 7.0.0)</Version>
+    </PackageVersion>
+    <PackageVersion Include="Microsoft.Extensions.Http">
+      <Version>[7.0.0, 10.0.0)</Version>
+      <Version Condition="'$(TargetFramework)' == 'net461'">[6.0.0, 7.0.0)</Version>
+    </PackageVersion>
+    <PackageVersion Include="Microsoft.Extensions.Logging">
+      <Version>[7.0.0, 10.0.0)</Version>
+      <Version Condition="'$(TargetFramework)' == 'net461'">[6.0.0, 7.0.0)</Version>
+    </PackageVersion>
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions">
+      <Version>[7.0.0, 10.0.0)</Version>
+      <Version Condition="'$(TargetFramework)' == 'net461'">[6.0.0, 7.0.0)</Version>
+    </PackageVersion>
+    <PackageVersion Include="Microsoft.Extensions.Options">
+      <Version>[7.0.0, 10.0.0)</Version>
+      <Version Condition="'$(TargetFramework)' == 'net461'">[6.0.0, 7.0.0)</Version>
+    </PackageVersion>
+
+    <PackageVersion Include="Azure.Identity">
+      <Version>[1.11.4, 2.0.0)</Version>
+    </PackageVersion>
+
+    <PackageVersion Include="Microsoft.Identity.Client">
+      <Version>[4.61.3, 5.0.0)</Version>
+    </PackageVersion>
+
+    <PackageVersion Include="Microsoft.PowerPlatform.Dataverse.Client">
+      <Version>[1.0.1, 1.3.0)</Version>
+    </PackageVersion>
+
+    <PackageVersion Include="Microsoft.SharePointOnline.CSOM">
+      <Version>[16.1.3912.1204, 17.0.0.0)</Version>
+      <Version
+        Condition="$([MSBuild]::GetTargetFrameworkIdentifier('$(TargetFramework)')) == '.NETStandard'"
+      >[16.1.20211.12000, 17.0.0.0)</Version>
+    </PackageVersion>
+
+    <PackageVersion Include="TUnit.Core">
+      <Version>[0.2.1, 1.0.0)</Version>
+    </PackageVersion>
+  </ItemGroup>
+
+</Project>

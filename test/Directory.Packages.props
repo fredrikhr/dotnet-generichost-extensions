@@ -8,8 +8,31 @@
   <Import Project="$(MSBuildThisFileDirectory)..\$(MSBuildThisFileName)$(MSBuildThisFileExtension)" />
 
   <ItemGroup>
-    <PackageVersion Include="TUnit">
-      <Version>0.6.33</Version>
+    <PackageVersion Include="Microsoft.Extensions.Hosting">
+      <Version>9.0.0</Version>
+    </PackageVersion>
+    <PackageVersion Include="Microsoft.Identity.Client">
+      <Version>4.4.0</Version>
     </PackageVersion>
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Testing.Platform" />
+    <PackageVersion Include="Microsoft.Testing.Platform">
+      <Version>1.5.1</Version>
+    </PackageVersion>
+    <PackageReference Include="Microsoft.Testing.Platform.MSBuild" />
+    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild">
+      <Version>1.5.1</Version>
+    </PackageVersion>
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport.Abstractions" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport.Abstractions">
+      <Version>1.5.1</Version>
+    </PackageVersion>
+    <PackageReference Include="TUnit" />
+    <PackageVersion Include="TUnit">
+      <Version>0.6.123</Version>
+    </PackageVersion>
+  </ItemGroup>
+
 </Project>
