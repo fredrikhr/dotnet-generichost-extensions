@@ -8,7 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "..root", "..root", "{44D9D5
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
-		Directory.Packages.props = Directory.Packages.props
 		Directroy.Build.targets = Directroy.Build.targets
 		LICENSE = LICENSE
 	EndProjectSection
@@ -28,7 +27,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{17F0BDF0-8F7A-41A1-AA71-BABAD3C0A718}"
 	ProjectSection(SolutionItems) = preProject
 		test\Directory.Build.props = test\Directory.Build.props
-		test\Directory.Packages.props = test\Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtDependencyInjection.SharePointOnline.TUnit", "test\FredrikHr.MsExtDependencyInjection.SharePointOnline.TUnit\FredrikHr.MsExtDependencyInjection.SharePointOnline.TUnit.csproj", "{90CE86DC-4D0F-4727-B9A8-465ED8755383}"
