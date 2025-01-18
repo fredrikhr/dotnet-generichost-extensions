@@ -39,7 +39,7 @@ public class TUnitLogger(string name) : ILogger
         }
     }
 
-    private static void Log<TState>(
+    private void Log<TState>(
         TestContext context,
         LogLevel logLevel,
         EventId eventId,
@@ -58,7 +58,7 @@ public class TUnitLogger(string name) : ILogger
             );
         lock (context.Lock)
         {
-            StringWriter writer = GetContextWriter(context, logLevel);
+            StringWriter writer = context.OutputWriter;
             Log(writer, logLevelString, eventId, logMessage);
         }
     }
@@ -72,7 +72,7 @@ public class TUnitLogger(string name) : ILogger
         "CodeQuality",
         "IDE0079: Remove unnecessary suppression"
         )]
-    private static void Log<TState>(
+    private void Log<TState>(
         Context context,
         LogLevel logLevel,
         EventId eventId,
@@ -90,17 +90,10 @@ public class TUnitLogger(string name) : ILogger
             out string? logMessage
             );
         StringWriter writer;
-        lock (writer = GetContextWriter(context, logLevel))
+        lock (writer = context.OutputWriter)
         {
             Log(writer, logLevelString, eventId, logMessage);
         }
-    }
-
-    private static StringWriter GetContextWriter(Context context, LogLevel logLevel)
-    {
-        return logLevel < LogLevel.Error
-            ? context.OutputWriter
-            : context.ErrorOutputWriter;
     }
 
     private static void PrepareLog<TState>(
@@ -119,7 +112,7 @@ public class TUnitLogger(string name) : ILogger
         logMessage = formatter?.Invoke(state, exception);
     }
 
-    private static void Log(
+    private void Log(
         StringWriter writer,
         string logLevel,
         EventId eventId,
@@ -129,6 +122,12 @@ public class TUnitLogger(string name) : ILogger
         writer.Write("[");
         writer.Write(logLevel);
         writer.Write("]");
+        if (Name is { Length: > 0 } categoryName)
+        {
+            writer.Write("[");
+            writer.Write(categoryName);
+            writer.Write("]");
+        }
         if (eventId.ToString() is { Length: > 0 } eventString)
             writer.Write($"[{eventString}]");
         if (logMessage is not { Length: > 0 }) return;
