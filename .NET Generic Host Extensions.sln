@@ -24,15 +24,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8474E364-FF2
 		src\Directory.Packages.props = src\Directory.Packages.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtConfiguration.Helpers", "src\FredrikHr.MsExtConfiguration.Helpers\FredrikHr.MsExtConfiguration.Helpers.csproj", "{0899562C-BF6A-415C-8F5B-9AA534FC82DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtDependencyInjection.Msal", "src\FredrikHr.MsExtDependencyInjection.Msal\FredrikHr.MsExtDependencyInjection.Msal.csproj", "{D828F3D4-83E6-4520-B0B6-D5024BDF6201}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtDependencyInjection.SharePointOnline", "src\FredrikHr.MsExtDependencyInjection.SharePointOnline\FredrikHr.MsExtDependencyInjection.SharePointOnline.csproj", "{F17FF9C7-2701-4FF0-B588-60958A0BD2A2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtHosting.TUnit", "src\FredrikHr.MsExtHosting.TUnit\FredrikHr.MsExtHosting.TUnit.csproj", "{4B158E65-1604-41EA-9193-0BBD6D6DC2BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtOptions.Helpers", "src\FredrikHr.MsExtOptions.Helpers\FredrikHr.MsExtOptions.Helpers.csproj", "{9D9A0F9C-0721-49BD-8DDE-A8B07FFCC663}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{17F0BDF0-8F7A-41A1-AA71-BABAD3C0A718}"
 	ProjectSection(SolutionItems) = preProject
 		test\Directory.Build.props = test\Directory.Build.props
 		test\Directory.Packages.props = test\Directory.Packages.props
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.Hosting.Msal.TUnit", "test\FredrikHr.Hosting.Msal.TUnit\FredrikHr.Hosting.Msal.TUnit.csproj", "{93621619-0C3E-4F85-941B-59374CD00854}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtDependencyInjection.SharePointOnline.TUnit", "test\FredrikHr.MsExtDependencyInjection.SharePointOnline.TUnit\FredrikHr.MsExtDependencyInjection.SharePointOnline.TUnit.csproj", "{90CE86DC-4D0F-4727-B9A8-465ED8755383}"
 EndProject
@@ -42,6 +50,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0899562C-BF6A-415C-8F5B-9AA534FC82DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0899562C-BF6A-415C-8F5B-9AA534FC82DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0899562C-BF6A-415C-8F5B-9AA534FC82DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0899562C-BF6A-415C-8F5B-9AA534FC82DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D828F3D4-83E6-4520-B0B6-D5024BDF6201}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D828F3D4-83E6-4520-B0B6-D5024BDF6201}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D828F3D4-83E6-4520-B0B6-D5024BDF6201}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D828F3D4-83E6-4520-B0B6-D5024BDF6201}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F17FF9C7-2701-4FF0-B588-60958A0BD2A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F17FF9C7-2701-4FF0-B588-60958A0BD2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F17FF9C7-2701-4FF0-B588-60958A0BD2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -50,6 +66,14 @@ Global
 		{4B158E65-1604-41EA-9193-0BBD6D6DC2BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B158E65-1604-41EA-9193-0BBD6D6DC2BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B158E65-1604-41EA-9193-0BBD6D6DC2BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D9A0F9C-0721-49BD-8DDE-A8B07FFCC663}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D9A0F9C-0721-49BD-8DDE-A8B07FFCC663}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D9A0F9C-0721-49BD-8DDE-A8B07FFCC663}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D9A0F9C-0721-49BD-8DDE-A8B07FFCC663}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93621619-0C3E-4F85-941B-59374CD00854}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93621619-0C3E-4F85-941B-59374CD00854}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93621619-0C3E-4F85-941B-59374CD00854}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93621619-0C3E-4F85-941B-59374CD00854}.Release|Any CPU.Build.0 = Release|Any CPU
 		{90CE86DC-4D0F-4727-B9A8-465ED8755383}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{90CE86DC-4D0F-4727-B9A8-465ED8755383}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90CE86DC-4D0F-4727-B9A8-465ED8755383}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -59,8 +83,12 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{0899562C-BF6A-415C-8F5B-9AA534FC82DC} = {8474E364-FF2E-42B3-86F5-56C33E2192EE}
+		{D828F3D4-83E6-4520-B0B6-D5024BDF6201} = {8474E364-FF2E-42B3-86F5-56C33E2192EE}
 		{F17FF9C7-2701-4FF0-B588-60958A0BD2A2} = {8474E364-FF2E-42B3-86F5-56C33E2192EE}
 		{4B158E65-1604-41EA-9193-0BBD6D6DC2BC} = {8474E364-FF2E-42B3-86F5-56C33E2192EE}
+		{9D9A0F9C-0721-49BD-8DDE-A8B07FFCC663} = {8474E364-FF2E-42B3-86F5-56C33E2192EE}
+		{93621619-0C3E-4F85-941B-59374CD00854} = {17F0BDF0-8F7A-41A1-AA71-BABAD3C0A718}
 		{90CE86DC-4D0F-4727-B9A8-465ED8755383} = {17F0BDF0-8F7A-41A1-AA71-BABAD3C0A718}
 	EndGlobalSection
 EndGlobal
