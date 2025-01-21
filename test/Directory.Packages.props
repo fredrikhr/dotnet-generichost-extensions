@@ -40,7 +40,7 @@
     </PackageVersion>
     <PackageReference Include="TUnit" />
     <PackageVersion Include="TUnit">
-      <Version>0.6.151</Version>
+      <Version>0.6.156</Version>
     </PackageVersion>
   </ItemGroup>
 
