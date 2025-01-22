@@ -28,11 +28,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Testing.Platform" />
     <PackageVersion Include="Microsoft.Testing.Platform">
-      <Version>1.5.1</Version>
+      <Version>1.5.2</Version>
     </PackageVersion>
     <PackageReference Include="Microsoft.Testing.Platform.MSBuild" />
     <PackageVersion Include="Microsoft.Testing.Platform.MSBuild">
-      <Version>1.5.1</Version>
+      <Version>1.5.2</Version>
     </PackageVersion>
     <PackageReference Include="Microsoft.Testing.Extensions.TrxReport.Abstractions" />
     <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport.Abstractions">
