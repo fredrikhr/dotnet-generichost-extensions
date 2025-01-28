@@ -1,0 +1,22 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FredrikHr.Hosting.Msal.TUnit [net8.0]",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/test/FredrikHr.Hosting.Msal.TUnit/FredrikHr.Hosting.Msal.TUnit.csproj",
+      "launchConfigurationId": "TargetFramework=net8.0;FredrikHr.Hosting.Msal.TUnit"
+    },
+    {
+      "name": "FredrikHr.Hosting.Msal.TUnit [net9.0]",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/test/FredrikHr.Hosting.Msal.TUnit/FredrikHr.Hosting.Msal.TUnit.csproj",
+      "launchConfigurationId": "TargetFramework=net9.0;FredrikHr.Hosting.Msal.TUnit"
+    }
+  ]
+}
