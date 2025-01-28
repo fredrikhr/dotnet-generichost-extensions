@@ -26,18 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Testing.Platform" />
-    <PackageVersion Include="Microsoft.Testing.Platform">
-      <Version>1.5.1</Version>
-    </PackageVersion>
-    <PackageReference Include="Microsoft.Testing.Platform.MSBuild" />
-    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild">
-      <Version>1.5.1</Version>
-    </PackageVersion>
-    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport.Abstractions" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport.Abstractions">
-      <Version>1.5.1</Version>
-    </PackageVersion>
     <PackageReference Include="TUnit" />
     <PackageVersion Include="TUnit">
       <Version>0.7.3</Version>
