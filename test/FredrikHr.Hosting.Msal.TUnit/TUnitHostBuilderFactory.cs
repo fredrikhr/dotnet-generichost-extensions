@@ -17,15 +17,6 @@ public class TUnitHostBuilderFactory
     private static readonly EmbeddedFileProvider AssemblyEmbeddedResourceFiles =
         new(typeof(TUnitHostBuilderFactory).Assembly);
 
-    public static readonly string UserSecretsDirectoryPath = Path
-        .GetDirectoryName(
-            PathHelper.GetSecretsPathFromSecretsId(
-                typeof(TUnitHostBuilderFactory).Assembly!
-                .GetCustomAttribute<UserSecretsIdAttribute>()
-                ?.UserSecretsId ?? Guid.Empty.ToString()
-            )
-        )!;
-
     private static void ConfigureHostConfiguration(IConfigurationBuilder config)
         => ConfigureHostConfiguration(config, out int _);
 
