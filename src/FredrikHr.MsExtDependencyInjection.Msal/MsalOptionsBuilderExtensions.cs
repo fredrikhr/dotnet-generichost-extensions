@@ -7,7 +7,7 @@ namespace Microsoft.Identity.Client;
 
 public static class MsalOptionsBuilderExtensions
 {
-    public static OptionsBuilder<BrokerOptions> SetConstructorArguments(
+    public static OptionsBuilder<BrokerOptions> UseConstructorArguments(
         this OptionsBuilder<BrokerOptions> optionsBuilder,
         BrokerOptions.OperatingSystems enabledOn
         )
@@ -25,7 +25,7 @@ public static class MsalOptionsBuilderExtensions
         return optionsBuilder;
     }
 
-    private static OptionsBuilder<TBuilder> ConfigureLoggingImpl<TBuilder, TApplication>(
+    private static OptionsBuilder<TBuilder> UseLoggingImpl<TBuilder, TApplication>(
         this OptionsBuilder<TBuilder> optionsBuilder,
         bool enablePiiLogging = false
         )
@@ -46,31 +46,31 @@ public static class MsalOptionsBuilderExtensions
         return optionsBuilder;
     }
 
-    public static OptionsBuilder<ConfidentialClientApplicationBuilder> ConfigureLogging(
+    public static OptionsBuilder<ConfidentialClientApplicationBuilder> UseLogging(
         this OptionsBuilder<ConfidentialClientApplicationBuilder> optionsBuilder,
         bool enablePiiLogging = false
-        ) => optionsBuilder.ConfigureLoggingImpl
+        ) => optionsBuilder.UseLoggingImpl
             <ConfidentialClientApplicationBuilder, ConfidentialClientApplication>(
             enablePiiLogging
             );
 
-    public static OptionsBuilder<PublicClientApplicationBuilder> ConfigureLogging(
+    public static OptionsBuilder<PublicClientApplicationBuilder> UseLogging(
         this OptionsBuilder<PublicClientApplicationBuilder> optionsBuilder,
         bool enablePiiLogging = false
-        ) => optionsBuilder.ConfigureLoggingImpl
+        ) => optionsBuilder.UseLoggingImpl
             <PublicClientApplicationBuilder, PublicClientApplication>(
             enablePiiLogging
             );
 
-    public static OptionsBuilder<ManagedIdentityApplicationBuilder> ConfigureLogging(
+    public static OptionsBuilder<ManagedIdentityApplicationBuilder> UseLogging(
         this OptionsBuilder<ManagedIdentityApplicationBuilder> optionsBuilder,
         bool enablePiiLogging = false
-        ) => optionsBuilder.ConfigureLoggingImpl
+        ) => optionsBuilder.UseLoggingImpl
             <ManagedIdentityApplicationBuilder, ManagedIdentityApplication>(
             enablePiiLogging
             );
 
-    private static OptionsBuilder<TBuilder> ConfigureMsalHttpFactoryImpl<TBuilder>(this OptionsBuilder<TBuilder> optionsBuilder)
+    private static OptionsBuilder<TBuilder> UseHttpClientFactoryImpl<TBuilder>(this OptionsBuilder<TBuilder> optionsBuilder)
         where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
     {
 #if NET6_0_OR_GREATER
@@ -88,19 +88,19 @@ public static class MsalOptionsBuilderExtensions
         return optionsBuilder;
     }
 
-    public static OptionsBuilder<ConfidentialClientApplicationBuilder> ConfigureMsalHttpFactory(
+    public static OptionsBuilder<ConfidentialClientApplicationBuilder> UseHttpClientFactory(
         this OptionsBuilder<ConfidentialClientApplicationBuilder> optionsBuilder
-        ) => optionsBuilder.ConfigureMsalHttpFactoryImpl();
+        ) => optionsBuilder.UseHttpClientFactoryImpl();
 
-    public static OptionsBuilder<PublicClientApplicationBuilder> ConfigureMsalHttpFactory(
+    public static OptionsBuilder<PublicClientApplicationBuilder> UseHttpClientFactory(
         this OptionsBuilder<PublicClientApplicationBuilder> optionsBuilder
-        ) => optionsBuilder.ConfigureMsalHttpFactoryImpl();
+        ) => optionsBuilder.UseHttpClientFactoryImpl();
 
-    public static OptionsBuilder<ManagedIdentityApplicationBuilder> ConfigureMsalHttpFactory(
+    public static OptionsBuilder<ManagedIdentityApplicationBuilder> UseHttpClientFactory(
         this OptionsBuilder<ManagedIdentityApplicationBuilder> optionsBuilder
-        ) => optionsBuilder.ConfigureMsalHttpFactoryImpl();
+        ) => optionsBuilder.UseHttpClientFactoryImpl();
 
-    public static OptionsBuilder<ConfidentialClientApplicationBuilder> WithInstance(
+    public static OptionsBuilder<ConfidentialClientApplicationBuilder> ConfigureInstance(
         this OptionsBuilder<ConfidentialClientApplicationBuilder> optionsBuilder,
         Action<OptionsBuilder<IConfidentialClientApplication>> configureInstance
         )
@@ -115,7 +115,7 @@ public static class MsalOptionsBuilderExtensions
         return optionsBuilder;
     }
 
-    public static OptionsBuilder<PublicClientApplicationBuilder> WithInstance(
+    public static OptionsBuilder<PublicClientApplicationBuilder> ConfigureInstance(
         this OptionsBuilder<PublicClientApplicationBuilder> optionsBuilder,
         Action<OptionsBuilder<IPublicClientApplication>> configureInstance
         )
@@ -130,7 +130,7 @@ public static class MsalOptionsBuilderExtensions
         return optionsBuilder;
     }
 
-    public static OptionsBuilder<ManagedIdentityApplicationBuilder> WithInstance(
+    public static OptionsBuilder<ManagedIdentityApplicationBuilder> ConfigureInstance(
         this OptionsBuilder<ManagedIdentityApplicationBuilder> optionsBuilder,
         Action<OptionsBuilder<IManagedIdentityApplication>> configureInstance
         )

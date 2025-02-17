@@ -22,8 +22,8 @@ public class ManualInteractiveMsalHostingTests(TUnitHostBuilderFactory hostBuild
             .ConfigureApplyBaseType<PublicClientApplicationOptions, ApplicationOptions>()
             .BindConfiguration(ConfigurationPath.Combine("Microsoft.Identity.Client", "PublicClient"));
         hostBuilder.Services.AddMsalPublicClient()
-            .ConfigureLogging()
-            .ConfigureMsalHttpFactory()
+            .UseLogging()
+            .UseHttpClientFactory()
             ;
 
         using var host = hostBuilder.Build();
