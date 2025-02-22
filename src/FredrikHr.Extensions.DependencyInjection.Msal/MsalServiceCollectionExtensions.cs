@@ -1,17 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client.Extensions.Msal;
 
 namespace Microsoft.Identity.Client;
 
 public static class MsalServiceCollectionExtensions
 {
-    public static IServiceCollection
+    public static OptionsBuilder<ConfidentialClientApplicationBuilder>
         AddMsalConfidentialClient(
         this IServiceCollection services,
-        Action<OptionsBuilder<ConfidentialClientApplicationOptions>>? configureOptions = default,
-        Action<OptionsBuilder<ConfidentialClientApplicationBuilder>>? configureBuilder = default,
-        Action<OptionsBuilder<IConfidentialClientApplication>>? configureApplication = default,
         string? name = null
         )
     {
@@ -31,24 +28,13 @@ public static class MsalServiceCollectionExtensions
             >();
 
         var optionsBuilder = services
-            .AddOptions<ConfidentialClientApplicationOptions>(name);
-        configureOptions?.Invoke(optionsBuilder);
-        var builderBuilder = services
             .AddOptions<ConfidentialClientApplicationBuilder>(name);
-        configureBuilder?.Invoke(builderBuilder);
-        var applicationBuilder = services
-            .AddOptions<IConfidentialClientApplication>(name);
-        configureApplication?.Invoke(applicationBuilder);
-
-        return services;
+        return optionsBuilder;
     }
 
-    public static IServiceCollection
+    public static OptionsBuilder<PublicClientApplicationBuilder>
         AddMsalPublicClient(
         this IServiceCollection services,
-        Action<OptionsBuilder<PublicClientApplicationOptions>>? addOptionsAction = default,
-        Action<OptionsBuilder<PublicClientApplicationBuilder>>? addBuilderAction = default,
-        Action<OptionsBuilder<IPublicClientApplication>>? addApplicationAction = default,
         string? name = null
         )
     {
@@ -67,25 +53,15 @@ public static class MsalServiceCollectionExtensions
             PublicClientApplicationFactory
             >();
 
-        var optionsOptsBuilder = services
-            .AddOptions<PublicClientApplicationOptions>(name);
-        addOptionsAction?.Invoke(optionsOptsBuilder);
-        var builderOptsBuilder = services
+        var optionsBuilder = services
             .AddOptions<PublicClientApplicationBuilder>(name);
-        addBuilderAction?.Invoke(builderOptsBuilder);
-        var applicationOptsBuilder = services
-            .AddOptions<IPublicClientApplication>(name);
-        addApplicationAction?.Invoke(applicationOptsBuilder);
-
-        return services;
+        return optionsBuilder;
     }
 
-    public static IServiceCollection
+    public static OptionsBuilder<ManagedIdentityApplicationBuilder>
         AddMsalManagedIdentityClient(
         this IServiceCollection services,
-        AppConfig.ManagedIdentityId? managedIdentityId,
-        Action<OptionsBuilder<ManagedIdentityApplicationBuilder>>? addBuilderAction = default,
-        Action<OptionsBuilder<IManagedIdentityApplication>>? addApplicationAction = default,
+        AppConfig.ManagedIdentityId? managedIdentityId = default,
         string? name = null
         )
     {
@@ -95,7 +71,7 @@ public static class MsalServiceCollectionExtensions
         _ = services ?? throw new ArgumentNullException(nameof(services));
 #endif
 
-        services.AddSingleton(
+        services.TryAddSingleton(
             managedIdentityId ?? AppConfig.ManagedIdentityId.SystemAssigned
             );
         services.AddSingleton<
@@ -107,13 +83,8 @@ public static class MsalServiceCollectionExtensions
             ManagedIdentityApplicationFactory
             >();
 
-        var builderOptsBuilder = services
+        var optionsBuilder = services
             .AddOptions<ManagedIdentityApplicationBuilder>(name);
-        addBuilderAction?.Invoke(builderOptsBuilder);
-        var applicationOptsBuilder = services
-            .AddOptions<IManagedIdentityApplication>(name);
-        addApplicationAction?.Invoke(applicationOptsBuilder);
-
-        return services;
+        return optionsBuilder;
     }
 }

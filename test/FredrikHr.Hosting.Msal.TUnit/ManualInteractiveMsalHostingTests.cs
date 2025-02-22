@@ -2,7 +2,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
-using Microsoft.Identity.Client.Extensions.Msal;
 
 namespace FredrikHr.Hosting.Msal.TUnit;
 
@@ -19,7 +18,7 @@ public class ManualInteractiveMsalHostingTests(TUnitHostBuilderFactory hostBuild
         hostBuilder.Services.AddOptions<ApplicationOptions>()
             .BindConfiguration(ConfigurationPath.Combine("Microsoft.Identity.Client", "ApplicationOptions"));
         hostBuilder.Services.AddOptions<PublicClientApplicationOptions>()
-            .ConfigureApplyBaseType<PublicClientApplicationOptions, ApplicationOptions>()
+            .UseInheritedConfigure<PublicClientApplicationOptions, ApplicationOptions>()
             .BindConfiguration(ConfigurationPath.Combine("Microsoft.Identity.Client", "PublicClient"));
         hostBuilder.Services.AddMsalPublicClient()
             .UseLogging()
@@ -32,7 +31,8 @@ public class ManualInteractiveMsalHostingTests(TUnitHostBuilderFactory hostBuild
         var serviceProvider = host.Services;
 
         var publicMsal = serviceProvider
-            .GetRequiredService<IPublicClientApplication>();
+            .GetRequiredService<IOptions<IPublicClientApplication>>()
+            .Value;
 
         var msalRequest = publicMsal.AcquireTokenInteractive(["openid"])
             .WithPrompt(Prompt.SelectAccount)
