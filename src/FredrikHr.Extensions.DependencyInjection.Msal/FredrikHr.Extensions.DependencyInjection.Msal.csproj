@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FredrikHr.MsExtOptions.Helpers\FredrikHr.MsExtOptions.Helpers.csproj" />
+    <ProjectReference Include="..\FredrikHr.Extensions.Options.Helpers\FredrikHr.Extensions.Options.Helpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

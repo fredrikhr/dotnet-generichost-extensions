@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\FredrikHr.MsExtConfiguration.Helpers\FredrikHr.MsExtConfiguration.Helpers.csproj" />
-    <ProjectReference Include="..\..\src\FredrikHr.MsExtHosting.TUnit\FredrikHr.MsExtHosting.TUnit.csproj" />
+    <ProjectReference Include="..\..\src\FredrikHr.Extensions.Configuration.Helpers\FredrikHr.Extensions.Configuration.Helpers.csproj" />
+    <ProjectReference Include="..\..\src\FredrikHr.Extensions.Hosting.TUnit\FredrikHr.Extensions.Hosting.TUnit.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\FredrikHr.MsExtDependencyInjection.Msal\FredrikHr.MsExtDependencyInjection.Msal.csproj" />
+    <ProjectReference Include="..\..\src\FredrikHr.Extensions.DependencyInjection.Msal\FredrikHr.Extensions.DependencyInjection.Msal.csproj" />
   </ItemGroup>
 
   <ItemGroup>

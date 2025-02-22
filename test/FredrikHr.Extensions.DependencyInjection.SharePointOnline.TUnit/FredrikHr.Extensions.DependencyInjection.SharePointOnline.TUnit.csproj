@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\FredrikHr.MsExtDependencyInjection.SharePointOnline\FredrikHr.MsExtDependencyInjection.SharePointOnline.csproj" />
+    <ProjectReference Include="..\..\src\FredrikHr.Extensions.DependencyInjection.SharePointOnline\FredrikHr.Extensions.DependencyInjection.SharePointOnline.csproj" />
   </ItemGroup>
 
   <ItemGroup>

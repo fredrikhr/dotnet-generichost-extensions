@@ -24,17 +24,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8474E364-FF2
 		src\Directory.Packages.props = src\Directory.Packages.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtConfiguration.Helpers", "src\FredrikHr.MsExtConfiguration.Helpers\FredrikHr.MsExtConfiguration.Helpers.csproj", "{0899562C-BF6A-415C-8F5B-9AA534FC82DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.Extensions.Configuration.Helpers", "src\FredrikHr.Extensions.Configuration.Helpers\FredrikHr.Extensions.Configuration.Helpers.csproj", "{0899562C-BF6A-415C-8F5B-9AA534FC82DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtDependencyInjection.AzureIdentity", "src\FredrikHr.MsExtDependencyInjection.AzureIdentity\FredrikHr.MsExtDependencyInjection.AzureIdentity.csproj", "{6C2DF390-3D4D-4121-88A7-99740F7E791E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.Extensions.DependencyInjection.AzureIdentity", "src\FredrikHr.Extensions.DependencyInjection.AzureIdentity\FredrikHr.Extensions.DependencyInjection.AzureIdentity.csproj", "{6C2DF390-3D4D-4121-88A7-99740F7E791E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtDependencyInjection.Msal", "src\FredrikHr.MsExtDependencyInjection.Msal\FredrikHr.MsExtDependencyInjection.Msal.csproj", "{D828F3D4-83E6-4520-B0B6-D5024BDF6201}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.Extensions.DependencyInjection.Msal", "src\FredrikHr.Extensions.DependencyInjection.Msal\FredrikHr.Extensions.DependencyInjection.Msal.csproj", "{D828F3D4-83E6-4520-B0B6-D5024BDF6201}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtDependencyInjection.SharePointOnline", "src\FredrikHr.MsExtDependencyInjection.SharePointOnline\FredrikHr.MsExtDependencyInjection.SharePointOnline.csproj", "{F17FF9C7-2701-4FF0-B588-60958A0BD2A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.Extensions.DependencyInjection.SharePointOnline", "src\FredrikHr.Extensions.DependencyInjection.SharePointOnline\FredrikHr.Extensions.DependencyInjection.SharePointOnline.csproj", "{F17FF9C7-2701-4FF0-B588-60958A0BD2A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtHosting.TUnit", "src\FredrikHr.MsExtHosting.TUnit\FredrikHr.MsExtHosting.TUnit.csproj", "{4B158E65-1604-41EA-9193-0BBD6D6DC2BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.Extensions.Hosting.TUnit", "src\FredrikHr.Extensions.Hosting.TUnit\FredrikHr.Extensions.Hosting.TUnit.csproj", "{4B158E65-1604-41EA-9193-0BBD6D6DC2BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtOptions.Helpers", "src\FredrikHr.MsExtOptions.Helpers\FredrikHr.MsExtOptions.Helpers.csproj", "{9D9A0F9C-0721-49BD-8DDE-A8B07FFCC663}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.Extensions.Options.Helpers", "src\FredrikHr.Extensions.Options.Helpers\FredrikHr.Extensions.Options.Helpers.csproj", "{9D9A0F9C-0721-49BD-8DDE-A8B07FFCC663}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{17F0BDF0-8F7A-41A1-AA71-BABAD3C0A718}"
 	ProjectSection(SolutionItems) = preProject
@@ -44,7 +44,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{17F0BDF0-8
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.Hosting.Msal.TUnit", "test\FredrikHr.Hosting.Msal.TUnit\FredrikHr.Hosting.Msal.TUnit.csproj", "{93621619-0C3E-4F85-941B-59374CD00854}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.MsExtDependencyInjection.SharePointOnline.TUnit", "test\FredrikHr.MsExtDependencyInjection.SharePointOnline.TUnit\FredrikHr.MsExtDependencyInjection.SharePointOnline.TUnit.csproj", "{90CE86DC-4D0F-4727-B9A8-465ED8755383}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FredrikHr.Extensions.DependencyInjection.SharePointOnline.TUnit", "test\FredrikHr.Extensions.DependencyInjection.SharePointOnline.TUnit\FredrikHr.Extensions.DependencyInjection.SharePointOnline.TUnit.csproj", "{90CE86DC-4D0F-4727-B9A8-465ED8755383}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FredrikHr.MsExtDependencyInjection.SharePointOnline.TUnit;
+namespace FredrikHr.Extensions.DependencyInjection.SharePointOnline.TUnit;
 
 public class SharePointServiceCollectionExtensionsTest
 {
