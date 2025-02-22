@@ -11,6 +11,11 @@ using System.Diagnostics.CodeAnalysis;
     Scope = "namespace", Target = "~N:Microsoft.Identity.Client"
     )]
 [assembly: SuppressMessage(
+    "Style",
+    "IDE0130: Namespace does not match folder structure",
+    Scope = "namespace", Target = "~N:Microsoft.Identity.Client.Extensions.Msal"
+    )]
+[assembly: SuppressMessage(
     "Performance",
     "CA1812: Avoid uninstantiated internal classes",
     Justification = nameof(Microsoft.Extensions.DependencyInjection)

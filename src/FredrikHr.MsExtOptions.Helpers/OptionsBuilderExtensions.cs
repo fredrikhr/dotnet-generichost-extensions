@@ -2,7 +2,7 @@ namespace Microsoft.Extensions.Options;
 
 public static class OptionsBuilderExtensions
 {
-    public static OptionsBuilder<TOptions> ConfigureApplyBaseType<TOptions, TOptionsBase>(
+    public static OptionsBuilder<TOptions> UseInheritedConfigure<TOptions, TOptionsBase>(
         this OptionsBuilder<TOptions> optionsBuilder
         )
         where TOptions : class, TOptionsBase
@@ -33,7 +33,7 @@ public static class OptionsBuilderExtensions
         return optionsBuilder;
     }
 
-    public static OptionsBuilder<TOptions> PostConfigureApplyBaseType<TOptions, TOptionsBase>(
+    public static OptionsBuilder<TOptions> UseInheritedPostConfigure<TOptions, TOptionsBase>(
         this OptionsBuilder<TOptions> optionsBuilder
         )
         where TOptions : class, TOptionsBase

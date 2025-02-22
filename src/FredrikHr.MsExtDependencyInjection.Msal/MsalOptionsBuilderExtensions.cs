@@ -99,49 +99,4 @@ public static class MsalOptionsBuilderExtensions
     public static OptionsBuilder<ManagedIdentityApplicationBuilder> UseHttpClientFactory(
         this OptionsBuilder<ManagedIdentityApplicationBuilder> optionsBuilder
         ) => optionsBuilder.UseHttpClientFactoryImpl();
-
-    public static OptionsBuilder<ConfidentialClientApplicationBuilder> ConfigureInstance(
-        this OptionsBuilder<ConfidentialClientApplicationBuilder> optionsBuilder,
-        Action<OptionsBuilder<IConfidentialClientApplication>> configureInstance
-        )
-    {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(optionsBuilder);
-#else
-        _ = optionsBuilder ?? throw new ArgumentNullException(nameof(optionsBuilder));
-#endif
-        if (configureInstance is not null)
-            configureInstance(new(optionsBuilder.Services, optionsBuilder.Name));
-        return optionsBuilder;
-    }
-
-    public static OptionsBuilder<PublicClientApplicationBuilder> ConfigureInstance(
-        this OptionsBuilder<PublicClientApplicationBuilder> optionsBuilder,
-        Action<OptionsBuilder<IPublicClientApplication>> configureInstance
-        )
-    {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(optionsBuilder);
-#else
-        _ = optionsBuilder ?? throw new ArgumentNullException(nameof(optionsBuilder));
-#endif
-        if (configureInstance is not null)
-            configureInstance(new(optionsBuilder.Services, optionsBuilder.Name));
-        return optionsBuilder;
-    }
-
-    public static OptionsBuilder<ManagedIdentityApplicationBuilder> ConfigureInstance(
-        this OptionsBuilder<ManagedIdentityApplicationBuilder> optionsBuilder,
-        Action<OptionsBuilder<IManagedIdentityApplication>> configureInstance
-        )
-    {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(optionsBuilder);
-#else
-        _ = optionsBuilder ?? throw new ArgumentNullException(nameof(optionsBuilder));
-#endif
-        if (configureInstance is not null)
-            configureInstance(new(optionsBuilder.Services, optionsBuilder.Name));
-        return optionsBuilder;
-    }
 }

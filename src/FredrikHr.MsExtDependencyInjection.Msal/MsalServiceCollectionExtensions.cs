@@ -1,117 +1,17 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client.Extensions.Msal;
 
 namespace Microsoft.Identity.Client;
 
 public static class MsalServiceCollectionExtensions
 {
-    private static void AddBaseAbstractApplicationBuilder<TApplicationInterface, TApplicationOptions, TBuilder>(
-        this OptionsBuilder<TBuilder> optionsBuilder,
-        Func<TApplicationOptions, TBuilder> builderFactory,
-        Func<IServiceProvider, object> applicationFactory,
-        ServiceLifetime serviceLifetime
-        )
-        where TApplicationInterface : IApplicationBase
-        where TApplicationOptions : class
-        where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
-    {
-        optionsBuilder.ConfigureApplyBaseType<TBuilder, BaseAbstractApplicationBuilder<TBuilder>>();
-        optionsBuilder.PostConfigureApplyBaseType<TBuilder, BaseAbstractApplicationBuilder<TBuilder>>();
-
-        optionsBuilder.Services.AddOptions();
-        optionsBuilder.Services.TryAddTransient(
-            ConfigurableServiceDescriptor.Factory(
-                sp => builderFactory(sp.GetRequiredService<TApplicationOptions>()),
-                optionsBuilder.Name
-            ));
-        optionsBuilder.Services.TryAdd(ServiceDescriptor.Describe(
-            serviceType: typeof(TApplicationInterface),
-            implementationFactory: applicationFactory,
-            serviceLifetime));
-    }
-
-    private static void AddAbstractApplicationBuilder<TApplicationInterface, TApplicationOptions, TBuilder>(
-        this OptionsBuilder<TBuilder> optionsBuilder,
-        Func<TApplicationOptions, TBuilder> builderFactory,
-        Func<IServiceProvider, object> applicationFactory,
-        ServiceLifetime serviceLifetime
-        )
-        where TApplicationInterface : IApplicationBase
-        where TApplicationOptions : class
-        where TBuilder : AbstractApplicationBuilder<TBuilder>
-    {
-        optionsBuilder.AddBaseAbstractApplicationBuilder<TApplicationInterface, TApplicationOptions, TBuilder>(
-            builderFactory,
-            applicationFactory,
-            serviceLifetime
-            );
-        optionsBuilder.ConfigureApplyBaseType<TBuilder, AbstractApplicationBuilder<TBuilder>>();
-        optionsBuilder.PostConfigureApplyBaseType<TBuilder, AbstractApplicationBuilder<TBuilder>>();
-    }
-
-    public static OptionsBuilder<ConfidentialClientApplicationBuilder>
+    public static IServiceCollection
         AddMsalConfidentialClient(
         this IServiceCollection services,
-        string? name = null,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Singleton
-        )
-    {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(services);
-#else
-        _ = services ?? throw new ArgumentNullException(nameof(services));
-#endif
-
-        OptionsBuilder<ConfidentialClientApplicationBuilder> optionsBuilder =
-            new(services, name);
-        optionsBuilder.AddAbstractApplicationBuilder<
-            IConfidentialClientApplication,
-            IOptionsMonitor<ConfidentialClientApplicationOptions>,
-            ConfidentialClientApplicationBuilder
-            >(
-            opts => ConfidentialClientApplicationBuilder
-                .CreateWithApplicationOptions(opts.Get(optionsBuilder.Name)),
-            CreateApplicationFactory<IConfidentialClientApplication, ConfidentialClientApplicationBuilder>(
-                static b => b.Build(), optionsBuilder.Name
-                ),
-            serviceLifetime);
-
-        return optionsBuilder;
-    }
-
-    public static OptionsBuilder<PublicClientApplicationBuilder>
-        AddMsalPublicClient(
-        this IServiceCollection services,
-        string? name = null,
-        ServiceLifetime serviceLifetime = ServiceLifetime.Singleton
-        )
-    {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(services);
-#else
-        _ = services ?? throw new ArgumentNullException(nameof(services));
-#endif
-        OptionsBuilder<PublicClientApplicationBuilder> optionsBuilder =
-            new(services, name);
-        optionsBuilder.AddAbstractApplicationBuilder<
-            IPublicClientApplication,
-            IOptionsMonitor<PublicClientApplicationOptions>,
-            PublicClientApplicationBuilder
-            >(
-            opts => PublicClientApplicationBuilder
-                .CreateWithApplicationOptions(opts.Get(optionsBuilder.Name)),
-            CreateApplicationFactory<IPublicClientApplication, PublicClientApplicationBuilder>(
-                static b => b.Build(), optionsBuilder.Name
-                ),
-            serviceLifetime);
-
-        return optionsBuilder;
-    }
-
-    public static OptionsBuilder<ManagedIdentityApplicationBuilder>
-        AddMsalManagedIdentityClient(
-        this IServiceCollection services,
+        Action<OptionsBuilder<ConfidentialClientApplicationOptions>>? configureOptions = default,
+        Action<OptionsBuilder<ConfidentialClientApplicationBuilder>>? configureBuilder = default,
+        Action<OptionsBuilder<IConfidentialClientApplication>>? configureApplication = default,
         string? name = null
         )
     {
@@ -121,36 +21,99 @@ public static class MsalServiceCollectionExtensions
         _ = services ?? throw new ArgumentNullException(nameof(services));
 #endif
 
-        OptionsBuilder<ManagedIdentityApplicationBuilder> optionsBuilder =
-            new(services, name);
-        services.TryAddSingleton(AppConfig.ManagedIdentityId.SystemAssigned);
-        optionsBuilder.AddBaseAbstractApplicationBuilder<
-            IManagedIdentityApplication,
-            AppConfig.ManagedIdentityId,
-            ManagedIdentityApplicationBuilder
-            >(
-            ManagedIdentityApplicationBuilder.Create,
-            CreateApplicationFactory<
-                IManagedIdentityApplication,
-                ManagedIdentityApplicationBuilder
-                >(static b => b.Build(), optionsBuilder.Name),
-            ServiceLifetime.Singleton);
-        return optionsBuilder;
+        services.AddSingleton<
+            IOptionsFactory<ConfidentialClientApplicationBuilder>,
+            ConfidentialClientApplicationBuilderFactory
+            >();
+        services.AddSingleton<
+            IOptionsFactory<IConfidentialClientApplication>,
+            ConfidentialClientApplicationFactory
+            >();
+
+        var optionsBuilder = services
+            .AddOptions<ConfidentialClientApplicationOptions>(name);
+        configureOptions?.Invoke(optionsBuilder);
+        var builderBuilder = services
+            .AddOptions<ConfidentialClientApplicationBuilder>(name);
+        configureBuilder?.Invoke(builderBuilder);
+        var applicationBuilder = services
+            .AddOptions<IConfidentialClientApplication>(name);
+        configureApplication?.Invoke(applicationBuilder);
+
+        return services;
     }
 
-    private static Func<IServiceProvider, TApplication> CreateApplicationFactory<
-        TApplication,
-        TBuilder
-        >(
-        Func<TBuilder, TApplication> builderBuildFunction,
-        string name
+    public static IServiceCollection
+        AddMsalPublicClient(
+        this IServiceCollection services,
+        Action<OptionsBuilder<PublicClientApplicationOptions>>? addOptionsAction = default,
+        Action<OptionsBuilder<PublicClientApplicationBuilder>>? addBuilderAction = default,
+        Action<OptionsBuilder<IPublicClientApplication>>? addApplicationAction = default,
+        string? name = null
         )
-        where TApplication : class, IApplicationBase
-        where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
     {
-        return ConfigurableServiceDescriptor.Factory(
-            sp => builderBuildFunction(sp.GetRequiredService<TBuilder>()),
-            name
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(services);
+#else
+        _ = services ?? throw new ArgumentNullException(nameof(services));
+#endif
+
+        services.AddSingleton<
+            IOptionsFactory<PublicClientApplicationBuilder>,
+            PublicClientApplicationBuilderFactory
+            >();
+        services.AddSingleton<
+            IOptionsFactory<IPublicClientApplication>,
+            PublicClientApplicationFactory
+            >();
+
+        var optionsOptsBuilder = services
+            .AddOptions<PublicClientApplicationOptions>(name);
+        addOptionsAction?.Invoke(optionsOptsBuilder);
+        var builderOptsBuilder = services
+            .AddOptions<PublicClientApplicationBuilder>(name);
+        addBuilderAction?.Invoke(builderOptsBuilder);
+        var applicationOptsBuilder = services
+            .AddOptions<IPublicClientApplication>(name);
+        addApplicationAction?.Invoke(applicationOptsBuilder);
+
+        return services;
+    }
+
+    public static IServiceCollection
+        AddMsalManagedIdentityClient(
+        this IServiceCollection services,
+        AppConfig.ManagedIdentityId? managedIdentityId,
+        Action<OptionsBuilder<ManagedIdentityApplicationBuilder>>? addBuilderAction = default,
+        Action<OptionsBuilder<IManagedIdentityApplication>>? addApplicationAction = default,
+        string? name = null
+        )
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(services);
+#else
+        _ = services ?? throw new ArgumentNullException(nameof(services));
+#endif
+
+        services.AddSingleton(
+            managedIdentityId ?? AppConfig.ManagedIdentityId.SystemAssigned
             );
+        services.AddSingleton<
+            IOptionsFactory<ManagedIdentityApplicationBuilder>,
+            ManagedIdentityApplicationBuilderFactory
+            >();
+        services.AddSingleton<
+            IOptionsFactory<IManagedIdentityApplication>,
+            ManagedIdentityApplicationFactory
+            >();
+
+        var builderOptsBuilder = services
+            .AddOptions<ManagedIdentityApplicationBuilder>(name);
+        addBuilderAction?.Invoke(builderOptsBuilder);
+        var applicationOptsBuilder = services
+            .AddOptions<IManagedIdentityApplication>(name);
+        addApplicationAction?.Invoke(applicationOptsBuilder);
+
+        return services;
     }
 }
