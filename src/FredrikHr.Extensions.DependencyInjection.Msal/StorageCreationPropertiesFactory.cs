@@ -4,9 +4,9 @@ namespace Microsoft.Identity.Client.Extensions.Msal;
 
 internal sealed class StorageCreationPropertiesFactory(
     IOptionsMonitor<StorageCreationPropertiesBuilder> builderProvider
-    ) : OptionsFactory<StorageCreationProperties>([], [])
+    ) : IOptionsFactory<StorageCreationProperties>
 {
-    protected override StorageCreationProperties CreateInstance(string name)
+    public StorageCreationProperties Create(string name)
     {
         var builder = builderProvider.Get(name);
         return builder.Build();
