@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/..root/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="LICENSE" />
+  </Folder>
+  <Folder Name="/.github/">
+    <File Path=".github/dependabot.yml" />
+  </Folder>
+  <Folder Name="/src/">
+    <File Path="src/Directory.Build.props" />
+    <File Path="src/Directory.Packages.props" />
+    <Project Path="src/FredrikHr.Extensions.Configuration.Helpers/FredrikHr.Extensions.Configuration.Helpers.csproj" />
+    <Project Path="src/FredrikHr.Extensions.DependencyInjection.AzureIdentity/FredrikHr.Extensions.DependencyInjection.AzureIdentity.csproj" />
+    <Project Path="src/FredrikHr.Extensions.DependencyInjection.Msal/FredrikHr.Extensions.DependencyInjection.Msal.csproj" />
+    <Project Path="src/FredrikHr.Extensions.DependencyInjection.SharePointOnline/FredrikHr.Extensions.DependencyInjection.SharePointOnline.csproj" />
+    <Project Path="src/FredrikHr.Extensions.Hosting.TUnit/FredrikHr.Extensions.Hosting.TUnit.csproj" />
+    <Project Path="src/FredrikHr.Extensions.Options.Helpers/FredrikHr.Extensions.Options.Helpers.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <File Path="test/Directory.Build.props" />
+    <File Path="test/Directory.Packages.props" />
+    <Project Path="test/FredrikHr.Extensions.DependencyInjection.SharePointOnline.TUnit/FredrikHr.Extensions.DependencyInjection.SharePointOnline.TUnit.csproj" />
+    <Project Path="test/FredrikHr.Hosting.Msal.TUnit/FredrikHr.Hosting.Msal.TUnit.csproj" />
+  </Folder>
+</Solution>
