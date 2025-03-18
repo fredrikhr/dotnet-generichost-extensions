@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FredrikHr.CommandLineApi.Hosting\FredrikHr.CommandLineApi.Hosting.csproj" />
+    <ProjectReference Include="..\..\src\FredrikHr.Extensions.Hosting.TUnit\FredrikHr.Extensions.Hosting.TUnit.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+  </ItemGroup>
+
+</Project>

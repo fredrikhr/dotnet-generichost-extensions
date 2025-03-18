@@ -1,4 +1,7 @@
 {
+  "files.associations": {
+    "nuget.config": "xml"
+  },
   "dotnet.defaultSolution": ".NET Generic Host Extensions.slnx",
   "dotnet.testWindow.useTestingPlatformProtocol": true
 }
