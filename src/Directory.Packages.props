@@ -74,7 +74,7 @@
     </PackageVersion>
 
     <PackageVersion Include="TUnit.Core">
-      <Version>0.3.0</Version>
+      <Version>0.13.0</Version>
     </PackageVersion>
   </ItemGroup>
 

@@ -58,7 +58,7 @@ public class TUnitLogger(string name) : ILogger
             );
         lock (context.Lock)
         {
-            StringWriter writer = context.OutputWriter;
+            TextWriter writer = context.OutputWriter;
             Log(writer, logLevelString, eventId, logMessage);
         }
     }
@@ -89,7 +89,7 @@ public class TUnitLogger(string name) : ILogger
             out string logLevelString,
             out string? logMessage
             );
-        StringWriter writer;
+        TextWriter writer;
         lock (writer = context.OutputWriter)
         {
             Log(writer, logLevelString, eventId, logMessage);
@@ -113,7 +113,7 @@ public class TUnitLogger(string name) : ILogger
     }
 
     private void Log(
-        StringWriter writer,
+        TextWriter writer,
         string logLevel,
         EventId eventId,
         string? logMessage
