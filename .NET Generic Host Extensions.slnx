@@ -14,7 +14,6 @@
   <Folder Name="/src/">
     <File Path="src/Directory.Build.props" />
     <File Path="src/Directory.Packages.props" />
-    <Project Path="src/FredrikHr.CommandLineApi.Hosting.HostApplicationBuilder/FredrikHr.CommandLineApi.Hosting.HostApplicationBuilder.csproj" />
     <Project Path="src/FredrikHr.CommandLineApi.Hosting/FredrikHr.CommandLineApi.Hosting.csproj" />
     <Project Path="src/FredrikHr.Extensions.Configuration.Helpers/FredrikHr.Extensions.Configuration.Helpers.csproj" />
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.AzureIdentity/FredrikHr.Extensions.DependencyInjection.AzureIdentity.csproj" />

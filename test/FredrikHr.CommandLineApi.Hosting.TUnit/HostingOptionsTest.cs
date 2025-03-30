@@ -20,7 +20,7 @@ public class HostingOptionsTest
     public class HostingCommandLineInvocation(
         IOptions<HostingCommandLineOptions> options,
         TaskCompletionSource<HostingCommandLineOptions> tcs
-        ) : IHostedCommandLineInvocation
+        ) : IHostCommandLineInvocation
     {
         public Task<int> InvokeAsync(CancellationToken cancelToken = default)
         {

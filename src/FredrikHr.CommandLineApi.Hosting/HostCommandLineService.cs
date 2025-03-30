@@ -7,9 +7,9 @@ namespace System.CommandLine.Hosting;
     "CA1812: Avoid uninstantiated internal classes",
     Justification = nameof(Microsoft.Extensions.DependencyInjection)
 )]
-internal sealed class HostedCommandLineService(
+internal sealed class HostCommandLineService(
     IHostApplicationLifetime lifetime,
-    IHostedCommandLineInvocation invocation
+    IHostCommandLineInvocation invocation
     ) : BackgroundService()
 {
     public new Task<int>? ExecuteTask => base.ExecuteTask as Task<int>;

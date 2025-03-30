@@ -1,6 +1,6 @@
 namespace System.CommandLine.Hosting;
 
-public class HostingConfigurationDirective() : Directive(Name)
+public class HostConfigurationDirective() : Directive(Name)
 {
     public new const string Name = "config";
 }

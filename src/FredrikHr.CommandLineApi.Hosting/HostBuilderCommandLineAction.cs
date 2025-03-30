@@ -5,15 +5,19 @@ using Microsoft.Extensions.Hosting;
 namespace System.CommandLine.Hosting;
 
 public class HostBuilderCommandLineAction<TInvocation>(
-    Func<string[], IHostBuilder> hostBuilderFactory,
+    Func<string[], IHostBuilder>? hostBuilderFactory,
     Action<IHostBuilder> configureHostBuilder
     )
-    : HostingCommandLineAction<IHostBuilder, TInvocation>(
-        hostBuilderFactory,
+    : HostCommandLineAction<IHostBuilder, TInvocation>(
+        hostBuilderFactory ?? Host.CreateDefaultBuilder,
         configureHostBuilder
         )
-    where TInvocation : class, IHostedCommandLineInvocation
+    where TInvocation : class, IHostCommandLineInvocation
 {
+    public HostBuilderCommandLineAction(
+        Action<IHostBuilder> configureHostBuilder
+    ) : this(default, configureHostBuilder) { }
+
     protected override void ConfigureHostServices(
         IHostBuilder hostBuilder,
         Action<IServiceCollection> configureServices
@@ -38,6 +42,7 @@ public class HostBuilderCommandLineAction<TInvocation>(
         _ = hostBuilder ?? throw new ArgumentNullException(nameof(hostBuilder));
 #endif
         hostBuilder.ConfigureHostConfiguration(configureAction);
+        hostBuilder.UseConsoleLifetime();
     }
 
     protected override IHost CreateHost(IHostBuilder hostBuilder)

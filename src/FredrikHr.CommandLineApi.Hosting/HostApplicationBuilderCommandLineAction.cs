@@ -6,11 +6,11 @@ namespace System.CommandLine.Hosting;
 
 public class HostApplicationBuilderCommandLineAction<TInvocation>(
     Action<HostApplicationBuilder> configureHostBuilder
-    ) : HostingCommandLineAction<HostApplicationBuilder, TInvocation>(
+    ) : HostCommandLineAction<HostApplicationBuilder, TInvocation>(
         Host.CreateApplicationBuilder,
         configureHostBuilder
         )
-    where TInvocation : class, IHostedCommandLineInvocation
+    where TInvocation : class, IHostCommandLineInvocation
 {
     protected override void ConfigureHostServices(
         HostApplicationBuilder hostBuilder,

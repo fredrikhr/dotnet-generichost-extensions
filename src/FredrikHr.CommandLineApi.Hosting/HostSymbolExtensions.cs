@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace System.CommandLine.Hosting;
 
-public static class HostingSymbolExtensions
+public static class HostSymbolExtensions
 {
     private static void ConfigureOptionsBuilder<T, TOptions>(
         Symbol symbol,
@@ -38,9 +38,9 @@ public static class HostingSymbolExtensions
                 (commandResult = parentResult as CommandResult) is null;
                 parentResult = parentResult.Parent) ;
             if (commandResult is null) return;
-            if (commandResult.Command.Action is not HostingCommandLineAction hostingAction)
+            if (commandResult.Command.Action is not HostCommandLineAction hostingAction)
                 return;
-            hostingAction.ConfigureAdditionalServices += ConfigureHostServices;
+            hostingAction.ConfigureSymbolServices += ConfigureHostServices;
         }
 
         void ConfigureHostServices(IServiceCollection services)
@@ -149,10 +149,10 @@ public static class HostingSymbolExtensions
 
     public static Command UseHost<TInvocation>(
         this Command command,
-        Func<string[], IHostBuilder> createHostBuilder,
+        Func<string[], IHostBuilder>? createHostBuilder,
         Action<IHostBuilder> configureHost
         )
-        where TInvocation : class, IHostedCommandLineInvocation
+        where TInvocation : class, IHostCommandLineInvocation
     {
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(command);
@@ -166,14 +166,68 @@ public static class HostingSymbolExtensions
         return command;
     }
 
+    public static Command UseHost<TInvocation>(
+        this Command command,
+        Action<IHostBuilder> configureHost
+        )
+        where TInvocation : class, IHostCommandLineInvocation
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(command);
+#else
+        _ = command ?? throw new ArgumentNullException(nameof(command));
+#endif
+        command.Action = new HostBuilderCommandLineAction<TInvocation>(
+            configureHost
+            );
+        return command;
+    }
+
     public static RootCommand UseHost<TInvocation>(
         this RootCommand command,
         Func<string[], IHostBuilder> createHostBuilder,
         Action<IHostBuilder> configureHost
         )
-        where TInvocation : class, IHostedCommandLineInvocation
+        where TInvocation : class, IHostCommandLineInvocation
     {
         UseHost<TInvocation>((Command)command, createHostBuilder, configureHost);
+        return command;
+    }
+
+    public static RootCommand UseHost<TInvocation>(
+        this RootCommand command,
+        Action<IHostBuilder> configureHost
+        )
+        where TInvocation : class, IHostCommandLineInvocation
+    {
+        UseHost<TInvocation>((Command)command, configureHost);
+        return command;
+    }
+
+    public static Command UseHostApplicationBuilder<TInvocation>(
+        this Command command,
+        Action<HostApplicationBuilder> configureHost
+        )
+        where TInvocation : class, IHostCommandLineInvocation
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(command);
+#else
+        _ = command ?? throw new ArgumentNullException(nameof(command));
+#endif
+        command.Action = new HostApplicationBuilderCommandLineAction<TInvocation>(
+            configureHost
+            );
+        return command;
+    }
+
+    public static RootCommand UseHostApplicationBuilder<TInvocation>(
+        this RootCommand command,
+        Action<HostApplicationBuilder> configureHost
+        )
+        where TInvocation : class, IHostCommandLineInvocation
+    {
+        UseHostApplicationBuilder<TInvocation>((Command)command, configureHost);
         return command;
     }
 }
