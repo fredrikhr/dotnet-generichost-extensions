@@ -1,9 +1,11 @@
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Microsoft.Extensions.Options;
 
 public static class OptionsBuilderExtensions
 {
-    public static OptionsBuilder<TOptions> UseInheritedConfigure<TOptions, TOptionsBase>(
-        this OptionsBuilder<TOptions> optionsBuilder
+    public static IServiceCollection ConfigureAllInherited<TOptions, TOptionsBase>(
+        this IServiceCollection services
         )
         where TOptions : class, TOptionsBase
         where TOptionsBase : class
@@ -11,30 +13,35 @@ public static class OptionsBuilderExtensions
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(optionsBuilder);
 #else
-        _ = optionsBuilder ?? throw new ArgumentNullException(nameof(optionsBuilder));
+        _ = services ?? throw new ArgumentNullException(nameof(services));
 #endif
-        if (typeof(TOptions) != typeof(TOptionsBase))
-        {
-            optionsBuilder.Configure<IEnumerable<IConfigureOptions<TOptionsBase>>>((opts, setups) =>
+
+        if (typeof(TOptions) == typeof(TOptionsBase)) goto returnFluent;
+
+        services.ConfigureAllNamed<TOptions, IEnumerable<IConfigureOptions<TOptionsBase>>>(
+            static (name, inheritedConfigureOptions, options) =>
             {
-                foreach (IConfigureOptions<TOptionsBase> setup in setups)
+                foreach (var configureOptions in inheritedConfigureOptions)
                 {
-                    if (setup is IConfigureNamedOptions<TOptionsBase> namedSetup)
+                    switch (configureOptions)
                     {
-                        namedSetup.Configure(optionsBuilder.Name, opts);
-                    }
-                    else if (optionsBuilder.Name == Options.DefaultName)
-                    {
-                        setup.Configure(opts);
+                        case IConfigureNamedOptions<TOptionsBase> configureNamedOptions:
+                            configureNamedOptions.Configure(name, options);
+                            break;
+                        case IConfigureOptions<TOptionsBase>
+                        when name == Options.DefaultName:
+                            configureOptions.Configure(options);
+                            break;
                     }
                 }
             });
-        }
-        return optionsBuilder;
+
+    returnFluent:
+        return services;
     }
 
-    public static OptionsBuilder<TOptions> UseInheritedPostConfigure<TOptions, TOptionsBase>(
-        this OptionsBuilder<TOptions> optionsBuilder
+    public static IServiceCollection PostConfigureAllInherited<TOptions, TOptionsBase>(
+        this IServiceCollection services
         )
         where TOptions : class, TOptionsBase
         where TOptionsBase : class
@@ -42,19 +49,65 @@ public static class OptionsBuilderExtensions
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(optionsBuilder);
 #else
-        _ = optionsBuilder ?? throw new ArgumentNullException(nameof(optionsBuilder));
+        _ = services ?? throw new ArgumentNullException(nameof(services));
 #endif
 
-        if (typeof(TOptions) != typeof(TOptionsBase))
-        {
-            optionsBuilder.PostConfigure<IEnumerable<IPostConfigureOptions<TOptionsBase>>>((opts, setups) =>
+        if (typeof(TOptions) == typeof(TOptionsBase)) goto returnFluent;
+
+        services.PostConfigureAllNamed<TOptions, IEnumerable<IPostConfigureOptions<TOptionsBase>>>(
+            static (name, inheritedConfigureOptions, options) =>
             {
-                foreach (IPostConfigureOptions<TOptionsBase> setup in setups)
+                foreach (var configureOptions in inheritedConfigureOptions)
                 {
-                    setup.PostConfigure(optionsBuilder.Name, opts);
+                    configureOptions.PostConfigure(name, options);
                 }
             });
-        }
-        return optionsBuilder;
+
+    returnFluent:
+        return services;
+    }
+
+    public static IServiceCollection ConfigureAllNamed<TOptions, TDep>(
+        this IServiceCollection services,
+        Action<string?, TDep, TOptions> configureOptions
+        )
+        where TOptions : class
+        where TDep : class
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(services);
+#else
+        _ = services ?? throw new ArgumentNullException(nameof(services));
+#endif
+
+        services.AddSingleton<IConfigureOptions<TOptions>>(
+            serviceProvider => new ConfigureAllNamedOptions<TOptions, TDep>(
+                serviceProvider.GetRequiredService<TDep>(),
+                configureOptions
+                ));
+
+        return services;
+    }
+
+    public static IServiceCollection PostConfigureAllNamed<TOptions, TDep>(
+        this IServiceCollection services,
+        Action<string?, TDep, TOptions> configureOptions
+        )
+        where TOptions : class
+        where TDep : class
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(services);
+#else
+        _ = services ?? throw new ArgumentNullException(nameof(services));
+#endif
+
+        services.AddSingleton<IPostConfigureOptions<TOptions>>(
+            serviceProvider => new PostConfigureAllNamedOptions<TOptions, TDep>(
+                serviceProvider.GetRequiredService<TDep>(),
+                configureOptions
+                ));
+
+        return services;
     }
 }
