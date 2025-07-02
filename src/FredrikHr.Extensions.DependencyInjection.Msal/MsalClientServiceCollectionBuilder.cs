@@ -102,7 +102,7 @@ public class MsalClientServiceCollectionBuilder
             ) where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
         {
             var msalLogging = CreateLoggingAdapter<TApplication>(name, loggerFactory);
-            builder.WithLogging(msalLogging, enablePiiLogging: false);
+            builder.WithLogging(msalLogging, enablePiiLogging: true);
         }
     }
 
