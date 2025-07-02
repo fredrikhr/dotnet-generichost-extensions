@@ -70,7 +70,10 @@ public static class MsalOptionsBuilderExtensions
             enablePiiLogging
             );
 
-    private static OptionsBuilder<TBuilder> UseHttpClientFactoryImpl<TBuilder>(this OptionsBuilder<TBuilder> optionsBuilder)
+    private static OptionsBuilder<TBuilder> UseHttpClientFactoryImpl<TBuilder>(
+this OptionsBuilder<TBuilder> optionsBuilder,
+        string? name
+)
         where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
     {
 #if NET6_0_OR_GREATER
@@ -81,7 +84,7 @@ public static class MsalOptionsBuilderExtensions
         optionsBuilder.Services.AddHttpClient(optionsBuilder.Name);
         optionsBuilder.Configure<IHttpClientFactory>((builder, httpFactory) =>
         {
-            MsalHttpClientFactory msalHttp = new(httpFactory, optionsBuilder.Name);
+            MsalHttpClientFactory msalHttp = new(httpFactory, name);
             builder.WithHttpClientFactory(msalHttp);
         });
 
@@ -90,13 +93,28 @@ public static class MsalOptionsBuilderExtensions
 
     public static OptionsBuilder<ConfidentialClientApplicationBuilder> UseHttpClientFactory(
         this OptionsBuilder<ConfidentialClientApplicationBuilder> optionsBuilder
-        ) => optionsBuilder.UseHttpClientFactoryImpl();
+        ) => optionsBuilder.UseHttpClientFactoryImpl(optionsBuilder?.Name);
 
     public static OptionsBuilder<PublicClientApplicationBuilder> UseHttpClientFactory(
         this OptionsBuilder<PublicClientApplicationBuilder> optionsBuilder
-        ) => optionsBuilder.UseHttpClientFactoryImpl();
+        ) => optionsBuilder.UseHttpClientFactoryImpl(optionsBuilder?.Name);
 
     public static OptionsBuilder<ManagedIdentityApplicationBuilder> UseHttpClientFactory(
         this OptionsBuilder<ManagedIdentityApplicationBuilder> optionsBuilder
-        ) => optionsBuilder.UseHttpClientFactoryImpl();
+        ) => optionsBuilder.UseHttpClientFactoryImpl(optionsBuilder?.Name);
+
+    public static OptionsBuilder<ConfidentialClientApplicationBuilder> UseHttpClient(
+        this OptionsBuilder<ConfidentialClientApplicationBuilder> optionsBuilder,
+        string? name = null
+        ) => optionsBuilder.UseHttpClientFactoryImpl(name);
+
+    public static OptionsBuilder<PublicClientApplicationBuilder> UseHttpClient(
+        this OptionsBuilder<PublicClientApplicationBuilder> optionsBuilder,
+        string? name = null
+        ) => optionsBuilder.UseHttpClientFactoryImpl(name);
+
+    public static OptionsBuilder<ManagedIdentityApplicationBuilder> UseHttpClient(
+        this OptionsBuilder<ManagedIdentityApplicationBuilder> optionsBuilder,
+        string? name = null
+        ) => optionsBuilder.UseHttpClientFactoryImpl(name);
 }
