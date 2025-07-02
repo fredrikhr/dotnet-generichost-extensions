@@ -71,9 +71,9 @@ public static class MsalOptionsBuilderExtensions
             );
 
     private static OptionsBuilder<TBuilder> UseHttpClientFactoryImpl<TBuilder>(
-this OptionsBuilder<TBuilder> optionsBuilder,
+        this OptionsBuilder<TBuilder> optionsBuilder,
         string? name
-)
+        )
         where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
     {
 #if NET6_0_OR_GREATER
@@ -117,4 +117,21 @@ this OptionsBuilder<TBuilder> optionsBuilder,
         this OptionsBuilder<ManagedIdentityApplicationBuilder> optionsBuilder,
         string? name = null
         ) => optionsBuilder.UseHttpClientFactoryImpl(name);
+
+    public static OptionsBuilder<ManagedIdentityApplicationBuilder> UseManagedIdentityId(
+        this OptionsBuilder<ManagedIdentityApplicationBuilder> builder,
+        AppConfig.ManagedIdentityId managedIdentityId
+        )
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(builder);
+#else
+        _ = builder ?? throw new ArgumentNullException(nameof(builder));
+#endif
+        builder.Services.Configure<ManagedIdentityApplicationOptions>(
+            builder.Name,
+            options => options.ManagedIdentityId = managedIdentityId
+            );
+        return builder;
+    }
 }
