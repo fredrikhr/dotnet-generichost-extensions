@@ -11,7 +11,7 @@ public static class OptionsBuilderExtensions
         where TOptionsBase : class
     {
 #if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(optionsBuilder);
+        ArgumentNullException.ThrowIfNull(services);
 #else
         _ = services ?? throw new ArgumentNullException(nameof(services));
 #endif
@@ -47,7 +47,7 @@ public static class OptionsBuilderExtensions
         where TOptionsBase : class
     {
 #if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(optionsBuilder);
+        ArgumentNullException.ThrowIfNull(services);
 #else
         _ = services ?? throw new ArgumentNullException(nameof(services));
 #endif
