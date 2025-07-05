@@ -38,9 +38,11 @@ public sealed class ClientContextFactory : OptionsFactory<ClientContext>
 
     protected override ClientContext CreateInstance(string? name)
     {
-        name ??= Options.DefaultName;
         ClientContextConstructorOptions ctorOptions = _inlineOptions
-            ?? _optionsProvider!.Get(name);
+            ?? _optionsProvider?.Get(name)
+            ?? throw new InvalidOperationException(
+                $"Unable to retrieve constructor options in order to create a {nameof(ClientContext)} instance with name '{name ?? Options.DefaultName}'."
+                );
         return new(ctorOptions.WebUrl);
     }
 
