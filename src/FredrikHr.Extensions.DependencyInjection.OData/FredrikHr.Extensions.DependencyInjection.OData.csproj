@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.OData.Client" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FredrikHr.Extensions.Options.Helpers\FredrikHr.Extensions.Options.Helpers.csproj" />
+  </ItemGroup>
+
+</Project>

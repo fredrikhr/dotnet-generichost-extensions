@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project>
   <!-- Import Directory.Build file from parent directory -->
   <PropertyGroup>
@@ -75,7 +75,19 @@
     </PackageVersion>
 
     <PackageVersion Include="Microsoft.PowerPlatform.Dataverse.Client">
-      <Version>1.0.1</Version>
+      <Version>1.2.9</Version>
+    </PackageVersion>
+
+    <PackageVersion Include="Microsoft.OData.Client">
+      <Version Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">8.0.0</Version>
+      <Version Condition="$([MSBuild]::GetTargetFrameworkIdentifier('$(TargetFramework)')) == '.NETFramework'">[7.5.1, 8.0.0)</Version>
+      <Version Condition="$([MSBuild]::GetTargetFrameworkIdentifier('$(TargetFramework)')) == '.NETStandard'">[7.5.1, 8.0.0)</Version>
+    </PackageVersion>
+    <PackageVersion
+      Include="Microsoft.OData.Extensions.Client"
+      Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))"
+    >
+      <Version>1.0.0</Version>
     </PackageVersion>
 
     <PackageVersion Include="Microsoft.SharePointOnline.CSOM">

@@ -18,6 +18,7 @@
     <Project Path="src/FredrikHr.Extensions.Configuration.Helpers/FredrikHr.Extensions.Configuration.Helpers.csproj" />
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.AzureIdentity/FredrikHr.Extensions.DependencyInjection.AzureIdentity.csproj" />
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.Msal/FredrikHr.Extensions.DependencyInjection.Msal.csproj" />
+    <Project Path="src/FredrikHr.Extensions.DependencyInjection.OData/FredrikHr.Extensions.DependencyInjection.OData.csproj" />
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.SharePointOnline/FredrikHr.Extensions.DependencyInjection.SharePointOnline.csproj" />
     <Project Path="src/FredrikHr.Extensions.Hosting.TUnit/FredrikHr.Extensions.Hosting.TUnit.csproj" />
     <Project Path="src/FredrikHr.Extensions.Options.Helpers/FredrikHr.Extensions.Options.Helpers.csproj" />
