@@ -19,6 +19,7 @@ public class MsalClientServiceCollectionBuilder
         Services = services ?? throw new ArgumentNullException(nameof(services));
 #endif
 
+        Services.AddOptions();
         services.AddSingleton<
             IOptionsFactory<PublicClientApplicationBuilder>,
             PublicClientApplicationBuilderFactory
@@ -52,6 +53,7 @@ public class MsalClientServiceCollectionBuilder
         bool enablePiiLogging = false
         )
     {
+        Services.AddLogging();
         Services.ConfigureAllNamed<PublicClientApplicationBuilder, ILoggerFactory>(
             enablePiiLogging
             ? ConfigureBuilderPiiLogging<PublicClientApplicationBuilder, PublicClientApplication>
@@ -108,6 +110,7 @@ public class MsalClientServiceCollectionBuilder
 
     public MsalClientServiceCollectionBuilder UseHttpClientFactory()
     {
+        Services.AddHttpClient();
         Services.ConfigureAllNamed<PublicClientApplicationBuilder, IHttpClientFactory>(
             ConfigureBuilderHttpClientFactory<PublicClientApplicationBuilder, PublicClientApplication>
             );
