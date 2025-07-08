@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.Options;
 
@@ -18,23 +19,10 @@ public static class OptionsBuilderExtensions
 
         if (typeof(TOptions) == typeof(TOptionsBase)) goto returnFluent;
 
-        services.ConfigureAllNamed<TOptions, IEnumerable<IConfigureOptions<TOptionsBase>>>(
-            static (name, inheritedConfigureOptions, options) =>
-            {
-                foreach (var configureOptions in inheritedConfigureOptions)
-                {
-                    switch (configureOptions)
-                    {
-                        case IConfigureNamedOptions<TOptionsBase> configureNamedOptions:
-                            configureNamedOptions.Configure(name, options);
-                            break;
-                        case IConfigureOptions<TOptionsBase>
-                        when name == Options.DefaultName:
-                            configureOptions.Configure(options);
-                            break;
-                    }
-                }
-            });
+        services.TryAddTransient<
+            IConfigureOptions<TOptions>,
+            InheritedConfigureOptions<TOptions, TOptionsBase>
+            >();
 
     returnFluent:
         return services;
@@ -54,14 +42,10 @@ public static class OptionsBuilderExtensions
 
         if (typeof(TOptions) == typeof(TOptionsBase)) goto returnFluent;
 
-        services.PostConfigureAllNamed<TOptions, IEnumerable<IPostConfigureOptions<TOptionsBase>>>(
-            static (name, inheritedConfigureOptions, options) =>
-            {
-                foreach (var configureOptions in inheritedConfigureOptions)
-                {
-                    configureOptions.PostConfigure(name, options);
-                }
-            });
+        services.TryAddTransient<
+            IPostConfigureOptions<TOptions>,
+            InheritedPostConfigureOptions<TOptions, TOptionsBase>
+            >();
 
     returnFluent:
         return services;
