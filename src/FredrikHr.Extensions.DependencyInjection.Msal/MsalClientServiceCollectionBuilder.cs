@@ -134,15 +134,45 @@ public class MsalClientServiceCollectionBuilder
         }
     }
 
-    public OptionsBuilder<PublicClientApplicationBuilder> AddPublicClient(
+    public MsalClientServiceCollectionBuilder WithPublicClient(
+        Action<OptionsBuilder<PublicClientApplicationBuilder>> configureBuilder,
         string? name = null
-        ) => new(Services, name);
+        )
+    {
+        if (configureBuilder is not null)
+        {
+            OptionsBuilder<PublicClientApplicationBuilder> builder =
+                new(Services, name);
+            configureBuilder(builder);
+        }
+        return this;
+    }
 
-    public OptionsBuilder<ConfidentialClientApplicationBuilder> AddConfidentialClient(
+    public MsalClientServiceCollectionBuilder WithConfidentialClient(
+        Action<OptionsBuilder<ConfidentialClientApplicationBuilder>> configureBuilder,
         string? name = null
-        ) => new(Services, name);
+        )
+    {
+        if (configureBuilder is not null)
+        {
+            OptionsBuilder<ConfidentialClientApplicationBuilder> builder =
+                new(Services, name);
+            configureBuilder(builder);
+        }
+        return this;
+    }
 
-    public OptionsBuilder<ManagedIdentityApplicationBuilder> AddManagedIdentityClient(
+    public MsalClientServiceCollectionBuilder WithManagedIdentityClient(
+        Action<OptionsBuilder<ManagedIdentityApplicationBuilder>> configureBuilder,
         string? name = null
-        ) => new(Services, name);
+        )
+    {
+        if (configureBuilder is not null)
+        {
+            OptionsBuilder<ManagedIdentityApplicationBuilder> builder =
+                new(Services, name);
+            configureBuilder(builder);
+        }
+        return this;
+    }
 }
