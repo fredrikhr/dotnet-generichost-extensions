@@ -51,6 +51,26 @@ public static class OptionsBuilderExtensions
         return services;
     }
 
+    public static IServiceCollection ConfigureAllNamed<TOptions>(
+        this IServiceCollection services,
+        Action<string?, TOptions> configureOptions
+        )
+        where TOptions : class
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(services);
+#else
+        _ = services ?? throw new ArgumentNullException(nameof(services));
+#endif
+
+        services.AddSingleton<IConfigureOptions<TOptions>>(
+            serviceProvider => new ConfigureAllNamedOptions<TOptions>(
+                configureOptions
+                ));
+
+        return services;
+    }
+
     public static IServiceCollection ConfigureAllNamed<TOptions, TDep>(
         this IServiceCollection services,
         Action<string?, TOptions, TDep> configureOptions
