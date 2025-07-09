@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.LoggingExtensions;
@@ -17,8 +18,11 @@ public static class MsalOptionsBuilderExtensions
 #else
         _ = optionsBuilder ?? throw new ArgumentNullException(nameof(optionsBuilder));
 #endif
-        optionsBuilder.Services.AddSingleton(new BrokerOptionsParameters(enabledOn));
-        optionsBuilder.Services.AddTransient<
+        optionsBuilder.Services.Configure<BrokerOptionsParameters>(
+            optionsBuilder.Name,
+            p => p.EnabledOn = enabledOn
+            );
+        optionsBuilder.Services.TryAddTransient<
             IOptionsFactory<BrokerOptions>,
             BrokerOptionsFactory
             >();

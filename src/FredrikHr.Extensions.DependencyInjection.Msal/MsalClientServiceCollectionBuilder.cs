@@ -49,6 +49,37 @@ public class MsalClientServiceCollectionBuilder
             >();
     }
 
+    public MsalClientServiceCollectionBuilder ConfigureAllBrokerOptions(
+        BrokerOptions.OperatingSystems enabledOn,
+        Action<string?, BrokerOptions>? configureOptions = null
+        ) => ConfigureAllBrokerOptions(_ => enabledOn, configureOptions);
+
+    public MsalClientServiceCollectionBuilder ConfigureAllBrokerOptions(
+        Func<string?, BrokerOptions.OperatingSystems> enabledOn,
+        Action<string?, BrokerOptions>? configureOptions = null
+        )
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(enabledOn);
+#else
+        _ = enabledOn ?? throw new ArgumentNullException(nameof(enabledOn));
+#endif
+
+        Services.AddOptions();
+        Services.ConfigureAllNamed<BrokerOptionsParameters>(
+            (name, p) => p.EnabledOn = enabledOn(name)
+            );
+        Services.TryAddTransient<
+            IOptionsFactory<BrokerOptions>,
+            BrokerOptionsFactory
+            >();
+        if (configureOptions is not null)
+        {
+            Services.ConfigureAllNamed(configureOptions);
+        }
+        return this;
+    }
+
     public MsalClientServiceCollectionBuilder UseLogging(
         bool enablePiiLogging = false
         )

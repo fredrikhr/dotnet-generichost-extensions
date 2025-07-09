@@ -3,20 +3,21 @@
 namespace Microsoft.Identity.Client;
 
 internal sealed class BrokerOptionsFactory(
-    BrokerOptionsParameters optionsConstructorParameters,
+    IOptionsMonitor<BrokerOptionsParameters> optionsParameterProvider,
     IEnumerable<IConfigureOptions<BrokerOptions>> setups,
     IEnumerable<IPostConfigureOptions<BrokerOptions>> postConfigures,
     IEnumerable<IValidateOptions<BrokerOptions>> validations
     ) : OptionsFactory<BrokerOptions>(setups, postConfigures, validations)
 {
     public BrokerOptionsFactory(
-        BrokerOptionsParameters optionsConstructorParameters,
+        IOptionsMonitor<BrokerOptionsParameters> optionsParameterProvider,
         IEnumerable<IConfigureOptions<BrokerOptions>> setups,
         IEnumerable<IPostConfigureOptions<BrokerOptions>> postConfigures
-        ) : this(optionsConstructorParameters, setups, postConfigures, []) { }
+        ) : this(optionsParameterProvider, setups, postConfigures, []) { }
 
     protected override BrokerOptions CreateInstance(string name)
     {
-        return new(optionsConstructorParameters.EnabledOn);
+        var optionParams = optionsParameterProvider.Get(name);
+        return new(optionParams.EnabledOn);
     }
 }

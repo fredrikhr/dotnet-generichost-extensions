@@ -1,8 +1,13 @@
 namespace Microsoft.Identity.Client;
 
-internal sealed class BrokerOptionsParameters(
-    BrokerOptions.OperatingSystems enabledOn
-    )
+internal sealed class BrokerOptionsParameters()
 {
-    public BrokerOptions.OperatingSystems EnabledOn { get; } = enabledOn;
+    public BrokerOptions.OperatingSystems EnabledOn { get; set; }
+
+    public BrokerOptionsParameters(
+        BrokerOptions.OperatingSystems enabledOn
+    ) : this()
+    {
+        EnabledOn = enabledOn;
+    }
 }
