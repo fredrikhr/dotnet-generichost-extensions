@@ -120,8 +120,8 @@ public class MsalClientServiceCollectionBuilder
 
         static void ConfigureBuilderLogging<TBuilder, TApplication>(
             string? name,
-            ILoggerFactory loggerFactory,
-            TBuilder builder
+            TBuilder builder,
+            ILoggerFactory loggerFactory
             ) where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
         {
             var msalLogging = CreateLoggingAdapter<TApplication>(name, loggerFactory);
@@ -130,8 +130,8 @@ public class MsalClientServiceCollectionBuilder
 
         static void ConfigureBuilderPiiLogging<TBuilder, TApplication>(
             string? name,
-            ILoggerFactory loggerFactory,
-            TBuilder builder
+            TBuilder builder,
+            ILoggerFactory loggerFactory
             ) where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
         {
             var msalLogging = CreateLoggingAdapter<TApplication>(name, loggerFactory);
@@ -156,8 +156,8 @@ public class MsalClientServiceCollectionBuilder
 
         static void ConfigureBuilderHttpClientFactory<TBuilder, TApplication>(
             string? name,
-            IHttpClientFactory httpFactory,
-            TBuilder builder
+            TBuilder builder,
+            IHttpClientFactory httpFactory
             ) where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
         {
             MsalHttpClientFactory msalHttpFactory = new(httpFactory, name);
