@@ -20,30 +20,30 @@ public class MsalClientServiceCollectionBuilder
 #endif
 
         Services.AddOptions();
-        services.AddSingleton<
+        services.TryAddSingleton<
             IOptionsFactory<PublicClientApplicationBuilder>,
             PublicClientApplicationBuilderFactory
             >();
-        services.AddSingleton<
+        services.TryAddSingleton<
             IOptionsFactory<IPublicClientApplication>,
             PublicClientApplicationFactory
             >();
 
-        services.AddSingleton<
+        services.TryAddSingleton<
             IOptionsFactory<ConfidentialClientApplicationBuilder>,
             ConfidentialClientApplicationBuilderFactory
             >();
-        services.AddSingleton<
+        services.TryAddSingleton<
             IOptionsFactory<IConfidentialClientApplication>,
             ConfidentialClientApplicationFactory
             >();
 
         services.TryAddSingleton(AppConfig.ManagedIdentityId.SystemAssigned);
-        services.AddSingleton<
+        services.TryAddSingleton<
             IOptionsFactory<ManagedIdentityApplicationBuilder>,
             ManagedIdentityApplicationBuilderFactory
             >();
-        services.AddSingleton<
+        services.TryAddSingleton<
             IOptionsFactory<IManagedIdentityApplication>,
             ManagedIdentityApplicationFactory
             >();
