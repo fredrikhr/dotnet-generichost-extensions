@@ -53,7 +53,7 @@ public static class OptionsBuilderExtensions
 
     public static IServiceCollection ConfigureAllNamed<TOptions, TDep>(
         this IServiceCollection services,
-        Action<string?, TDep, TOptions> configureOptions
+        Action<string?, TOptions, TDep> configureOptions
         )
         where TOptions : class
         where TDep : class
@@ -75,7 +75,7 @@ public static class OptionsBuilderExtensions
 
     public static IServiceCollection PostConfigureAllNamed<TOptions, TDep>(
         this IServiceCollection services,
-        Action<string?, TDep, TOptions> configureOptions
+        Action<string?, TOptions, TDep> configureOptions
         )
         where TOptions : class
         where TDep : class

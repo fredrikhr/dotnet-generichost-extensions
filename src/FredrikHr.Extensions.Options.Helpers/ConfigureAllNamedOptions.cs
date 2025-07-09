@@ -2,16 +2,16 @@ namespace Microsoft.Extensions.Options;
 
 public class ConfigureAllNamedOptions<TOptions, TDep>(
     TDep dependency,
-    Action<string?, TDep, TOptions> configureOptions
+    Action<string?, TOptions, TDep> configureOptions
     ) : IConfigureNamedOptions<TOptions> where TOptions : class
 {
-    public Action<string?, TDep, TOptions> ConfigureOptions { get; } =
+    public Action<string?, TOptions, TDep> ConfigureOptions { get; } =
         configureOptions ?? throw new ArgumentNullException(nameof(configureOptions));
 
     /// <inhertdoc cref="IConfigureNamedOptions{TOptions}.Configure(string?, TOptions)"/>
     public void Configure(string? name, TOptions options)
     {
-        ConfigureOptions(name, dependency, options);
+        ConfigureOptions(name, options, dependency);
     }
 
     /// <inhertdoc cref="IConfigureOptions{TOptions}.Configure(TOptions)"/>
