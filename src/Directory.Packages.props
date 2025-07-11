@@ -60,8 +60,11 @@
       <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
     </PackageVersion>
 
+    <PackageVersion Include="Azure.Core">
+      <Version>1.11.0</Version>
+    </PackageVersion>
     <PackageVersion Include="Azure.Identity">
-      <Version>1.11.4</Version>
+      <Version>1.13.0</Version>
     </PackageVersion>
 
     <PackageVersion Include="Microsoft.Identity.Client">

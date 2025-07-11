@@ -16,6 +16,7 @@
     <File Path="src/Directory.Packages.props" />
     <Project Path="src/FredrikHr.CommandLineApi.Hosting/FredrikHr.CommandLineApi.Hosting.csproj" />
     <Project Path="src/FredrikHr.Extensions.Configuration.Helpers/FredrikHr.Extensions.Configuration.Helpers.csproj" />
+    <Project Path="src/FredrikHr.Extensions.DependencyInjection.AzureCore/FredrikHr.Extensions.DependencyInjection.AzureCore.csproj" />
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.AzureIdentity/FredrikHr.Extensions.DependencyInjection.AzureIdentity.csproj" />
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.DataverseClient/FredrikHr.Extensions.DependencyInjection.DataverseClient.csproj" />
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.Msal/FredrikHr.Extensions.DependencyInjection.Msal.csproj" />

@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
@@ -13,4 +14,10 @@
 
     <PackageReference Include="Azure.Identity" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FredrikHr.Extensions.DependencyInjection.AzureCore\FredrikHr.Extensions.DependencyInjection.AzureCore.csproj" />
+    <ProjectReference Include="..\FredrikHr.Extensions.Options.Helpers\FredrikHr.Extensions.Options.Helpers.csproj" />
+  </ItemGroup>
+
 </Project>

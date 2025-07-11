@@ -1,21 +1,16 @@
-using Azure.Core;
 using Azure.Core.Diagnostics;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Azure.Identity;
 
 public static class AzureIdentityServiceCollectionExtensions
 {
-    public static OptionsBuilder<TOptions> AddAzureTokenCredential<TCredential, TOptions>(
-        this IServiceCollection services,
-        string? name = null
+    public static IServiceCollection AddAzureIdentity(
+        this IServiceCollection services
         )
-        where TCredential : TokenCredential
-        where TOptions : TokenCredentialOptions
     {
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(services);
@@ -23,31 +18,61 @@ public static class AzureIdentityServiceCollectionExtensions
         _ = services ?? throw new ArgumentNullException(nameof(services));
 #endif
 
+        services.AddOptions();
+        services.AddLogging(logging => logging.ForwardAzureEventSource());
         services.AddHttpClient();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<
-            ILoggerProvider,
-            AzureEventSourceLoggingForwarder
-            >());
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<
-            IConfigureOptions<TOptions>,
-            HttpClientTransportAzureTokenCredentialConfigureOptions<TOptions>
-            >());
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<
+                IConfigureOptions<TokenCredentialOptions>,
+                HttpClientTransportAzureTokenCredentialConfigureOptions<TokenCredentialOptions>
+                >()
+            );
 
-        services.AddTransient(serviceProvider =>
-        {
-            var optsSource = serviceProvider.GetRequiredService
-                <IOptionsMonitor<TOptions>>();
-            return ActivatorUtilities.CreateInstance<TCredential>(
-                serviceProvider,
-                optsSource.Get(name)
-                );
-        });
-        if (typeof(TCredential) != typeof(TokenCredential))
-        {
-            services.AddTransient<TokenCredential>(static serviceProvider =>
-                serviceProvider.GetRequiredService<TCredential>()
-                );
-        }
-        return new(services, name);
+        services.TryAddSingleton<AzureTokenCredentialFactory>();
+        services.TryAddSingleton<
+            IOptionsFactory<DefaultAzureCredential>
+            >(SingletonTokenCredentialFactory);
+        services.TryAddSingleton<
+            IOptionsFactory<AzureCliCredential>
+            >(SingletonTokenCredentialFactory);
+        services.TryAddSingleton<
+            IOptionsFactory<AzureDeveloperCliCredential>
+            >(SingletonTokenCredentialFactory);
+        services.TryAddSingleton<
+            IOptionsFactory<AzurePowerShellCredential>
+            >(SingletonTokenCredentialFactory);
+        services.TryAddSingleton<
+            IOptionsFactory<DeviceCodeCredential>
+            >(SingletonTokenCredentialFactory);
+        services.TryAddSingleton<
+            IOptionsFactory<EnvironmentCredential>
+            >(SingletonTokenCredentialFactory);
+        services.TryAddSingleton<
+            IOptionsFactory<InteractiveBrowserCredential>
+            >(SingletonTokenCredentialFactory);
+        services.TryAddSingleton<
+            IOptionsFactory<SharedTokenCacheCredential>
+            >(SingletonTokenCredentialFactory);
+        services.TryAddSingleton<
+            IOptionsFactory<VisualStudioCodeCredential>
+            >(SingletonTokenCredentialFactory);
+        services.TryAddSingleton<
+            IOptionsFactory<VisualStudioCredential>
+            >(SingletonTokenCredentialFactory);
+        services.TryAddSingleton<
+            IOptionsFactory<WorkloadIdentityCredential>
+            >(SingletonTokenCredentialFactory);
+
+        services.TryAddSingleton<ManagedIdentityRegistry>();
+        services.TryAddTransient <
+            IOptionsFactory<ManagedIdentityCredentialOptions>,
+            ManagedIdentityCredentialOptionsFactory
+            >();
+
+        return services;
+
+        static AzureTokenCredentialFactory SingletonTokenCredentialFactory(
+            IServiceProvider serviceProvider
+            ) => serviceProvider.GetRequiredService<AzureTokenCredentialFactory>();
     }
 }
