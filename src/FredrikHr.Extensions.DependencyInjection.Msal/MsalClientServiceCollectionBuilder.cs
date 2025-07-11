@@ -86,19 +86,13 @@ public class MsalClientServiceCollectionBuilder
     {
         Services.AddLogging();
         Services.ConfigureAllNamed<PublicClientApplicationBuilder, ILoggerFactory>(
-            enablePiiLogging
-            ? ConfigureBuilderPiiLogging<PublicClientApplicationBuilder, PublicClientApplication>
-            : ConfigureBuilderLogging<PublicClientApplicationBuilder, PublicClientApplication>
+            ConfigureBuilderLogging<PublicClientApplicationBuilder, PublicClientApplication>
             );
         Services.ConfigureAllNamed<ConfidentialClientApplicationBuilder, ILoggerFactory>(
-            enablePiiLogging
-            ? ConfigureBuilderPiiLogging<ConfidentialClientApplicationBuilder, ConfidentialClientApplication>
-            : ConfigureBuilderLogging<ConfidentialClientApplicationBuilder, ConfidentialClientApplication>
+            ConfigureBuilderLogging<ConfidentialClientApplicationBuilder, ConfidentialClientApplication>
             );
         Services.ConfigureAllNamed<ManagedIdentityApplicationBuilder, ILoggerFactory>(
-            enablePiiLogging
-            ? ConfigureBuilderPiiLogging<ManagedIdentityApplicationBuilder, ManagedIdentityApplication>
-            : ConfigureBuilderLogging<ManagedIdentityApplicationBuilder, ManagedIdentityApplication>
+            ConfigureBuilderLogging<ManagedIdentityApplicationBuilder, ManagedIdentityApplication>
             );
 
         return this;
@@ -118,24 +112,14 @@ public class MsalClientServiceCollectionBuilder
             return new(logger);
         }
 
-        static void ConfigureBuilderLogging<TBuilder, TApplication>(
+        void ConfigureBuilderLogging<TBuilder, TApplication>(
             string? name,
             TBuilder builder,
             ILoggerFactory loggerFactory
             ) where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
         {
             var msalLogging = CreateLoggingAdapter<TApplication>(name, loggerFactory);
-            builder.WithLogging(msalLogging, enablePiiLogging: false);
-        }
-
-        static void ConfigureBuilderPiiLogging<TBuilder, TApplication>(
-            string? name,
-            TBuilder builder,
-            ILoggerFactory loggerFactory
-            ) where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
-        {
-            var msalLogging = CreateLoggingAdapter<TApplication>(name, loggerFactory);
-            builder.WithLogging(msalLogging, enablePiiLogging: true);
+            builder.WithLogging(msalLogging, enablePiiLogging);
         }
     }
 
