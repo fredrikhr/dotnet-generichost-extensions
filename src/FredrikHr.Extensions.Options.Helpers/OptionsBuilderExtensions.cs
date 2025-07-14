@@ -5,6 +5,19 @@ namespace Microsoft.Extensions.Options;
 
 public static class OptionsBuilderExtensions
 {
+    public static IServiceCollection Inherit<TOptions, TOptionsBase>(
+        this IServiceCollection services,
+        string? name = default
+        )
+        where TOptions : class, TOptionsBase
+        where TOptionsBase : class
+    {
+        return services
+            .ConfigureInherited<TOptions, TOptionsBase>(name)
+            .PostConfigureInherited<TOptions, TOptionsBase>(name)
+            ;
+    }
+
     public static IServiceCollection ConfigureInherited<TOptions, TOptionsBase>(
         this IServiceCollection services,
         string? name = default
@@ -51,6 +64,18 @@ public static class OptionsBuilderExtensions
 
     returnFluent:
         return services;
+    }
+
+    public static IServiceCollection InheritAll<TOptions, TOptionsBase>(
+        this IServiceCollection services
+        )
+        where TOptions : class, TOptionsBase
+        where TOptionsBase : class
+    {
+        return services
+            .ConfigureAllInherited<TOptions, TOptionsBase>()
+            .PostConfigureAllInherited<TOptions, TOptionsBase>()
+            ;
     }
 
     public static IServiceCollection ConfigureAllInherited<TOptions, TOptionsBase>(

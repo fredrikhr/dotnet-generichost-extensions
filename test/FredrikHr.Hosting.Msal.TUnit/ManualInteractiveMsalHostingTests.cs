@@ -1,7 +1,12 @@
+using System.Reflection;
+
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.Extensions.Msal;
 
 namespace FredrikHr.Hosting.Msal.TUnit;
 
@@ -17,13 +22,37 @@ public class ManualInteractiveMsalHostingTests(TUnitHostBuilderFactory hostBuild
         var hostBuilder = _hostBuilderFactory.CreateHostAppBuilder();
         hostBuilder.Services.AddOptions<ApplicationOptions>()
             .BindConfiguration(ConfigurationPath.Combine("Microsoft.Identity.Client", "ApplicationOptions"));
+        hostBuilder.Services.InheritAll<
+            PublicClientApplicationOptions,
+            ApplicationOptions
+            >();
         hostBuilder.Services.AddOptions<PublicClientApplicationOptions>()
-            .UseInheritedConfigure<PublicClientApplicationOptions, ApplicationOptions>()
             .BindConfiguration(ConfigurationPath.Combine("Microsoft.Identity.Client", "PublicClient"));
-        hostBuilder.Services.AddMsalPublicClient()
-            .UseLogging()
+        hostBuilder.Services.AddMsal()
+            .UseLogging(enablePiiLogging: hostBuilder.Environment.IsDevelopment())
             .UseHttpClientFactory()
+            .UseMsalUserTokenCacheHelper()
             ;
+        hostBuilder.Services.AddMsalPersistentCacheHelper();
+        if (hostBuilder.Environment.IsDevelopment())
+        {
+            hostBuilder.Services.ConfigureAllNamed<StorageCreationParameters>((name, storageParams) =>
+            {
+                var assembly = GetType().Assembly;
+                UserSecretsIdAttribute? attribute = assembly.GetCustomAttribute<UserSecretsIdAttribute>();
+                if (attribute?.UserSecretsId is not string secretsId) return;
+                string secretsPath;
+                try
+                {
+                    secretsPath = PathHelper.GetSecretsPathFromSecretsId(
+                        secretsId
+                    );
+                }
+                catch (InvalidOperationException) { return; }
+                if (Path.GetDirectoryName(secretsPath) is not string secretsDir) return;
+                storageParams.CacheDirectory = secretsDir;
+            });
+        }
 
         using var host = hostBuilder.Build();
         await host.StartAsync(cancelToken)
@@ -34,12 +63,35 @@ public class ManualInteractiveMsalHostingTests(TUnitHostBuilderFactory hostBuild
             .GetRequiredService<IOptions<IPublicClientApplication>>()
             .Value;
 
-        var msalRequest = publicMsal.AcquireTokenInteractive(["openid"])
-            .WithPrompt(Prompt.SelectAccount)
-            ;
-        var msalAuthResult = await msalRequest.ExecuteAsync(cancelToken)
-            .ConfigureAwait(continueOnCapturedContext: false);
-
+        IEnumerable<string> msalScopes = ["openid"];
+        AuthenticationResult? msalAuthResult = null;
+        try
+        {
+            IAccount? msalAccount = (await publicMsal.GetAccountsAsync()
+                .ConfigureAwait(continueOnCapturedContext: false)
+                ).SingleOrDefault();
+            if (msalAccount is not null)
+            {
+                msalAuthResult = await publicMsal.AcquireTokenSilent(
+                    msalScopes,
+                    msalAccount
+                    ).ExecuteAsync(cancelToken)
+                    .ConfigureAwait(continueOnCapturedContext: false);
+            }
+        }
+        catch (MsalClientException)
+        {
+            msalAuthResult = null;
+        }
+        if (msalAuthResult is null)
+        {
+            var msalRequest = publicMsal.AcquireTokenInteractive(msalScopes)
+                .WithPrompt(Prompt.SelectAccount)
+                ;
+            msalAuthResult = await msalRequest.ExecuteAsync(cancelToken)
+                .ConfigureAwait(continueOnCapturedContext: false);
+        }
+        
         await host.StopAsync(cancelToken)
             .ConfigureAwait(continueOnCapturedContext: false);
     }
