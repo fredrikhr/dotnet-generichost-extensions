@@ -4,4 +4,5 @@ public class StorageCreationParameters
 {
     public required string CacheDirectory { get; set; }
     public required string CacheName { get; set; }
+    public bool SuppressFileExtension { get; set; }
 }

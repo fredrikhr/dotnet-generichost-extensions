@@ -86,16 +86,6 @@ public static class MsalCacheHelperServiceCollectionExtensions
         _ = services ?? throw new ArgumentNullException(nameof(services));
 #endif
 
-        services.AddOptions();
-        services.ConfigureAllNamed<StorageCreationParameters>(
-            (name, ctorParams) => ctorParams.CacheName = name ?? "MsalCache"
-            );
-        services.ConfigureAllNamed<StorageCreationParameters>(
-            (name, ctorParams) => ctorParams.CacheDirectory = Path.Combine(
-                MsalCacheHelper.UserRootDirectory,
-                typeof(IClientApplicationBase).Namespace!
-                )
-            );
         AddMsalCacheHelperServices(services);
         return services;
     }
