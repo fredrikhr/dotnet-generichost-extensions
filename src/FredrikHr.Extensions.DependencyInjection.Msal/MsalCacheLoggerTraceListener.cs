@@ -12,6 +12,7 @@ internal sealed partial class MsalCacheLoggerTraceListener(
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2254:Template should be a static expression")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079: Remove unnecessary suppression", Justification = "erroneously triggered")]
     public override void TraceEvent(TraceEventCache? eventCache, string source, TraceEventType eventType, int id, string? format, params object?[]? args)
     {
         Span<(TraceEventType eventType, Microsoft.Extensions.Logging.LogLevel logLevel)> mappings = stackalloc[]

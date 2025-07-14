@@ -10,20 +10,25 @@ public sealed class MsalCacheHelperFactory :
     private readonly IOptionsMonitor<StorageCreationPropertiesBuilder> _storageCreationPropsOptions;
     private readonly IEnumerable<IConfigureOptions<MsalCacheHelper>> _setups;
     private readonly IEnumerable<IPostConfigureOptions<MsalCacheHelper>> _postConfigures;
+    private readonly IValidateOptions<MsalCacheHelper>[] _validations;
     private readonly System.Diagnostics.TraceSource _traceSource =
         new(typeof(MsalCacheHelper).FullName!);
     private readonly MsalCacheLoggerTraceListener _traceListener;
+
+    internal System.Diagnostics.TraceSource TraceSource => _traceSource;
 
     public MsalCacheHelperFactory(
         IOptionsMonitor<StorageCreationPropertiesBuilder> storageCreationPropsOptions,
         ILogger<MsalCacheHelper> logger,
         IEnumerable<IConfigureOptions<MsalCacheHelper>> setups,
-        IEnumerable<IPostConfigureOptions<MsalCacheHelper>> postConfigures
+        IEnumerable<IPostConfigureOptions<MsalCacheHelper>> postConfigures,
+        IEnumerable<IValidateOptions<MsalCacheHelper>> validations
         )
     {
         _storageCreationPropsOptions = storageCreationPropsOptions;
         _setups = setups;
         _postConfigures = postConfigures;
+        _validations = [.. validations ?? []];
         _traceListener = new MsalCacheLoggerTraceListener(logger);
         _traceSource.Listeners.Add(_traceListener);
     }
@@ -41,20 +46,36 @@ public sealed class MsalCacheHelperFactory :
             .Build();
         var instance = await MsalCacheHelper.CreateAsync(props, _traceSource)
             .ConfigureAwait(continueOnCapturedContext: false);
-        foreach (IConfigureOptions<MsalCacheHelper> setup in _setups)
+        foreach (IConfigureOptions<MsalCacheHelper> setup in _setups ?? [])
         {
             if (setup is IConfigureNamedOptions<MsalCacheHelper> namedSetup)
             {
                 namedSetup.Configure(name, instance);
             }
-            else if (name == Options.DefaultName)
+            else if (name == Options.DefaultName || name is null)
             {
                 setup.Configure(instance);
             }
         }
-        foreach (IPostConfigureOptions<MsalCacheHelper> post in _postConfigures)
+        foreach (IPostConfigureOptions<MsalCacheHelper> post in _postConfigures ?? [])
         {
             post.PostConfigure(name, instance);
+        }
+        if (_validations.Length > 0)
+        {
+            var failures = new List<string>();
+            foreach (var validate in _validations)
+            {
+                ValidateOptionsResult result = validate.Validate(name, instance);
+                if (result is not null && result.Failed)
+                {
+                    failures.AddRange(result.Failures);
+                }
+            }
+            if (failures.Count > 0)
+            {
+                throw new OptionsValidationException(name ?? Options.DefaultName, instance.GetType(), failures);
+            }
         }
 
         return instance;
