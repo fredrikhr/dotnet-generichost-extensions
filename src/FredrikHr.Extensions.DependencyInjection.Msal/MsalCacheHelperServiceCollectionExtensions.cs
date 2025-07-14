@@ -34,6 +34,10 @@ public static class MsalCacheHelperServiceCollectionExtensions
             IOptionsFactory<StorageCreationProperties>,
             StorageCreationPropertiesFactory
             >();
+        services.TryAddSingleton<MsalCacheHelperFactory>();
+        services.TryAddSingleton<
+            IOptionsFactory<Task<MsalCacheHelper>>
+            >(static sp => sp.GetRequiredService<MsalCacheHelperFactory>());
         return new(services, name);
     }
 }
