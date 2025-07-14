@@ -86,7 +86,7 @@ public static class MsalOptionsBuilderExtensions
         _ = optionsBuilder ?? throw new ArgumentNullException(nameof(optionsBuilder));
 #endif
         optionsBuilder.Services.AddHttpClient(optionsBuilder.Name);
-        optionsBuilder.Configure<IHttpClientFactory>((builder, httpFactory) =>
+        optionsBuilder.Configure<IHttpMessageHandlerFactory>((builder, httpFactory) =>
         {
             MsalHttpClientFactory msalHttp = new(httpFactory, name);
             builder.WithHttpClientFactory(msalHttp);

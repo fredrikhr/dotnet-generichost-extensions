@@ -1,13 +1,28 @@
-﻿namespace Microsoft.Identity.Client;
+namespace Microsoft.Identity.Client;
 
 public class MsalHttpClientFactory(
-    IHttpClientFactory httpFactory,
+    IHttpMessageHandlerFactory httpMsgFactory,
     string? name = default
     ) : IMsalHttpClientFactory
 {
-    public HttpClient GetHttpClient() => name switch
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Reliability",
+        "CA2000: Dispose objects before losing scope",
+        Justification = nameof(IHttpMessageHandlerFactory)
+        )]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "CodeQuality",
+        "IDE0079: Remove unnecessary suppression",
+        Justification = "erroneously triggered"
+        )]
+    public HttpClient GetHttpClient()
     {
-        { Length: > 0 } => httpFactory.CreateClient(name),
-        _ => httpFactory.CreateClient()
-    };
+        var httpMsgHandler = name switch
+        {
+            null => httpMsgFactory.CreateHandler(),
+            _ => httpMsgFactory.CreateHandler(name),
+        };
+        MsalHttpClientFactoryHttpHandler httpHandler = new(httpMsgHandler);
+        return new(httpHandler);
+    }
 }
