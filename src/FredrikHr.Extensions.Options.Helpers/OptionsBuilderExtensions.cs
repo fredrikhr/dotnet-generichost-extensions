@@ -93,6 +93,26 @@ public static class OptionsBuilderExtensions
         return services;
     }
 
+    public static IServiceCollection PostConfigureAllNamed<TOptions>(
+        this IServiceCollection services,
+        Action<string?, TOptions> configureOptions
+        )
+        where TOptions : class
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(services);
+#else
+        _ = services ?? throw new ArgumentNullException(nameof(services));
+#endif
+
+        services.AddSingleton<IPostConfigureOptions<TOptions>>(
+            serviceProvider => new PostConfigureAllNamedOptions<TOptions>(
+                configureOptions
+                ));
+
+        return services;
+    }
+
     public static IServiceCollection PostConfigureAllNamed<TOptions, TDep>(
         this IServiceCollection services,
         Action<string?, TOptions, TDep> configureOptions
