@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 
-#if NET8_0_OR_GREATER
+#if NET9_0_OR_GREATER
 using System.Threading;
 #else
 using Lock = object;
