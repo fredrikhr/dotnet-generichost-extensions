@@ -19,7 +19,7 @@ public class MsalClientServiceCollectionBuilder
         Services = services ?? throw new ArgumentNullException(nameof(services));
 #endif
 
-        Services.AddOptions();
+        services.AddOptions();
         services.TryAddSingleton<
             IOptionsFactory<PublicClientApplicationBuilder>,
             PublicClientApplicationBuilderFactory

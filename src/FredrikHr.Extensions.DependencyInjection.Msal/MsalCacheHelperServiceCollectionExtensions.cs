@@ -10,6 +10,8 @@ public static class MsalCacheHelperServiceCollectionExtensions
         IServiceCollection services
         )
     {
+        services.AddOptions();
+        services.AddLogging();
         services.TryAddSingleton<
             IOptionsFactory<StorageCreationPropertiesBuilder>,
             StorageCreationPropertiesBuilderFactory
@@ -22,6 +24,10 @@ public static class MsalCacheHelperServiceCollectionExtensions
         services.TryAddSingleton<
             IOptionsFactory<Task<MsalCacheHelper>>
             >(static sp => sp.GetRequiredService<MsalCacheHelperFactory>());
+        services.TryAddTransient<
+            IValidateOptions<MsalCacheHelper>,
+            MsalCacheHelperValidateOptions
+            >();
     }
 
     public static OptionsBuilder<StorageCreationPropertiesBuilder>
@@ -38,7 +44,6 @@ public static class MsalCacheHelperServiceCollectionExtensions
         _ = services ?? throw new ArgumentNullException(nameof(services));
 #endif
 
-        services.AddOptions();
         services.Configure<StorageCreationParameters>(name, opt =>
         {
             opt.CacheName = cacheName;
@@ -59,7 +64,6 @@ public static class MsalCacheHelperServiceCollectionExtensions
         _ = services ?? throw new ArgumentNullException(nameof(services));
 #endif
 
-        services.AddOptions();
         if (cacheConstructorFactory is not null)
         {
             services.ConfigureAllNamed<StorageCreationParameters>(
@@ -96,7 +100,7 @@ public static class MsalCacheHelperServiceCollectionExtensions
         return services;
     }
 
-    public static MsalClientServiceCollectionBuilder UseMsalCacheHelper(
+    public static MsalClientServiceCollectionBuilder UseMsalUserTokenCacheHelper(
         this MsalClientServiceCollectionBuilder msalBuilder
         )
     {
@@ -105,6 +109,7 @@ public static class MsalCacheHelperServiceCollectionExtensions
 #else
         _ = msalBuilder ?? throw new ArgumentNullException(nameof(msalBuilder));
 #endif
+        AddMsalCacheHelperServices(msalBuilder.Services);
         msalBuilder.Services.PostConfigureAllNamed<
             IClientApplicationBase,
             IOptionsMonitor<Task<MsalCacheHelper>>
