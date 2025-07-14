@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Identity.Client.Extensions.Msal;
@@ -19,16 +20,17 @@ public static class MsalCacheHelperServiceCollectionExtensions
         _ = services ?? throw new ArgumentNullException(nameof(services));
 #endif
 
+        services.AddOptions();
         services.Configure<StorageCreationParameters>(name, opt =>
         {
             opt.CacheName = cacheName;
             opt.CacheDirectory = cacheDirectory;
         });
-        services.AddSingleton<
+        services.TryAddSingleton<
             IOptionsFactory<StorageCreationPropertiesBuilder>,
             StorageCreationPropertiesBuilderFactory
             >();
-        services.AddSingleton<
+        services.TryAddSingleton<
             IOptionsFactory<StorageCreationProperties>,
             StorageCreationPropertiesFactory
             >();

@@ -11,11 +11,10 @@ public sealed class MsalCacheHelperFactory :
     private readonly IEnumerable<IConfigureOptions<MsalCacheHelper>> _setups;
     private readonly IEnumerable<IPostConfigureOptions<MsalCacheHelper>> _postConfigures;
     private readonly IValidateOptions<MsalCacheHelper>[] _validations;
-    private readonly System.Diagnostics.TraceSource _traceSource =
-        new(typeof(MsalCacheHelper).FullName!);
     private readonly MsalCacheLoggerTraceListener _traceListener;
 
-    internal System.Diagnostics.TraceSource TraceSource => _traceSource;
+    internal System.Diagnostics.TraceSource TraceSource { get; } =
+        new(typeof(MsalCacheHelper).FullName!);
 
     public MsalCacheHelperFactory(
         IOptionsMonitor<StorageCreationPropertiesBuilder> storageCreationPropsOptions,
@@ -30,7 +29,7 @@ public sealed class MsalCacheHelperFactory :
         _postConfigures = postConfigures;
         _validations = [.. validations ?? []];
         _traceListener = new MsalCacheLoggerTraceListener(logger);
-        _traceSource.Listeners.Add(_traceListener);
+        TraceSource.Listeners.Add(_traceListener);
     }
 
     Task<MsalCacheHelper> IOptionsFactory<Task<MsalCacheHelper>>.Create(string name)
@@ -44,7 +43,7 @@ public sealed class MsalCacheHelperFactory :
     {
         var props = _storageCreationPropsOptions.Get(name)
             .Build();
-        var instance = await MsalCacheHelper.CreateAsync(props, _traceSource)
+        var instance = await MsalCacheHelper.CreateAsync(props, TraceSource)
             .ConfigureAwait(continueOnCapturedContext: false);
         foreach (IConfigureOptions<MsalCacheHelper> setup in _setups ?? [])
         {
@@ -83,7 +82,7 @@ public sealed class MsalCacheHelperFactory :
 
     public void Dispose()
     {
-        _traceSource.Listeners.Clear();
+        TraceSource.Listeners.Clear();
         _traceListener.Dispose();
     }
 }
