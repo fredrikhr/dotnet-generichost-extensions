@@ -8,10 +8,12 @@ public sealed class MsalCacheHelperFactory :
     IDisposable
 {
     private readonly IOptionsMonitor<StorageCreationPropertiesBuilder> _storageCreationPropsOptions;
+    private readonly ILogger<MsalCacheHelper> _logger;
     private readonly IEnumerable<IConfigureOptions<MsalCacheHelper>> _setups;
     private readonly IEnumerable<IPostConfigureOptions<MsalCacheHelper>> _postConfigures;
     private readonly IValidateOptions<MsalCacheHelper>[] _validations;
     private readonly MsalCacheLoggerTraceListener _traceListener;
+    private readonly IDisposable? _loggerOptionsChangeRegistration;
 
     internal System.Diagnostics.TraceSource TraceSource { get; } =
         new(typeof(MsalCacheHelper).FullName!);
@@ -21,15 +23,21 @@ public sealed class MsalCacheHelperFactory :
         ILogger<MsalCacheHelper> logger,
         IEnumerable<IConfigureOptions<MsalCacheHelper>> setups,
         IEnumerable<IPostConfigureOptions<MsalCacheHelper>> postConfigures,
-        IEnumerable<IValidateOptions<MsalCacheHelper>> validations
+        IEnumerable<IValidateOptions<MsalCacheHelper>> validations,
+        IOptionsMonitor<LoggerFilterOptions> loggerOptionsMonitor
         )
     {
         _storageCreationPropsOptions = storageCreationPropsOptions;
+        _logger = logger;
         _setups = setups;
         _postConfigures = postConfigures;
         _validations = [.. validations ?? []];
         _traceListener = new MsalCacheLoggerTraceListener(logger);
         TraceSource.Listeners.Add(_traceListener);
+        _loggerOptionsChangeRegistration = loggerOptionsMonitor?.OnChange(
+            OnLoggerOptionsChanged
+            );
+        OnLoggerOptionsChanged(null);
     }
 
     Task<MsalCacheHelper> IOptionsFactory<Task<MsalCacheHelper>>.Create(string name)
@@ -80,8 +88,27 @@ public sealed class MsalCacheHelperFactory :
         return instance;
     }
 
+    private void OnLoggerOptionsChanged(LoggerFilterOptions? options)
+    {
+        if (_logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Trace))
+            TraceSource.Switch.Level = System.Diagnostics.SourceLevels.All;
+        else if (_logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+            TraceSource.Switch.Level = System.Diagnostics.SourceLevels.Verbose;
+        else if (_logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Information))
+            TraceSource.Switch.Level = System.Diagnostics.SourceLevels.Information;
+        else if (_logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Warning))
+            TraceSource.Switch.Level = System.Diagnostics.SourceLevels.Warning;
+        else if (_logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Error))
+            TraceSource.Switch.Level = System.Diagnostics.SourceLevels.Error;
+        else if (_logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Critical))
+            TraceSource.Switch.Level = System.Diagnostics.SourceLevels.Critical;
+        else if (_logger.IsEnabled(Microsoft.Extensions.Logging.LogLevel.None))
+            TraceSource.Switch.Level = System.Diagnostics.SourceLevels.Off;
+    }
+
     public void Dispose()
     {
+        _loggerOptionsChangeRegistration?.Dispose();
         TraceSource.Listeners.Clear();
         _traceListener.Dispose();
     }
