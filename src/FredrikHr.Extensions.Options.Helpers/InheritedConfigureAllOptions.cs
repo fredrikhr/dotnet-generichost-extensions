@@ -1,6 +1,6 @@
 namespace Microsoft.Extensions.Options;
 
-public class InheritedConfigureOptions<TOptions, TOptionsBase>(
+public class InheritedConfigureAllOptions<TOptions, TOptionsBase>(
     IEnumerable<IConfigureOptions<TOptionsBase>> configureBaseOptions
     ) : IConfigureNamedOptions<TOptions>
     where TOptions : class, TOptionsBase

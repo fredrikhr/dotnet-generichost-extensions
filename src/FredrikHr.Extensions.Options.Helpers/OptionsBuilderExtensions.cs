@@ -5,6 +5,54 @@ namespace Microsoft.Extensions.Options;
 
 public static class OptionsBuilderExtensions
 {
+    public static IServiceCollection ConfigureInherited<TOptions, TOptionsBase>(
+        this IServiceCollection services,
+        string? name = default
+        )
+        where TOptions : class, TOptionsBase
+        where TOptionsBase : class
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(services);
+#else
+        _ = services ?? throw new ArgumentNullException(nameof(services));
+#endif
+
+        if (typeof(TOptions) == typeof(TOptionsBase)) goto returnFluent;
+        name ??= Options.DefaultName;
+        services.TryAddTransient<IConfigureOptions<TOptions>>(
+            serviceProvider => InheritedConfigureNamedOptions
+            <TOptions, TOptionsBase>.CreateInstance(serviceProvider, name)
+            );
+
+    returnFluent:
+        return services;
+    }
+
+    public static IServiceCollection PostConfigureInherited<TOptions, TOptionsBase>(
+        this IServiceCollection services,
+        string? name = default
+        )
+        where TOptions : class, TOptionsBase
+        where TOptionsBase : class
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(services);
+#else
+        _ = services ?? throw new ArgumentNullException(nameof(services));
+#endif
+
+        if (typeof(TOptions) == typeof(TOptionsBase)) goto returnFluent;
+        name ??= Options.DefaultName;
+        services.TryAddTransient<IPostConfigureOptions<TOptions>>(
+            serviceProvider => InheritedPostConfigureNamedOptions
+            <TOptions, TOptionsBase>.CreateInstance(serviceProvider, name)
+            );
+
+    returnFluent:
+        return services;
+    }
+
     public static IServiceCollection ConfigureAllInherited<TOptions, TOptionsBase>(
         this IServiceCollection services
         )
@@ -21,7 +69,7 @@ public static class OptionsBuilderExtensions
 
         services.TryAddTransient<
             IConfigureOptions<TOptions>,
-            InheritedConfigureOptions<TOptions, TOptionsBase>
+            InheritedConfigureAllOptions<TOptions, TOptionsBase>
             >();
 
     returnFluent:
@@ -44,7 +92,7 @@ public static class OptionsBuilderExtensions
 
         services.TryAddTransient<
             IPostConfigureOptions<TOptions>,
-            InheritedPostConfigureOptions<TOptions, TOptionsBase>
+            InheritedPostConfigureAllOptions<TOptions, TOptionsBase>
             >();
 
     returnFluent:

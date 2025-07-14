@@ -1,6 +1,6 @@
 namespace Microsoft.Extensions.Options;
 
-public class InheritedPostConfigureOptions<TOptions, TOptionsBase>(
+public class InheritedPostConfigureAllOptions<TOptions, TOptionsBase>(
     IEnumerable<IPostConfigureOptions<TOptionsBase>> configureBaseOptions
     ) : IPostConfigureOptions<TOptions>
     where TOptions : class, TOptionsBase
