@@ -1,19 +1,291 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
 namespace Microsoft.Identity.Client;
 
-public class MsalHttpAuthorizationDelegatingHandler
-: DelegatingHandler
+public class MsalHttpAuthorizationDelegatingHandler(
+    string? name,
+    IServiceProvider serviceProvider
+    ) : DelegatingHandler()
 {
-    private bool ShouldHandleRequest(
-        HttpRequestMessage request,
-        IDictionary<string, object?>? options
-        )
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+
+    private bool ShouldHandleRequest(HttpRequestMessage request)
     {
-        if ((options?.TryGetValue(typeof(MsalHttpClientFactoryHttpHandler).FullName ?? nameof(MsalHttpClientFactoryHttpHandler), out object? msalHttpClientFactoryHandler) ?? false) &&
-            msalHttpClientFactoryHandler is MsalHttpClientFactoryHttpHandler
-            )
+        if (request.TryGetOptionByType<MsalHttpClientFactoryHttpHandler>(out _))
             return false;
 
         return false;
+    }
+
+    private IServiceProvider GetServiceProvider(HttpRequestMessage request)
+    {
+        return request.GetServiceProvider() ?? _serviceProvider;
+    }
+
+    private static Func<DeviceCodeResult, Task> GetDeviceCodeResultCallback(
+        IServiceProvider serviceProvider
+        )
+    {
+        var callback = serviceProvider.GetService<Func<DeviceCodeResult, Task>>()
+            ?? (deviceCodeResult =>
+            {
+                const Microsoft.Extensions.Logging.LogLevel critLevel =
+                    Microsoft.Extensions.Logging.LogLevel.Critical;
+                var logger = serviceProvider.GetRequiredService<ILogger<IPublicClientApplication>>();
+                if (!logger.IsEnabled(critLevel))
+                {
+                    return Task.CompletedTask;
+                }
+
+                logger.Log(
+                    critLevel,
+                    new EventId(1, nameof(DeviceCodeResult)),
+                    exception: null,
+                    state: new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        { nameof(DeviceCodeResult), deviceCodeResult },
+                        { nameof(DeviceCodeResult.ClientId), deviceCodeResult.ClientId },
+                        { nameof(DeviceCodeResult.ExpiresOn), deviceCodeResult.ExpiresOn },
+                        { nameof(DeviceCodeResult.Scopes), deviceCodeResult.Scopes },
+                        { nameof(DeviceCodeResult.Message), deviceCodeResult.Message },
+                        { nameof(DeviceCodeResult.UserCode), deviceCodeResult.UserCode },
+                        { nameof(DeviceCodeResult.VerificationUrl), deviceCodeResult.VerificationUrl },
+                    },
+                    formatter: static (state, _) => state[nameof(DeviceCodeResult.Message)]?.ToString() ?? ""
+                    );
+                return Task.CompletedTask;
+            });
+        return callback;
+    }
+
+    private TClient GetMsalClient<TClient, TAlternate>(
+        HttpRequestMessage request,
+        IServiceProvider serviceProvider
+        )
+        where TClient : class, IApplicationBase
+        where TAlternate : TClient
+    {
+        request.TryGetOptionByType(out TClient? msalClient);
+        msalClient ??= request.TryGetOptionByType(out TAlternate? msalClientAlt)
+            ? msalClientAlt
+            : null;
+        msalClient ??= serviceProvider.GetRequiredService<
+                IOptionsMonitor<TClient>
+                >().Get(name);
+        return msalClient;
+    }
+
+    private Task<AuthenticationResult> AcquireTokenSilent(
+        HttpRequestMessage request,
+        IServiceProvider serviceProvider,
+        IClientApplicationBase msalClient,
+        CancellationToken cancelToken
+        )
+    {
+        var scopes = request.GetMsalScopes();
+        var account = request.GetMsalAccount();
+        AcquireTokenSilentParameterBuilder acquireTokenBuilder;
+        if (account is null)
+        {
+            var loginHint = request.GetMsalLoginHint();
+            acquireTokenBuilder = msalClient.AcquireTokenSilent(scopes, loginHint);
+        }
+        else
+            acquireTokenBuilder = msalClient.AcquireTokenSilent(scopes, account);
+        ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
+        return acquireTokenBuilder.ExecuteAsync(cancelToken);
+    }
+
+    private Task<AuthenticationResult> AcquireTokenByAuthorizationCode(
+        HttpRequestMessage request,
+        IServiceProvider serviceProvider,
+        IConfidentialClientApplication msalClient,
+        CancellationToken cancelToken
+        )
+    {
+        var scopes = request.GetMsalScopes();
+        var authorizationCode = request.GetMsalAuthorizationCode();
+
+        var acquireTokenBuilder = msalClient.AcquireTokenByAuthorizationCode(scopes, authorizationCode);
+        ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
+        return acquireTokenBuilder.ExecuteAsync(cancelToken);
+    }
+
+    private Task<AuthenticationResult> AcquireTokenForClient(
+        HttpRequestMessage request,
+        IServiceProvider serviceProvider,
+        IConfidentialClientApplication msalClient,
+        CancellationToken cancelToken
+        )
+    {
+        var scopes = request.GetMsalScopes();
+
+        var acquireTokenBuilder = msalClient.AcquireTokenForClient(scopes);
+        ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
+        return acquireTokenBuilder.ExecuteAsync(cancelToken);
+    }
+
+    private Task<AuthenticationResult> AcquireTokenOnBehalfOf(
+        HttpRequestMessage request,
+        IServiceProvider serviceProvider,
+        IConfidentialClientApplication msalClient,
+        CancellationToken cancelToken
+        )
+    {
+        var scopes = request.GetMsalScopes();
+        var assertion = request.GetMsalUserAssertion();
+
+        var acquireTokenBuilder = msalClient.AcquireTokenOnBehalfOf(scopes, assertion);
+        ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
+        return acquireTokenBuilder.ExecuteAsync(cancelToken);
+    }
+
+    private Task<AuthenticationResult> AcquireTokenInteractive(
+        HttpRequestMessage request,
+        IServiceProvider serviceProvider,
+        IPublicClientApplication msalClient,
+        CancellationToken cancelToken
+        )
+    {
+        var scopes = request.GetMsalScopes();
+
+        var acquireTokenBuilder = msalClient.AcquireTokenInteractive(scopes);
+        ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
+        return acquireTokenBuilder.ExecuteAsync(cancelToken);
+    }
+
+    private Task<AuthenticationResult> AcquireTokenWithDeviceCode(
+        HttpRequestMessage request,
+        IServiceProvider serviceProvider,
+        PublicClientApplication msalClient,
+        CancellationToken cancelToken
+        )
+    {
+        var scopes = request.GetMsalScopes();
+        var deviceCodeResultCallback = GetDeviceCodeResultCallback(serviceProvider);
+
+        var acquireTokenBuilder = msalClient.AcquireTokenWithDeviceCode(scopes, deviceCodeResultCallback);
+        ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
+        return acquireTokenBuilder.ExecuteAsync(cancelToken);
+    }
+
+    private Task<AuthenticationResult> AcquireTokenByIntegratedWindowsAuth(
+        HttpRequestMessage request,
+        IServiceProvider serviceProvider,
+        PublicClientApplication msalClient,
+        CancellationToken cancelToken
+        )
+    {
+        var scopes = request.GetMsalScopes();
+
+        var acquireTokenBuilder = msalClient.AcquireTokenByIntegratedWindowsAuth(scopes);
+        ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
+        return acquireTokenBuilder.ExecuteAsync(cancelToken);
+    }
+
+    private Task<AuthenticationResult> AcquireTokenByUsernamePassword(
+        HttpRequestMessage request,
+        IServiceProvider serviceProvider,
+        IPublicClientApplication msalClient,
+        CancellationToken cancelToken
+        )
+    {
+        var scopes = request.GetMsalScopes();
+        var credential = request.GetMsalUsernamePasswordCredential();
+        var (username, password) = (credential?.UserName, credential?.Password);
+
+        var acquireTokenBuilder = msalClient.AcquireTokenByUsernamePassword(scopes, username, password);
+        ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
+        return acquireTokenBuilder.ExecuteAsync(cancelToken);
+    }
+
+    private Task<AuthenticationResult> AcquireTokenForManagedIdentity(
+        HttpRequestMessage request,
+        IServiceProvider serviceProvider,
+        IManagedIdentityApplication msalClient,
+        CancellationToken cancelToken
+        )
+    {
+        var resource = request.GetMsalResource();
+
+        var acquireTokenBuilder = msalClient.AcquireTokenForManagedIdentity(resource);
+        ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
+        return acquireTokenBuilder.ExecuteAsync(cancelToken);
+    }
+
+    private void ConfigureAcquireTokenBuilder<TBuilder>(
+        HttpRequestMessage request,
+        IServiceProvider serviceProvider,
+        TBuilder acquireTokenBuilder
+        ) where TBuilder : BaseAbstractAcquireTokenParameterBuilder<TBuilder>
+    {
+        var acquireTokenConfigureOptions = request.GetOptionEnumerableByType<
+            IConfigureOptions<TBuilder>
+            >().Concat(serviceProvider.GetServices<
+                IConfigureOptions<TBuilder>
+            >());
+        var acquireTokenPostConfigureOptions = request.GetOptionEnumerableByType<
+            IPostConfigureOptions<TBuilder>
+            >().Concat(serviceProvider.GetServices<
+                IPostConfigureOptions<TBuilder>
+            >());
+        var acquireTokenValidations = request.GetOptionEnumerableByType<
+            IValidateOptions<TBuilder>
+            >().Concat(serviceProvider.GetServices<
+                IValidateOptions<TBuilder>
+            >()).ToArray();
+        foreach (var configureAcquireTokenBuilder in acquireTokenConfigureOptions)
+        {
+            switch (configureAcquireTokenBuilder)
+            {
+                case IConfigureNamedOptions<TBuilder> namedConfigureAcquireTokenBuilder:
+                    namedConfigureAcquireTokenBuilder.Configure(name, acquireTokenBuilder);
+                    break;
+                default:
+                    configureAcquireTokenBuilder.Configure(acquireTokenBuilder);
+                    break;
+            }
+        }
+        foreach (var configureAcquireTokenBuilder in acquireTokenPostConfigureOptions)
+        {
+            configureAcquireTokenBuilder.PostConfigure(name, acquireTokenBuilder);
+        }
+        if (acquireTokenValidations.Length > 0)
+        {
+            var failures = new List<string>();
+            foreach (var validateAcquireTokenBuilder in acquireTokenValidations)
+            {
+                ValidateOptionsResult result = validateAcquireTokenBuilder.Validate(name, acquireTokenBuilder);
+                if (result is not null && result.Failed)
+                {
+                    failures.AddRange(result.Failures);
+                }
+            }
+            if (failures.Count > 0)
+            {
+                throw new OptionsValidationException(
+                    name ?? Options.DefaultName,
+                    typeof(TBuilder),
+                    failures
+                    );
+            }
+        }
+    }
+
+    private static void ApplyAuthenticationResult(
+        HttpRequestMessage request,
+        AuthenticationResult? authResult
+        )
+    {
+        if (authResult is null) return;
+
+        request.Headers.Add(
+            nameof(request.Headers.Authorization),
+            authResult.CreateAuthorizationHeader()
+            );
+        request.SetOptionByType(authResult.Account);
     }
 
     protected override Task<HttpResponseMessage> SendAsync(
@@ -27,14 +299,7 @@ public class MsalHttpAuthorizationDelegatingHandler
         _ = request ?? throw new ArgumentNullException(nameof(request));
 #endif
 
-        var options = request
-#if NET5_0_OR_GREATER
-            .Options
-#else
-            .Properties
-#endif
-            ;
-        bool shouldHandle = ShouldHandleRequest(request, options);
+        bool shouldHandle = ShouldHandleRequest(request);
         if (shouldHandle)
         {
 
@@ -55,15 +320,7 @@ public class MsalHttpAuthorizationDelegatingHandler
         _ = request ?? throw new ArgumentNullException(nameof(request));
 #endif
 
-        var options = request
-#if NET5_0_OR_GREATER
-            .Options
-#else
-            .Properties
-#endif
-            ;
-
-        bool shouldHandle = ShouldHandleRequest(request, options);
+        bool shouldHandle = ShouldHandleRequest(request);
         if (shouldHandle)
         {
 
