@@ -16,14 +16,11 @@ public static class MsalHttpAuthorizationExtensions
         _ = request ?? throw new ArgumentNullException(nameof(request));
 #endif
 
-        var options = request
 #if NET5_0_OR_GREATER
-            .Options
+        return request.Options;
 #else
-            .Properties
+        return request.Properties;
 #endif
-            ;
-        return options;
     }
 
     internal static bool TryGetOptionByType<T>(
@@ -85,27 +82,64 @@ public static class MsalHttpAuthorizationExtensions
         options.Add(optionKey, optionValue);
     }
 
-    public static void AddServiceScope(
+    public static void SetMsalPublicClient(
+        this HttpRequestMessage request,
+        IPublicClientApplication client
+        )
+    {
+        if (client is PublicClientApplication clientClass)
+            request.AddOptionByType(clientClass);
+        else
+            request.AddOptionByType(client);
+    }
+
+    public static void SetMsalConfidentialClient(
+        this HttpRequestMessage request,
+        IConfidentialClientApplication client
+        )
+    {
+        if (client is ConfidentialClientApplication clientClass)
+            request.AddOptionByType(clientClass);
+        else
+            request.AddOptionByType(client);
+    }
+
+    public static void SetMsalManagedIdentityClient(
+        this HttpRequestMessage request,
+        IManagedIdentityApplication client
+        )
+    {
+        if (client is ManagedIdentityApplication clientClass)
+            request.AddOptionByType(clientClass);
+        else
+            request.AddOptionByType(client);
+    }
+
+    public const string ServiceScopeOptionsKey = "Microsoft.Identity.Client.ServiceScope";
+
+    public static void SetMsalServiceScope(
         this HttpRequestMessage request,
         IServiceScope serviceScope
-        ) => request.SetOptionByType(serviceScope);
+        ) => request.GetOptions()[ServiceScopeOptionsKey] = serviceScope;
 
-    public static void AddServiceProvider(
+    public static IServiceScope? GetMsalServiceScope(
+        this HttpRequestMessage request
+        ) => request.GetOptions().TryGetValue(ServiceScopeOptionsKey, out object? optionObjectValue)
+            ? optionObjectValue as IServiceScope : null;
+
+    public const string ServiceProviderOptionsKey = "Microsoft.Identity.Client.ServiceProvider";
+
+    public static void SetMsalServiceProvider(
         this HttpRequestMessage request,
         IServiceProvider serviceProvider
-        ) => request.SetOptionByType(serviceProvider);
+        ) => request.GetOptions()[ServiceProviderOptionsKey] = serviceProvider;
 
-    public static IServiceScope? GetServiceScope(
+    public static IServiceProvider? GetMsalServiceProvider(
         this HttpRequestMessage request
-        ) => request.TryGetOptionByType(out IServiceScope? serviceScope)
-            ? serviceScope : null;
-
-    public static IServiceProvider? GetServiceProvider(
-        this HttpRequestMessage request
-        ) => request.GetServiceScope() is { ServiceProvider: IServiceProvider scopeServiceProvider }
+        ) => request.GetMsalServiceScope() is { ServiceProvider: IServiceProvider scopeServiceProvider }
             ? scopeServiceProvider
-            : request.TryGetOptionByType(out IServiceProvider? serviceProvider)
-            ? serviceProvider
+            : request.GetOptions().TryGetValue(ServiceProviderOptionsKey, out object? optionObjectValue)
+            ? optionObjectValue as IServiceProvider
             : null;
 
     public static void SetMsalAccount(

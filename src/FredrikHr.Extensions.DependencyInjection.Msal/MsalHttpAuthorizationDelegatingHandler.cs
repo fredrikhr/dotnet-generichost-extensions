@@ -9,6 +9,7 @@ public class MsalHttpAuthorizationDelegatingHandler(
     IServiceProvider serviceProvider
     ) : DelegatingHandler()
 {
+    private (string? resource, string[]? scopes) _defaultResourceScopes;
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     private bool ShouldHandleRequest(HttpRequestMessage request)
@@ -16,12 +17,98 @@ public class MsalHttpAuthorizationDelegatingHandler(
         if (request.TryGetOptionByType<MsalHttpClientFactoryHttpHandler>(out _))
             return false;
 
+        if (GetMsalScopes(request) is not IEnumerable<string> msalScopes)
+        {
         return false;
+    }
+        request.SetMsalScopes(msalScopes);
+
+        return true;
     }
 
     private IServiceProvider GetServiceProvider(HttpRequestMessage request)
     {
-        return request.GetServiceProvider() ?? _serviceProvider;
+        return request.GetMsalServiceProvider() ?? _serviceProvider;
+    }
+
+    private string? GetMsalResource(HttpRequestMessage request)
+    {
+        string? resource = request.GetMsalResource();
+        if (resource is not null) return resource;
+        request.TryGetOptionByType(out MsalHttpAuthorizationResourceRegistry? resourceRegistry);
+        resourceRegistry ??= GetServiceProvider(request).GetService<
+            MsalHttpAuthorizationResourceRegistry
+            >();
+        resource = resourceRegistry?.GetResource(request.RequestUri);
+        return resource;
+    }
+
+    private ICollection<string>? GetMsalScopePermissions(HttpRequestMessage request)
+    {
+        return null;
+    }
+
+    private static bool IsOpenIdSpecialScope(string scope)
+    {
+        const StringComparison cmp = StringComparison.OrdinalIgnoreCase;
+        return "offline_access".Equals(scope, cmp);
+    }
+
+    private IEnumerable<string>? GetMsalScopes(HttpRequestMessage request)
+    {
+        ICollection<string>? scopes = request.GetMsalScopes() switch
+        {
+            string[] requestScopesArray => requestScopesArray,
+            ICollection<string> requestScopesCollection => requestScopesCollection,
+            null => null,
+            var requestScopesEnumerable => [.. requestScopesEnumerable],
+        };
+        if (scopes is { Count: > 0 }) return scopes;
+        string? resource = GetMsalResource(request);
+        ICollection<string>? permissions = GetMsalScopePermissions(request);
+        if (resource is null) return permissions;
+        if (permissions is not { Count: > 0 })
+        {
+            const StringComparison cmp = StringComparison.Ordinal;
+            (string? defaultResource, string[]? defaultScopes) = _defaultResourceScopes;
+            if (resource.Equals(defaultResource, cmp) && defaultScopes is not null)
+                return defaultScopes;
+            defaultScopes = [$"{resource}/.default"];
+            _defaultResourceScopes = (resource, defaultScopes);
+            return defaultScopes;
+        }
+        var scopesArray = new string[permissions.Count];
+        int scopeIdx;
+        if (permissions is string[] permissionsArray)
+        {
+            scopeIdx = 0;
+            foreach (string permission in permissionsArray)
+            {
+                scopesArray[scopeIdx] = GetResourceScopeFromPermissionScope(
+                    resource,
+                    permission
+                    );
+                scopeIdx++;
+            }
+        }
+        else
+        {
+            scopeIdx = 0;
+            foreach (string permission in permissions)
+            {
+                scopesArray[scopeIdx] = GetResourceScopeFromPermissionScope(
+                    resource,
+                    permission
+                    );
+                scopeIdx++;
+    }
+        }
+        return scopesArray;
+
+        static string GetResourceScopeFromPermissionScope(string resource, string scope)
+        {
+            return IsOpenIdSpecialScope(scope) ? scope : $"{resource}/{scope}";
+        }
     }
 
     private static Func<DeviceCodeResult, Task> GetDeviceCodeResultCallback(
