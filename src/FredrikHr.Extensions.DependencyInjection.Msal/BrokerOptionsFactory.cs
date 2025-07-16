@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Identity.Client;
 
@@ -17,7 +17,7 @@ internal sealed class BrokerOptionsFactory(
 
     protected override BrokerOptions CreateInstance(string name)
     {
-        var optionParams = optionsParameterProvider.Get(name);
+        BrokerOptionsParameters optionParams = optionsParameterProvider.Get(name);
         return new(optionParams.EnabledOn);
     }
 }

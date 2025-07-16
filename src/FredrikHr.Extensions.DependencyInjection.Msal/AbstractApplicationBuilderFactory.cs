@@ -14,7 +14,7 @@ internal abstract class AbstractApplicationBuilderFactory<TBuilder, TOptions>(
 
     protected sealed override TBuilder CreateInstance(string name)
     {
-        var options = optionsProvider.Get(name);
+        TOptions? options = optionsProvider.Get(name);
         return CreateInstance(options);
     }
 }

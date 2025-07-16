@@ -49,7 +49,7 @@ public sealed class MsalCacheHelperFactory :
         string? name = default
         )
     {
-        var props = _storageCreationPropsOptions.Get(name)
+        StorageCreationProperties props = _storageCreationPropsOptions.Get(name)
             .Build();
         var instance = await MsalCacheHelper.CreateAsync(props, TraceSource)
             .ConfigureAwait(continueOnCapturedContext: false);
@@ -70,8 +70,8 @@ public sealed class MsalCacheHelperFactory :
         }
         if (_validations.Length > 0)
         {
-            var failures = new List<string>();
-            foreach (var validate in _validations)
+            List<string> failures = [];
+            foreach (IValidateOptions<MsalCacheHelper> validate in _validations)
             {
                 ValidateOptionsResult result = validate.Validate(name, instance);
                 if (result is not null && result.Failed)

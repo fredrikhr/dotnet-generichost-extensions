@@ -66,7 +66,7 @@ public static class MsalCacheHelperServiceCollectionExtensions
 
         if (cacheConstructorFactory is not null)
         {
-            services.ConfigureAllNamed<StorageCreationParameters>(
+            services.ConfigureAll<StorageCreationParameters>(
                 (name, ctorParams) => (
                 ctorParams.CacheName,
                 ctorParams.CacheDirectory
@@ -100,19 +100,19 @@ public static class MsalCacheHelperServiceCollectionExtensions
         _ = msalBuilder ?? throw new ArgumentNullException(nameof(msalBuilder));
 #endif
         AddMsalCacheHelperServices(msalBuilder.Services);
-        msalBuilder.Services.PostConfigureAllNamed<
+        msalBuilder.Services.PostConfigureAll<
             IClientApplicationBase,
             IOptionsMonitor<Task<MsalCacheHelper>>
             >(static (name, client, cacheProvider) =>
             {
-                var cache = cacheProvider.Get(name).GetAwaiter().GetResult();
+                MsalCacheHelper cache = cacheProvider.Get(name).GetAwaiter().GetResult();
                 cache.RegisterCache(client.UserTokenCache);
             });
-        msalBuilder.Services.PostConfigureAllInherited<
+        msalBuilder.Services.PostConfigureInheritAll<
             IPublicClientApplication,
             IClientApplicationBase
             >();
-        msalBuilder.Services.PostConfigureAllInherited<
+        msalBuilder.Services.PostConfigureInheritAll<
             IConfidentialClientApplication,
             IClientApplicationBase
             >();

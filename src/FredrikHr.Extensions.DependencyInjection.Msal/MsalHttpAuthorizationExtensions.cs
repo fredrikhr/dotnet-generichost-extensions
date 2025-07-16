@@ -1,6 +1,7 @@
 using System.Net;
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Identity.Client;
 
@@ -28,9 +29,9 @@ public static class MsalHttpAuthorizationExtensions
         out T? optionValue
         )
     {
-        var options = request.GetOptions();
+        IDictionary<string, object?> options = request.GetOptions();
         optionValue = default;
-        if (options.TryGetValue(typeof(T).FullName!, out var optionObjectValue))
+        if (options.TryGetValue(typeof(T).FullName!, out object? optionObjectValue))
         {
             if (optionObjectValue is null)
             {
@@ -49,9 +50,9 @@ public static class MsalHttpAuthorizationExtensions
         this HttpRequestMessage request
         )
     {
-        var options = request.GetOptions();
-        var optionKey = typeof(T).FullName!;
-        options.TryGetValue(optionKey, out var optionObjectValue);
+        IDictionary<string, object?> options = request.GetOptions();
+        string optionKey = typeof(T).FullName!;
+        options.TryGetValue(optionKey, out object? optionObjectValue);
         return optionObjectValue switch
         {
             IEnumerable<T> optionEnumerable => optionEnumerable,
@@ -65,9 +66,8 @@ public static class MsalHttpAuthorizationExtensions
         T? optionValue
         )
     {
-        var options = request.GetOptions();
-        string? optionKey = typeof(T).FullName ?? optionValue?.GetType().FullName;
-        if (optionKey is null) return;
+        IDictionary<string, object?> options = request.GetOptions();
+        string optionKey = typeof(T).FullName!;
         options[optionKey] = optionValue;
     }
 
@@ -76,9 +76,8 @@ public static class MsalHttpAuthorizationExtensions
         T? optionValue
         )
     {
-        var options = request.GetOptions();
-        string? optionKey = typeof(T).FullName ?? optionValue?.GetType().FullName;
-        if (optionKey is null) return;
+        IDictionary<string, object?> options = request.GetOptions();
+        string optionKey = typeof(T).FullName!;
         options.Add(optionKey, optionValue);
     }
 
@@ -173,7 +172,7 @@ public static class MsalHttpAuthorizationExtensions
 
     public static string? GetMsalResource(
         this HttpRequestMessage request
-        ) => request.GetOptions().TryGetValue(ResourceOptionsKey, out var optionObjectValue)
+        ) => request.GetOptions().TryGetValue(ResourceOptionsKey, out object? optionObjectValue)
             ? optionObjectValue as string : null;
 
     public const string ScopesOptionsKey = "Microsoft.Identity.Client.Scopes";
@@ -188,8 +187,8 @@ public static class MsalHttpAuthorizationExtensions
         params IEnumerable<string> scopes
         )
     {
-        var existingScopes = request.GetMsalScopes();
-        var combinedScopes = existingScopes switch
+        IEnumerable<string> existingScopes = request.GetMsalScopes();
+        ICollection<string> combinedScopes = existingScopes switch
         {
             ICollection<string> existingScopeCollection => existingScopeCollection,
             _ => [.. existingScopes],
@@ -200,7 +199,7 @@ public static class MsalHttpAuthorizationExtensions
         }
         else
         {
-            foreach (var scope in scopes ?? [])
+            foreach (string scope in scopes ?? [])
             {
                 combinedScopes.Add(scope);
             }
@@ -213,8 +212,8 @@ public static class MsalHttpAuthorizationExtensions
         params ReadOnlySpan<string> scopes
         )
     {
-        var existingScopes = request.GetMsalScopes();
-        var combinedScopes = existingScopes switch
+        IEnumerable<string> existingScopes = request.GetMsalScopes();
+        ICollection<string> combinedScopes = existingScopes switch
         {
             ICollection<string> existingScopeCollection => existingScopeCollection,
             _ => [.. existingScopes],
@@ -236,7 +235,7 @@ public static class MsalHttpAuthorizationExtensions
         this HttpRequestMessage request
         )
     {
-        return request.GetOptions().TryGetValue(ScopesOptionsKey, out var optionsObjectValue)
+        return request.GetOptions().TryGetValue(ScopesOptionsKey, out object? optionsObjectValue)
             ? optionsObjectValue switch
             {
                 IEnumerable<string> optionsEnumerable => optionsEnumerable,
@@ -260,7 +259,7 @@ public static class MsalHttpAuthorizationExtensions
         )
     {
         string? optionsValue = request.GetOptions()
-            .TryGetValue(LoginHintOptionsKey, out var optionObjectValue)
+            .TryGetValue(LoginHintOptionsKey, out object? optionObjectValue)
             ? optionObjectValue as string
             : null;
         return optionsValue;
@@ -281,7 +280,7 @@ public static class MsalHttpAuthorizationExtensions
         )
     {
         string? optionsValue = request.GetOptions()
-            .TryGetValue(AuthorizationCodeOptionsKey, out var optionObjectValue)
+            .TryGetValue(AuthorizationCodeOptionsKey, out object? optionObjectValue)
             ? optionObjectValue as string
             : null;
         return optionsValue;
@@ -323,7 +322,7 @@ public static class MsalHttpAuthorizationExtensions
     {
         return request.GetOptions().TryGetValue(
             UsernamePasswordCredentialOptionsKey,
-            out var optionObjectValue
+            out object? optionObjectValue
             ) ? optionObjectValue as NetworkCredential : null;
     }
 }

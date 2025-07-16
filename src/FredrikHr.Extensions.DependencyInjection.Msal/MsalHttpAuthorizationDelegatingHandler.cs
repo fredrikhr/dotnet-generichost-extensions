@@ -1,3 +1,5 @@
+using System.Net;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,8 +21,8 @@ public class MsalHttpAuthorizationDelegatingHandler(
 
         if (GetMsalScopes(request) is not IEnumerable<string> msalScopes)
         {
-        return false;
-    }
+            return false;
+        }
         request.SetMsalScopes(msalScopes);
 
         return true;
@@ -101,7 +103,7 @@ public class MsalHttpAuthorizationDelegatingHandler(
                     permission
                     );
                 scopeIdx++;
-    }
+            }
         }
         return scopesArray;
 
@@ -171,12 +173,12 @@ public class MsalHttpAuthorizationDelegatingHandler(
         CancellationToken cancelToken
         )
     {
-        var scopes = request.GetMsalScopes();
-        var account = request.GetMsalAccount();
+        IEnumerable<string>? scopes = GetMsalScopes(request);
+        IAccount? account = request.GetMsalAccount();
         AcquireTokenSilentParameterBuilder acquireTokenBuilder;
         if (account is null)
         {
-            var loginHint = request.GetMsalLoginHint();
+            string? loginHint = request.GetMsalLoginHint();
             acquireTokenBuilder = msalClient.AcquireTokenSilent(scopes, loginHint);
         }
         else
@@ -192,8 +194,8 @@ public class MsalHttpAuthorizationDelegatingHandler(
         CancellationToken cancelToken
         )
     {
-        var scopes = request.GetMsalScopes();
-        var authorizationCode = request.GetMsalAuthorizationCode();
+        IEnumerable<string>? scopes = GetMsalScopes(request);
+        string? authorizationCode = request.GetMsalAuthorizationCode();
 
         var acquireTokenBuilder = msalClient.AcquireTokenByAuthorizationCode(scopes, authorizationCode);
         ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
@@ -207,7 +209,7 @@ public class MsalHttpAuthorizationDelegatingHandler(
         CancellationToken cancelToken
         )
     {
-        var scopes = request.GetMsalScopes();
+        IEnumerable<string>? scopes = GetMsalScopes(request);
 
         var acquireTokenBuilder = msalClient.AcquireTokenForClient(scopes);
         ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
@@ -221,8 +223,8 @@ public class MsalHttpAuthorizationDelegatingHandler(
         CancellationToken cancelToken
         )
     {
-        var scopes = request.GetMsalScopes();
-        var assertion = request.GetMsalUserAssertion();
+        IEnumerable<string>? scopes = GetMsalScopes(request);
+        UserAssertion? assertion = request.GetMsalUserAssertion();
 
         var acquireTokenBuilder = msalClient.AcquireTokenOnBehalfOf(scopes, assertion);
         ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
@@ -236,7 +238,7 @@ public class MsalHttpAuthorizationDelegatingHandler(
         CancellationToken cancelToken
         )
     {
-        var scopes = request.GetMsalScopes();
+        IEnumerable<string>? scopes = GetMsalScopes(request);
 
         var acquireTokenBuilder = msalClient.AcquireTokenInteractive(scopes);
         ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
@@ -250,7 +252,7 @@ public class MsalHttpAuthorizationDelegatingHandler(
         CancellationToken cancelToken
         )
     {
-        var scopes = request.GetMsalScopes();
+        IEnumerable<string>? scopes = GetMsalScopes(request);
         var deviceCodeResultCallback = GetDeviceCodeResultCallback(serviceProvider);
 
         var acquireTokenBuilder = msalClient.AcquireTokenWithDeviceCode(scopes, deviceCodeResultCallback);
@@ -265,7 +267,7 @@ public class MsalHttpAuthorizationDelegatingHandler(
         CancellationToken cancelToken
         )
     {
-        var scopes = request.GetMsalScopes();
+        IEnumerable<string>? scopes = GetMsalScopes(request);
 
         var acquireTokenBuilder = msalClient.AcquireTokenByIntegratedWindowsAuth(scopes);
         ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
@@ -279,9 +281,9 @@ public class MsalHttpAuthorizationDelegatingHandler(
         CancellationToken cancelToken
         )
     {
-        var scopes = request.GetMsalScopes();
-        var credential = request.GetMsalUsernamePasswordCredential();
-        var (username, password) = (credential?.UserName, credential?.Password);
+        IEnumerable<string>? scopes = request.GetMsalScopes();
+        NetworkCredential? credential = request.GetMsalUsernamePasswordCredential();
+        (string? username, string? password) = (credential?.UserName, credential?.Password);
 
         var acquireTokenBuilder = msalClient.AcquireTokenByUsernamePassword(scopes, username, password);
         ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
@@ -295,7 +297,8 @@ public class MsalHttpAuthorizationDelegatingHandler(
         CancellationToken cancelToken
         )
     {
-        var resource = request.GetMsalResource();
+        string? resource = GetMsalResource(request)
+            ?? (GetMsalScopes(request) ?? []).FirstOrDefault();
 
         var acquireTokenBuilder = msalClient.AcquireTokenForManagedIdentity(resource);
         ConfigureAcquireTokenBuilder(request, serviceProvider, acquireTokenBuilder);
@@ -308,22 +311,28 @@ public class MsalHttpAuthorizationDelegatingHandler(
         TBuilder acquireTokenBuilder
         ) where TBuilder : BaseAbstractAcquireTokenParameterBuilder<TBuilder>
     {
-        var acquireTokenConfigureOptions = request.GetOptionEnumerableByType<
+        IEnumerable<IConfigureOptions<TBuilder>> acquireTokenConfigureOptions =
+            request.GetOptionEnumerableByType<
             IConfigureOptions<TBuilder>
             >().Concat(serviceProvider.GetServices<
                 IConfigureOptions<TBuilder>
             >());
-        var acquireTokenPostConfigureOptions = request.GetOptionEnumerableByType<
+        IEnumerable<IPostConfigureOptions<TBuilder>> acquireTokenPostConfigureOptions =
+            request.GetOptionEnumerableByType<
             IPostConfigureOptions<TBuilder>
             >().Concat(serviceProvider.GetServices<
                 IPostConfigureOptions<TBuilder>
             >());
-        var acquireTokenValidations = request.GetOptionEnumerableByType<
-            IValidateOptions<TBuilder>
-            >().Concat(serviceProvider.GetServices<
-                IValidateOptions<TBuilder>
-            >()).ToArray();
-        foreach (var configureAcquireTokenBuilder in acquireTokenConfigureOptions)
+        IValidateOptions<TBuilder>[] acquireTokenValidations =
+            [
+                .. request.GetOptionEnumerableByType<
+                    IValidateOptions<TBuilder>
+                    >(),
+                .. serviceProvider.GetServices<
+                    IValidateOptions<TBuilder>
+                    >(),
+            ];
+        foreach (IConfigureOptions<TBuilder> configureAcquireTokenBuilder in acquireTokenConfigureOptions)
         {
             switch (configureAcquireTokenBuilder)
             {
@@ -335,14 +344,14 @@ public class MsalHttpAuthorizationDelegatingHandler(
                     break;
             }
         }
-        foreach (var configureAcquireTokenBuilder in acquireTokenPostConfigureOptions)
+        foreach (IPostConfigureOptions<TBuilder> configureAcquireTokenBuilder in acquireTokenPostConfigureOptions)
         {
             configureAcquireTokenBuilder.PostConfigure(name, acquireTokenBuilder);
         }
         if (acquireTokenValidations.Length > 0)
         {
-            var failures = new List<string>();
-            foreach (var validateAcquireTokenBuilder in acquireTokenValidations)
+            List<string> failures = [];
+            foreach (IValidateOptions<TBuilder> validateAcquireTokenBuilder in acquireTokenValidations)
             {
                 ValidateOptionsResult result = validateAcquireTokenBuilder.Validate(name, acquireTokenBuilder);
                 if (result is not null && result.Failed)

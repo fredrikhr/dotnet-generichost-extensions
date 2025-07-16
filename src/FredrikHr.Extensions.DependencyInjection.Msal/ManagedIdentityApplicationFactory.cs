@@ -13,7 +13,7 @@ internal sealed class ManagedIdentityApplicationFactory(
 {
     protected override IManagedIdentityApplication CreateInstance(string name)
     {
-        var builder = builderProvider.Get(name);
+        ManagedIdentityApplicationBuilder builder = builderProvider.Get(name);
         return builder.Build();
     }
 }

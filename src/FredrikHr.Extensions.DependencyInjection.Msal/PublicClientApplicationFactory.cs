@@ -13,7 +13,7 @@ internal sealed class PublicClientApplicationFactory(
 {
     protected override IPublicClientApplication CreateInstance(string name)
     {
-        var builder = builderProvider.Get(name);
+        PublicClientApplicationBuilder builder = builderProvider.Get(name);
         return builder.Build();
     }
 }

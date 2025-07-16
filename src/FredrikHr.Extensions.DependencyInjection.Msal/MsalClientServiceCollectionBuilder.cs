@@ -66,7 +66,7 @@ public class MsalClientServiceCollectionBuilder
 #endif
 
         Services.AddOptions();
-        Services.ConfigureAllNamed<BrokerOptionsParameters>(
+        Services.ConfigureAll<BrokerOptionsParameters>(
             (name, p) => p.EnabledOn = enabledOn(name)
             );
         Services.TryAddTransient<
@@ -75,7 +75,7 @@ public class MsalClientServiceCollectionBuilder
             >();
         if (configureOptions is not null)
         {
-            Services.ConfigureAllNamed(configureOptions);
+            Services.ConfigureAll(configureOptions);
         }
         return this;
     }
@@ -85,13 +85,13 @@ public class MsalClientServiceCollectionBuilder
         )
     {
         Services.AddLogging();
-        Services.ConfigureAllNamed<PublicClientApplicationBuilder, ILoggerFactory>(
+        Services.ConfigureAll<PublicClientApplicationBuilder, ILoggerFactory>(
             ConfigureBuilderLogging<PublicClientApplicationBuilder, PublicClientApplication>
             );
-        Services.ConfigureAllNamed<ConfidentialClientApplicationBuilder, ILoggerFactory>(
+        Services.ConfigureAll<ConfidentialClientApplicationBuilder, ILoggerFactory>(
             ConfigureBuilderLogging<ConfidentialClientApplicationBuilder, ConfidentialClientApplication>
             );
-        Services.ConfigureAllNamed<ManagedIdentityApplicationBuilder, ILoggerFactory>(
+        Services.ConfigureAll<ManagedIdentityApplicationBuilder, ILoggerFactory>(
             ConfigureBuilderLogging<ManagedIdentityApplicationBuilder, ManagedIdentityApplication>
             );
 
@@ -118,7 +118,7 @@ public class MsalClientServiceCollectionBuilder
             ILoggerFactory loggerFactory
             ) where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
         {
-            var msalLogging = CreateLoggingAdapter<TApplication>(name, loggerFactory);
+            IdentityLoggerAdapter msalLogging = CreateLoggingAdapter<TApplication>(name, loggerFactory);
             builder.WithLogging(msalLogging, enablePiiLogging);
         }
     }
@@ -126,13 +126,13 @@ public class MsalClientServiceCollectionBuilder
     public MsalClientServiceCollectionBuilder UseHttpClientFactory()
     {
         Services.AddHttpClient();
-        Services.ConfigureAllNamed<PublicClientApplicationBuilder, IHttpMessageHandlerFactory>(
+        Services.ConfigureAll<PublicClientApplicationBuilder, IHttpMessageHandlerFactory>(
             ConfigureBuilderHttpClientFactory<PublicClientApplicationBuilder, PublicClientApplication>
             );
-        Services.ConfigureAllNamed<ConfidentialClientApplicationBuilder, IHttpMessageHandlerFactory>(
+        Services.ConfigureAll<ConfidentialClientApplicationBuilder, IHttpMessageHandlerFactory>(
             ConfigureBuilderHttpClientFactory<ConfidentialClientApplicationBuilder, ConfidentialClientApplication>
             );
-        Services.ConfigureAllNamed<ManagedIdentityApplicationBuilder, IHttpMessageHandlerFactory>(
+        Services.ConfigureAll<ManagedIdentityApplicationBuilder, IHttpMessageHandlerFactory>(
             ConfigureBuilderHttpClientFactory<ManagedIdentityApplicationBuilder, ManagedIdentityApplication>
             );
 

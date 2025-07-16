@@ -12,12 +12,11 @@ internal sealed class StorageCreationPropertiesFactory(
 
     public StorageCreationProperties Create(string name)
     {
-        var builder = builderProvider.Get(name);
-        var instance = builder.Build();
+        StorageCreationProperties instance = builderProvider.Get(name).Build();
         if (_validations.Length > 0)
         {
-            var failures = new List<string>();
-            foreach (var validate in _validations)
+            List<string> failures = [];
+            foreach (IValidateOptions<StorageCreationProperties> validate in _validations)
             {
                 ValidateOptionsResult result = validate.Validate(name, instance);
                 if (result is not null && result.Failed)
@@ -27,7 +26,11 @@ internal sealed class StorageCreationPropertiesFactory(
             }
             if (failures.Count > 0)
             {
-                throw new OptionsValidationException(name ?? Options.DefaultName, instance.GetType(), failures);
+                throw new OptionsValidationException(
+                    name ?? Options.DefaultName,
+                    typeof(StorageCreationProperties),
+                    failures
+                    );
             }
         }
         return instance;

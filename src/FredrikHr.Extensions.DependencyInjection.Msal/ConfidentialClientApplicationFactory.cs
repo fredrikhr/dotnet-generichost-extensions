@@ -13,7 +13,7 @@ internal sealed class ConfidentialClientApplicationFactory(
 {
     protected override IConfidentialClientApplication CreateInstance(string name)
     {
-        var builder = builderProvider.Get(name);
+        ConfidentialClientApplicationBuilder builder = builderProvider.Get(name);
         return builder.Build();
     }
 }

@@ -58,14 +58,14 @@ internal sealed partial class MsalCacheLoggerTraceListener(
     public override void Write(string? message)
     {
         if (message is null) return;
-        var writer = _writeBuffer.Value ??= new StringBuilder();
+        StringBuilder writer = _writeBuffer.Value ??= new();
         writer.Append(message);
     }
 
     public override void WriteLine(string? message)
     {
         if (message is null) return;
-        var writer = _writeBuffer.Value ??= new StringBuilder();
+        StringBuilder writer = _writeBuffer.Value ??= new();
         if (writer.Length > 0)
         {
             writer.Append(message);

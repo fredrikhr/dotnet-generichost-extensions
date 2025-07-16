@@ -17,7 +17,7 @@ public class MsalHttpClientFactory(
         )]
     public HttpClient GetHttpClient()
     {
-        var httpMsgHandler = name switch
+        HttpMessageHandler httpMsgHandler = name switch
         {
             null => httpMsgFactory.CreateHandler(),
             _ => httpMsgFactory.CreateHandler(name),
