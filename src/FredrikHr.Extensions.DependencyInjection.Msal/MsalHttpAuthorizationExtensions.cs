@@ -325,4 +325,78 @@ public static class MsalHttpAuthorizationExtensions
             out object? optionObjectValue
             ) ? optionObjectValue as NetworkCredential : null;
     }
+
+    public static void AddMsalAcquireTokenConfiguration<TBuilder>(
+        this HttpRequestMessage request,
+        IConfigureOptions<TBuilder> configureBuilder
+        ) where TBuilder : BaseAbstractAcquireTokenParameterBuilder<TBuilder>
+    {
+        IDictionary<string, object?> options = request.GetOptions();
+        var optionsKey = typeof(IConfigureOptions<TBuilder>).FullName!;
+        options.TryGetValue(optionsKey, out object? optionsExisting);
+        ICollection<IConfigureOptions<TBuilder>> optionsCollection = optionsExisting switch
+        {
+            IConfigureOptions<TBuilder> optionsExistingSingle => [optionsExistingSingle],
+            ICollection<IConfigureOptions<TBuilder>> optionsExistingCollection => optionsExistingCollection,
+            IEnumerable<IConfigureOptions<TBuilder>> optionsExistingEnumerable => [.. optionsExistingEnumerable],
+            _ => []
+        };
+        optionsCollection.Add(configureBuilder);
+        options[optionsKey] = optionsCollection;
+    }
+
+    public static void AddMsalAcquireTokenConfiguration<TBuilder>(
+        this HttpRequestMessage request,
+        Action<TBuilder> configureBuilder
+        ) where TBuilder : BaseAbstractAcquireTokenParameterBuilder<TBuilder>
+    {
+        ConfigureOptions<TBuilder> configureOptions = new(configureBuilder);
+        request.AddMsalAcquireTokenConfiguration(configureOptions);
+    }
+
+    public static void AddMsalAcquireTokenConfiguration<TBuilder>(
+        this HttpRequestMessage request,
+        Action<string?, TBuilder> configureBuilder
+        ) where TBuilder : BaseAbstractAcquireTokenParameterBuilder<TBuilder>
+    {
+        ConfigureAllOptions<TBuilder> configureOptions = new(configureBuilder);
+        request.AddMsalAcquireTokenConfiguration(configureOptions);
+    }
+
+    public static void AddMsalAcquireTokenPostConfiguration<TBuilder>(
+        this HttpRequestMessage request,
+        IPostConfigureOptions<TBuilder> configureBuilder
+        ) where TBuilder : BaseAbstractAcquireTokenParameterBuilder<TBuilder>
+    {
+        IDictionary<string, object?> options = request.GetOptions();
+        string optionsKey = typeof(IPostConfigureOptions<TBuilder>).FullName!;
+        options.TryGetValue(optionsKey, out object? optionsExisting);
+        ICollection<IPostConfigureOptions<TBuilder>> optionsCollection = optionsExisting switch
+        {
+            IPostConfigureOptions<TBuilder> optionsExistingSingle => [optionsExistingSingle],
+            ICollection<IPostConfigureOptions<TBuilder>> optionsExistingCollection => optionsExistingCollection,
+            IEnumerable<IPostConfigureOptions<TBuilder>> optionsExistingEnumerable => [.. optionsExistingEnumerable],
+            _ => []
+        };
+        optionsCollection.Add(configureBuilder);
+        options[optionsKey] = optionsCollection;
+    }
+
+    public static void AddMsalAcquireTokenPostConfiguration<TBuilder>(
+        this HttpRequestMessage request,
+        Action<TBuilder> configureBuilder
+        ) where TBuilder : BaseAbstractAcquireTokenParameterBuilder<TBuilder>
+    {
+        PostConfigureOptions<TBuilder> configureOptions = new(name: null, configureBuilder);
+        request.AddMsalAcquireTokenPostConfiguration(configureOptions);
+    }
+
+    public static void AddMsalAcquireTokenPostConfiguration<TBuilder>(
+        this HttpRequestMessage request,
+        Action<string?, TBuilder> configureBuilder
+        ) where TBuilder : BaseAbstractAcquireTokenParameterBuilder<TBuilder>
+    {
+        PostConfigureAllOptions<TBuilder> configureOptions = new(configureBuilder);
+        request.AddMsalAcquireTokenPostConfiguration(configureOptions);
+    }
 }
