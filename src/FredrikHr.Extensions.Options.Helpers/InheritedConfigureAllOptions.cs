@@ -9,7 +9,7 @@ public class InheritedConfigureAllOptions<TOptions, TOptionsBase>(
     public void Configure(string? name, TOptions options)
     {
         if (typeof(TOptions) == typeof(TOptionsBase)) return;
-        foreach (var configureOptions in configureBaseOptions)
+        foreach (IConfigureOptions<TOptionsBase> configureOptions in configureBaseOptions)
         {
             if (configureOptions is IConfigureNamedOptions<TOptionsBase> configureNamedOptions)
                 configureNamedOptions.Configure(name, options);

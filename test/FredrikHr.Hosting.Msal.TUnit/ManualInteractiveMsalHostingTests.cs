@@ -19,7 +19,7 @@ public class ManualInteractiveMsalHostingTests(TUnitHostBuilderFactory hostBuild
     [Test, Explicit]
     public async Task PublicInteractiveUserTokenForOpenId(CancellationToken cancelToken = default)
     {
-        var hostBuilder = _hostBuilderFactory.CreateHostAppBuilder();
+        HostApplicationBuilder hostBuilder = _hostBuilderFactory.CreateHostAppBuilder();
         hostBuilder.Services.AddOptions<ApplicationOptions>()
             .BindConfiguration(ConfigurationPath.Combine("Microsoft.Identity.Client", "ApplicationOptions"));
         hostBuilder.Services.InheritAll<
@@ -36,9 +36,9 @@ public class ManualInteractiveMsalHostingTests(TUnitHostBuilderFactory hostBuild
         hostBuilder.Services.AddMsalPersistentCacheHelper();
         if (hostBuilder.Environment.IsDevelopment())
         {
-            hostBuilder.Services.ConfigureAllNamed<StorageCreationParameters>((name, storageParams) =>
+            hostBuilder.Services.ConfigureAll<StorageCreationParameters>((name, storageParams) =>
             {
-                var assembly = GetType().Assembly;
+                Assembly assembly = GetType().Assembly;
                 UserSecretsIdAttribute? attribute = assembly.GetCustomAttribute<UserSecretsIdAttribute>();
                 if (attribute?.UserSecretsId is not string secretsId) return;
                 string secretsPath;
@@ -54,12 +54,12 @@ public class ManualInteractiveMsalHostingTests(TUnitHostBuilderFactory hostBuild
             });
         }
 
-        using var host = hostBuilder.Build();
+        using IHost host = hostBuilder.Build();
         await host.StartAsync(cancelToken)
             .ConfigureAwait(continueOnCapturedContext: false);
-        var serviceProvider = host.Services;
+        IServiceProvider serviceProvider = host.Services;
 
-        var publicMsal = serviceProvider
+        IPublicClientApplication publicMsal = serviceProvider
             .GetRequiredService<IOptions<IPublicClientApplication>>()
             .Value;
 

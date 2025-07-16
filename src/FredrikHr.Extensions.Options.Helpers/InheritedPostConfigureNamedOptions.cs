@@ -11,7 +11,7 @@ public class InheritedPostConfigureNamedOptions<TOptions, TOptionsBase>(
         >(name, configureBaseOptions, (options, configureBaseOptions) =>
         {
             if (typeof(TOptions) == typeof(TOptionsBase)) return;
-            foreach (var configureOptions in configureBaseOptions)
+            foreach (IPostConfigureOptions<TOptionsBase> configureOptions in configureBaseOptions)
             {
                 configureOptions.PostConfigure(name, options);
             }

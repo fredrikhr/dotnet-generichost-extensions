@@ -1,6 +1,6 @@
 namespace Microsoft.Extensions.Options;
 
-public class PostConfigureAllNamedOptions<TOptions>(
+public class PostConfigureAllOptions<TOptions>(
     Action<string?, TOptions> configureOptions
     ) : IPostConfigureOptions<TOptions> where TOptions : class
 {
@@ -13,7 +13,7 @@ public class PostConfigureAllNamedOptions<TOptions>(
     }
 }
 
-public class PostConfigureAllNamedOptions<TOptions, TDep>(
+public class PostConfigureAllOptions<TOptions, TDep>(
     TDep dependency,
     Action<string?, TOptions, TDep> configureOptions
     ) : IPostConfigureOptions<TOptions> where TOptions : class

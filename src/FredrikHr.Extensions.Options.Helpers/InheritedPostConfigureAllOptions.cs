@@ -9,7 +9,7 @@ public class InheritedPostConfigureAllOptions<TOptions, TOptionsBase>(
     public void PostConfigure(string? name, TOptions options)
     {
         if (typeof(TOptions) == typeof(TOptionsBase)) return;
-        foreach (var configureOptions in configureBaseOptions)
+        foreach (IPostConfigureOptions<TOptionsBase> configureOptions in configureBaseOptions)
         {
             configureOptions.PostConfigure(name, options);
         }

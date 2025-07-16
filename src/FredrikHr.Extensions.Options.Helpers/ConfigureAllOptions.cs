@@ -1,6 +1,6 @@
 namespace Microsoft.Extensions.Options;
 
-public class ConfigureAllNamedOptions<TOptions>(
+public class ConfigureAllOptions<TOptions>(
     Action<string?, TOptions> configureOptions
     ) : IConfigureNamedOptions<TOptions> where TOptions : class
 {
@@ -15,10 +15,10 @@ public class ConfigureAllNamedOptions<TOptions>(
 
     /// <inhertdoc cref="IConfigureOptions{TOptions}.Configure(TOptions)"/>
     public void Configure(TOptions options)
-        => Configure(Options.DefaultName, options);
+        => Configure(null, options);
 }
 
-public class ConfigureAllNamedOptions<TOptions, TDep>(
+public class ConfigureAllOptions<TOptions, TDep>(
     TDep dependency,
     Action<string?, TOptions, TDep> configureOptions
     ) : IConfigureNamedOptions<TOptions> where TOptions : class
@@ -34,5 +34,5 @@ public class ConfigureAllNamedOptions<TOptions, TDep>(
 
     /// <inhertdoc cref="IConfigureOptions{TOptions}.Configure(TOptions)"/>
     public void Configure(TOptions options)
-        => Configure(Options.DefaultName, options);
+        => Configure(null, options);
 }

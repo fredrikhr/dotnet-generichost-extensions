@@ -73,12 +73,12 @@ public static class OptionsBuilderExtensions
         where TOptionsBase : class
     {
         return services
-            .ConfigureAllInherited<TOptions, TOptionsBase>()
-            .PostConfigureAllInherited<TOptions, TOptionsBase>()
+            .ConfigureInheritAll<TOptions, TOptionsBase>()
+            .PostConfigureInheritAll<TOptions, TOptionsBase>()
             ;
     }
 
-    public static IServiceCollection ConfigureAllInherited<TOptions, TOptionsBase>(
+    public static IServiceCollection ConfigureInheritAll<TOptions, TOptionsBase>(
         this IServiceCollection services
         )
         where TOptions : class, TOptionsBase
@@ -101,7 +101,7 @@ public static class OptionsBuilderExtensions
         return services;
     }
 
-    public static IServiceCollection PostConfigureAllInherited<TOptions, TOptionsBase>(
+    public static IServiceCollection PostConfigureInheritAll<TOptions, TOptionsBase>(
         this IServiceCollection services
         )
         where TOptions : class, TOptionsBase
@@ -124,7 +124,7 @@ public static class OptionsBuilderExtensions
         return services;
     }
 
-    public static IServiceCollection ConfigureAllNamed<TOptions>(
+    public static IServiceCollection ConfigureAll<TOptions>(
         this IServiceCollection services,
         Action<string?, TOptions> configureOptions
         )
@@ -137,14 +137,14 @@ public static class OptionsBuilderExtensions
 #endif
 
         services.AddSingleton<IConfigureOptions<TOptions>>(
-            serviceProvider => new ConfigureAllNamedOptions<TOptions>(
+            serviceProvider => new ConfigureAllOptions<TOptions>(
                 configureOptions
                 ));
 
         return services;
     }
 
-    public static IServiceCollection ConfigureAllNamed<TOptions, TDep>(
+    public static IServiceCollection ConfigureAll<TOptions, TDep>(
         this IServiceCollection services,
         Action<string?, TOptions, TDep> configureOptions
         )
@@ -158,7 +158,7 @@ public static class OptionsBuilderExtensions
 #endif
 
         services.AddSingleton<IConfigureOptions<TOptions>>(
-            serviceProvider => new ConfigureAllNamedOptions<TOptions, TDep>(
+            serviceProvider => new ConfigureAllOptions<TOptions, TDep>(
                 serviceProvider.GetRequiredService<TDep>(),
                 configureOptions
                 ));
@@ -166,7 +166,7 @@ public static class OptionsBuilderExtensions
         return services;
     }
 
-    public static IServiceCollection PostConfigureAllNamed<TOptions>(
+    public static IServiceCollection PostConfigureAll<TOptions>(
         this IServiceCollection services,
         Action<string?, TOptions> configureOptions
         )
@@ -179,14 +179,14 @@ public static class OptionsBuilderExtensions
 #endif
 
         services.AddSingleton<IPostConfigureOptions<TOptions>>(
-            serviceProvider => new PostConfigureAllNamedOptions<TOptions>(
+            serviceProvider => new PostConfigureAllOptions<TOptions>(
                 configureOptions
                 ));
 
         return services;
     }
 
-    public static IServiceCollection PostConfigureAllNamed<TOptions, TDep>(
+    public static IServiceCollection PostConfigureAll<TOptions, TDep>(
         this IServiceCollection services,
         Action<string?, TOptions, TDep> configureOptions
         )
@@ -200,7 +200,7 @@ public static class OptionsBuilderExtensions
 #endif
 
         services.AddSingleton<IPostConfigureOptions<TOptions>>(
-            serviceProvider => new PostConfigureAllNamedOptions<TOptions, TDep>(
+            serviceProvider => new PostConfigureAllOptions<TOptions, TDep>(
                 serviceProvider.GetRequiredService<TDep>(),
                 configureOptions
                 ));
