@@ -175,6 +175,75 @@ public static class MsalHttpAuthorizationExtensions
         ) => request.GetOptions().TryGetValue(ResourceOptionsKey, out object? optionObjectValue)
             ? optionObjectValue as string : null;
 
+    public const string PermissionScopesOptionsKey = "Microsoft.Identity.Client.Permissions";
+
+    public static void SetMsalPermissionScopes(
+        this HttpRequestMessage request,
+        IEnumerable<string> scopes
+        ) => request.GetOptions()[PermissionScopesOptionsKey] = scopes;
+
+    public static void AddMsalPermissionScopes(
+        this HttpRequestMessage request,
+        params IEnumerable<string> scopes
+        )
+    {
+        IEnumerable<string> existingScopes = request.GetMsalScopes();
+        ICollection<string> combinedScopes = existingScopes switch
+        {
+            ICollection<string> existingScopeCollection => existingScopeCollection,
+            _ => [.. existingScopes],
+        };
+        if (combinedScopes is List<string> combinedScopeList)
+        {
+            combinedScopeList.AddRange(scopes ?? []);
+        }
+        else
+        {
+            foreach (string scope in scopes ?? [])
+            {
+                combinedScopes.Add(scope);
+            }
+        }
+        request.SetMsalPermissionScopes(combinedScopes);
+    }
+
+    public static void AddMsalPermissionScopes(
+        this HttpRequestMessage request,
+        params ReadOnlySpan<string> scopes
+        )
+    {
+        IEnumerable<string> existingScopes = request.GetMsalPermissionScopes();
+        ICollection<string> combinedScopes = existingScopes switch
+        {
+            ICollection<string> existingScopeCollection => existingScopeCollection,
+            _ => [.. existingScopes],
+        };
+        if (combinedScopes is List<string> combinedScopeList)
+        {
+            int combinedLength = combinedScopeList.Count + scopes.Length;
+            if (combinedScopeList.Capacity < combinedLength)
+                combinedScopeList.Capacity = combinedLength;
+        }
+        foreach (ref readonly string scope in scopes)
+        {
+            combinedScopes.Add(scope);
+        }
+        request.SetMsalPermissionScopes(combinedScopes);
+    }
+
+    public static IEnumerable<string> GetMsalPermissionScopes(
+        this HttpRequestMessage request
+        )
+    {
+        return request.GetOptions().TryGetValue(PermissionScopesOptionsKey, out object? optionsObjectValue)
+            ? optionsObjectValue switch
+            {
+                IEnumerable<string> optionsEnumerable => optionsEnumerable,
+                string optionsSingleValue => [optionsSingleValue],
+                _ => [],
+            } : [];
+    }
+
     public const string ScopesOptionsKey = "Microsoft.Identity.Client.Scopes";
 
     public static void SetMsalScopes(

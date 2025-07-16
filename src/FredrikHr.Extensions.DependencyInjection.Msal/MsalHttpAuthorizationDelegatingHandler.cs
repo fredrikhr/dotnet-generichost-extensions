@@ -45,9 +45,16 @@ public class MsalHttpAuthorizationDelegatingHandler(
         return resource;
     }
 
-    private ICollection<string>? GetMsalScopePermissions(HttpRequestMessage request)
+    private static ICollection<string>? GetMsalScopePermissions(HttpRequestMessage request)
     {
-        return null;
+        ICollection<string>? scopes = request.GetMsalPermissionScopes() switch
+        {
+            string[] requestScopesArray => requestScopesArray,
+            ICollection<string> requestScopesCollection => requestScopesCollection,
+            null => null,
+            var requestScopesEnumerable => [.. requestScopesEnumerable],
+        };
+        return scopes is { Count: > 0 } ? scopes : null;
     }
 
     private static bool IsOpenIdSpecialScope(string scope)
