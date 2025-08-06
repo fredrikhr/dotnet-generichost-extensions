@@ -23,7 +23,12 @@
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.OData/FredrikHr.Extensions.DependencyInjection.OData.csproj" />
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.SharePointOnline/FredrikHr.Extensions.DependencyInjection.SharePointOnline.csproj" />
     <Project Path="src/FredrikHr.Extensions.Hosting.TUnit/FredrikHr.Extensions.Hosting.TUnit.csproj" />
+    <Project Path="src/FredrikHr.Extensions.HostingStartup.Abstractions/FredrikHr.Extensions.HostingStartup.Abstractions.csproj" />
+    <Project Path="src/FredrikHr.Extensions.HostingStartup/FredrikHr.Extensions.HostingStartup.csproj" />
     <Project Path="src/FredrikHr.Extensions.Options.Helpers/FredrikHr.Extensions.Options.Helpers.csproj" />
+  </Folder>
+  <Folder Name="/src/FredrikHr.Extensions.Hosting.Helpers/">
+    <File Path="src/FredrikHr.Extensions.Hosting.Helpers/HostApplicationBuilderUnsafeAccessor.cs" />
   </Folder>
   <Folder Name="/test/">
     <File Path="test/Directory.Build.props" />
