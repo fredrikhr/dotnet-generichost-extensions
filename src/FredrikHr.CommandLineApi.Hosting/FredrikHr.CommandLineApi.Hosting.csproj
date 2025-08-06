@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
     <RootNamespace>System.CommandLine.Hosting</RootNamespace>
   </PropertyGroup>
 
@@ -13,6 +13,10 @@
     <PackageReference Include="Microsoft.Extensions.Options">
       <VersionOverride>8.0.0</VersionOverride>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\FredrikHr.Extensions.Hosting.Helpers\HostApplicationBuilderUnsafeAccessor.cs" />
   </ItemGroup>
 
 </Project>

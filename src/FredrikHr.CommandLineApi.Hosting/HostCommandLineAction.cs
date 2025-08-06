@@ -17,19 +17,15 @@ public abstract class HostCommandLineAction
 
 public abstract class HostCommandLineAction<TBuilder, TInvocation>(
     Func<string[], TBuilder> hostBuilderFactory,
-    Action<TBuilder> configureHostBuilder
+    Action<TBuilder> configureHostBuilder,
+    Func<TBuilder, IHostBuilder> builderAsHostBuilder
     ) : HostCommandLineAction()
     where TInvocation : class, IHostCommandLineInvocation
 {
+    private readonly Func<TBuilder, IHostBuilder> _builderAsHostBuilder =
+        builderAsHostBuilder ?? throw new ArgumentNullException(nameof(builderAsHostBuilder));
+
     public Action<TBuilder> ConfigureBuilder { get; } = configureHostBuilder;
-
-    protected abstract IHost CreateHost(TBuilder hostBuilder);
-
-    protected abstract void ConfigureHostServices(TBuilder hostBuilder,
-        Action<IServiceCollection> configureServices);
-
-    protected abstract void ConfigureHostConfiguration(TBuilder hostBuilder,
-        Action<IConfigurationBuilder> configureAction);
 
     public override sealed async Task<int> InvokeAsync(
         ParseResult parseResult,
@@ -43,7 +39,8 @@ public abstract class HostCommandLineAction<TBuilder, TInvocation>(
 #endif
 
         string[] unmatchedTokens = parseResult.UnmatchedTokens?.ToArray() ?? [];
-        TBuilder hostBuilder = hostBuilderFactory(unmatchedTokens);
+        TBuilder typedBuilder = hostBuilderFactory(unmatchedTokens);
+        IHostBuilder hostBuilder = _builderAsHostBuilder(typedBuilder);
 
         // As long as done before first await,
         // configuration modification is respected
@@ -51,7 +48,7 @@ public abstract class HostCommandLineAction<TBuilder, TInvocation>(
 
         TryApplyHostConfigurationDirective(parseResult, hostBuilder);
 
-        ConfigureHostServices(hostBuilder, services =>
+        hostBuilder.ConfigureServices(services =>
         {
             services.AddSingleton(parseResult);
             services.AddSingleton(parseResult.Configuration);
@@ -63,9 +60,9 @@ public abstract class HostCommandLineAction<TBuilder, TInvocation>(
             ConfigureSymbolServices?.Invoke(services);
         });
 
-        ConfigureBuilder?.Invoke(hostBuilder);
+        ConfigureBuilder?.Invoke(typedBuilder);
 
-        using var host = CreateHost(hostBuilder);
+        using var host = hostBuilder.Build();
         await host.StartAsync(cancellationToken)
             .ConfigureAwait(continueOnCapturedContext: false);
         var resultTask = GetInvocationExecutionResult(host, cancellationToken);
@@ -77,8 +74,8 @@ public abstract class HostCommandLineAction<TBuilder, TInvocation>(
             .ConfigureAwait(continueOnCapturedContext: false);
     }
 
-    private void TryApplyHostConfigurationDirective(
-        ParseResult parseResult, TBuilder hostBuilder
+    private static void TryApplyHostConfigurationDirective(
+        ParseResult parseResult, IHostBuilder hostBuilder
         )
     {
         if (parseResult.Configuration.RootCommand is RootCommand rootCommand &&
@@ -89,8 +86,7 @@ public abstract class HostCommandLineAction<TBuilder, TInvocation>(
         {
             var configKvps = configResult.Values.Select(GetKeyValuePair)
                 .ToList();
-            ConfigureHostConfiguration(
-                hostBuilder,
+            hostBuilder.ConfigureHostConfiguration(
                 (config) => config.AddInMemoryCollection(configKvps)
                 );
         }
