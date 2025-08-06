@@ -13,12 +13,12 @@ public static class OptionsBuilderExtensions
         where TOptionsBase : class
     {
         return services
-            .ConfigureInherited<TOptions, TOptionsBase>(name)
-            .PostConfigureInherited<TOptions, TOptionsBase>(name)
+            .ConfigureInherit<TOptions, TOptionsBase>(name)
+            .PostConfigureInherit<TOptions, TOptionsBase>(name)
             ;
     }
 
-    public static IServiceCollection ConfigureInherited<TOptions, TOptionsBase>(
+    public static IServiceCollection ConfigureInherit<TOptions, TOptionsBase>(
         this IServiceCollection services,
         string? name = default
         )
@@ -45,7 +45,7 @@ public static class OptionsBuilderExtensions
         return services;
     }
 
-    public static IServiceCollection PostConfigureInherited<TOptions, TOptionsBase>(
+    public static IServiceCollection PostConfigureInherit<TOptions, TOptionsBase>(
         this IServiceCollection services,
         string? name = default
         )
