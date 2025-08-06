@@ -33,10 +33,13 @@ public static class OptionsBuilderExtensions
 
         if (typeof(TOptions) == typeof(TOptionsBase)) goto returnFluent;
         name ??= Options.DefaultName;
-        services.TryAddTransient<IConfigureOptions<TOptions>>(
-            serviceProvider => InheritedConfigureNamedOptions
+        var serviceDesc = ServiceDescriptor.Transient<
+            IConfigureOptions<TOptions>,
+            InheritedConfigureNamedOptions<TOptions, TOptionsBase>
+            >(serviceProvider => InheritedConfigureNamedOptions
             <TOptions, TOptionsBase>.CreateInstance(serviceProvider, name)
             );
+        services.TryAddEnumerable(serviceDesc);
 
     returnFluent:
         return services;
@@ -57,10 +60,13 @@ public static class OptionsBuilderExtensions
 
         if (typeof(TOptions) == typeof(TOptionsBase)) goto returnFluent;
         name ??= Options.DefaultName;
-        services.TryAddTransient<IPostConfigureOptions<TOptions>>(
-            serviceProvider => InheritedPostConfigureNamedOptions
+        var serviceDesc = ServiceDescriptor.Transient<
+            IPostConfigureOptions<TOptions>,
+            InheritedPostConfigureNamedOptions<TOptions, TOptionsBase>
+            >(serviceProvider => InheritedPostConfigureNamedOptions
             <TOptions, TOptionsBase>.CreateInstance(serviceProvider, name)
             );
+        services.TryAddEnumerable(serviceDesc);
 
     returnFluent:
         return services;
@@ -92,10 +98,10 @@ public static class OptionsBuilderExtensions
 
         if (typeof(TOptions) == typeof(TOptionsBase)) goto returnFluent;
 
-        services.TryAddTransient<
+        services.TryAddEnumerable(ServiceDescriptor.Transient<
             IConfigureOptions<TOptions>,
             InheritedConfigureAllOptions<TOptions, TOptionsBase>
-            >();
+            >());
 
     returnFluent:
         return services;
@@ -115,10 +121,10 @@ public static class OptionsBuilderExtensions
 
         if (typeof(TOptions) == typeof(TOptionsBase)) goto returnFluent;
 
-        services.TryAddTransient<
+        services.TryAddEnumerable(ServiceDescriptor.Transient<
             IPostConfigureOptions<TOptions>,
             InheritedPostConfigureAllOptions<TOptions, TOptionsBase>
-            >();
+            >());
 
     returnFluent:
         return services;
