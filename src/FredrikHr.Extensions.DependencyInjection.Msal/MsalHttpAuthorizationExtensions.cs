@@ -175,7 +175,7 @@ public static class MsalHttpAuthorizationExtensions
         ) => request.GetOptions().TryGetValue(ResourceOptionsKey, out object? optionObjectValue)
             ? optionObjectValue as string : null;
 
-    public const string PermissionScopesOptionsKey = "Microsoft.Identity.Client.Permissions";
+    public const string PermissionScopesOptionsKey = "Microsoft.Identity.Client.PermissionScopes";
 
     public static void SetMsalPermissionScopes(
         this HttpRequestMessage request,
