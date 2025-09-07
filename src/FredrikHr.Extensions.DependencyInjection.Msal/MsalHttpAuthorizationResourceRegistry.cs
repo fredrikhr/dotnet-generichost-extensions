@@ -38,6 +38,17 @@ public sealed class MsalHttpAuthorizationResourceRegistry() : IDisposable
         return null;
     }
 
+    public void AddEntry(Uri uri)
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(uri);
+#else
+        _ = uri ?? throw new ArgumentNullException(nameof(uri));
+#endif
+        string resource = uri.GetLeftPart(UriPartial.Authority);
+        AddEntry(uri, resource);
+    }
+
     public void AddEntry(Uri uri, string resource)
     {
 #if NET6_0_OR_GREATER
