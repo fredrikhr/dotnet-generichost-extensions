@@ -7,9 +7,9 @@
   <!-- Import Directory.Build file from parent directory -->
   <PropertyGroup>
     <MSBuildAllProjects>
-      $(MSBuildAllProjects);$(MSBuildThisFileDirectory)..\$(MSBuildThisFileName)$(MSBuildThisFileExtension)</MSBuildAllProjects>
+      $(MSBuildAllProjects);$(MSBuildThisFileDirectory)..\..\$(MSBuildThisFileName)$(MSBuildThisFileExtension)</MSBuildAllProjects>
   </PropertyGroup>
-  <Import Project="$(MSBuildThisFileDirectory)..\$(MSBuildThisFileName)$(MSBuildThisFileExtension)" />
+  <Import Project="$(MSBuildThisFileDirectory)..\..\$(MSBuildThisFileName)$(MSBuildThisFileExtension)" />
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>

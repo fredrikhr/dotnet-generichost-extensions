@@ -30,11 +30,17 @@
   <Folder Name="/src/FredrikHr.Extensions.Hosting.Helpers/">
     <File Path="src/FredrikHr.Extensions.Hosting.Helpers/HostApplicationBuilderUnsafeAccessor.cs" />
   </Folder>
-  <Folder Name="/test/">
-    <File Path="test/Directory.Build.props" />
-    <File Path="test/Directory.Packages.props" />
-    <Project Path="test/FredrikHr.CommandLineApi.Hosting.TUnit/FredrikHr.CommandLineApi.Hosting.TUnit.csproj" />
-    <Project Path="test/FredrikHr.Extensions.DependencyInjection.SharePointOnline.TUnit/FredrikHr.Extensions.DependencyInjection.SharePointOnline.TUnit.csproj" />
-    <Project Path="test/FredrikHr.Hosting.Msal.TUnit/FredrikHr.Hosting.Msal.TUnit.csproj" />
+  <Folder Name="/test/" />
+  <Folder Name="/test/TUnit/">
+    <File Path="test/TUnit/Directory.Build.props" />
+    <File Path="test/TUnit/Directory.Packages.props" />
+    <Project Path="test/TUnit/FredrikHr.CommandLineApi.Hosting.TUnit/FredrikHr.CommandLineApi.Hosting.TUnit.csproj" />
+    <Project Path="test/TUnit/FredrikHr.Extensions.DependencyInjection.SharePointOnline.TUnit/FredrikHr.Extensions.DependencyInjection.SharePointOnline.TUnit.csproj" />
+    <Project Path="test/TUnit/FredrikHr.Hosting.Msal.TUnit/FredrikHr.Hosting.Msal.TUnit.csproj" />
+  </Folder>
+  <Folder Name="/test/XUnit/">
+    <File Path="test/XUnit/Directory.Build.props" />
+    <File Path="test/XUnit/Directory.Packages.props" />
+    <Project Path="test/XUnit/FredrikHr.Extensions.Test.XUnit/FredrikHr.Extensions.Test.XUnit.csproj" />
   </Folder>
 </Solution>
