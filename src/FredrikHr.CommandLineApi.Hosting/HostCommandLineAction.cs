@@ -45,7 +45,7 @@ public abstract class HostCommandLineAction<TBuilder, TExecution>(
 
         // As long as done before first await,
         // configuration modification is respected
-        parseResult.Configuration.ProcessTerminationTimeout = null;
+        parseResult.InvocationConfiguration.ProcessTerminationTimeout = null;
 
         TryApplyHostConfigurationDirective(parseResult, hostBuilder);
 
@@ -81,7 +81,7 @@ public abstract class HostCommandLineAction<TBuilder, TExecution>(
         ParseResult parseResult, IHostBuilder hostBuilder
         )
     {
-        if (parseResult.Configuration.RootCommand is RootCommand rootCommand &&
+        if (parseResult.RootCommandResult.Command is RootCommand rootCommand &&
             rootCommand.Directives.FirstOrDefault(IsConfigDirective)
                 is Directive configDirective &&
             parseResult.GetResult(configDirective) is DirectiveResult configResult
