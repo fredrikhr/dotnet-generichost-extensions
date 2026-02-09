@@ -52,7 +52,7 @@ internal sealed partial class DataverseClientHostedServiceProvider(
 
         await tcs.Task.ConfigureAwait(continueOnCapturedContext: false);
 
-        object? storedServiceProvider = targetField.GetValue(serviceProvider);
+        object? storedServiceProvider = targetField.GetValue(null);
         if (ReferenceEquals(storedServiceProvider, serviceProvider))
         {
             targetField.SetValue(null, null);
