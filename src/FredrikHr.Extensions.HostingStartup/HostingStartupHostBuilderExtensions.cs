@@ -26,12 +26,20 @@ public static class HostingStartupHostBuilderExtensions
         ArgumentNullException.ThrowIfNull(hostBuilder);
         return hostBuilder.ConfigureHostConfiguration(config =>
         {
-            ConfigurationBuilder dynamicConfigBuilder = new();
-            foreach (var configSource in config.Sources)
+            IConfigurationRoot dynamicConfig;
+            if (config is IConfigurationRoot configManager)
             {
-                dynamicConfigBuilder.Add(configSource);
+                dynamicConfig = configManager;
             }
-            IConfigurationRoot dynamicConfig = dynamicConfigBuilder.Build();
+            else
+            {
+                ConfigurationBuilder dynamicConfigBuilder = new();
+                foreach (var configSource in config.Sources)
+                {
+                    dynamicConfigBuilder.Add(configSource);
+                }
+                dynamicConfig = dynamicConfigBuilder.Build();
+            }
             try
             {
                 if (ParseBooleanLikeValue(dynamicConfig[HostingStartupDefaults.PreventHostingStartupKey]) ?? false)
@@ -117,17 +125,24 @@ public static class HostingStartupHostBuilderExtensions
 
     private static bool? ParseBooleanLikeValue(string? value)
     {
+        const StringComparison cmp = StringComparison.OrdinalIgnoreCase;
+
         if (string.IsNullOrEmpty(value)) return null;
 
-        if (bool.TrueString.Equals(value, StringComparison.OrdinalIgnoreCase))
+        ReadOnlySpan<char> valueSpan = value.AsSpan().Trim();
+        if (valueSpan.IsEmpty) return null;
+
+        if (bool.TrueString.AsSpan().Equals(valueSpan, cmp))
         {
             return true;
         }
-        if (bool.FalseString.Equals(value, StringComparison.OrdinalIgnoreCase))
+        if (bool.FalseString.AsSpan().Equals(valueSpan, cmp))
         {
             return false;
         }
-        if (int.TryParse(value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int parsedInt))
+        const System.Globalization.NumberStyles style = System.Globalization.NumberStyles.Integer;
+        System.Globalization.CultureInfo inv = System.Globalization.CultureInfo.InvariantCulture;
+        if (int.TryParse(valueSpan, style, inv, out int parsedInt))
         {
             switch (parsedInt)
             {
