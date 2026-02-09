@@ -147,87 +147,185 @@ public static class HostSymbolExtensions
         return option;
     }
 
-    public static Command UseHost<TInvocation>(
+    public static Command UseHostExecution<TExecution>(
         this Command command,
         Func<string[], IHostBuilder>? createHostBuilder,
         Action<IHostBuilder> configureHost
         )
-        where TInvocation : class, IHostCommandLineInvocation
+        where TExecution : class, ICommandLineHostedExecution
     {
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(command);
 #else
         _ = command ?? throw new ArgumentNullException(nameof(command));
 #endif
-        command.Action = new HostBuilderCommandLineAction<TInvocation>(
+        command.Action = new HostBuilderCommandLineAction<TExecution>(
             createHostBuilder,
             configureHost
             );
         return command;
     }
 
-    public static Command UseHost<TInvocation>(
+    public static Command UseHostExecution(
+        this Command command,
+        Func<string[], IHostBuilder>? createHostBuilder,
+        Action<IHostBuilder> configureHost,
+        Func<IServiceProvider, CancellationToken, Task<int>> invokeAsync
+        )
+    {
+        UseHostExecution<InlineCommandLineHostedExecution>(
+            command,
+            createHostBuilder,
+            configureHost + AddInvocationSingleton
+            );
+        return command;
+
+        void AddInvocationSingleton(IHostBuilder builder)
+        {
+            builder.ConfigureServices(services => services.AddSingleton<
+                ICommandLineHostedExecution,
+                InlineCommandLineHostedExecution
+                >(sp => new(sp, invokeAsync)));
+        }
+    }
+
+    public static Command UseHostExecution<TExecution>(
         this Command command,
         Action<IHostBuilder> configureHost
         )
-        where TInvocation : class, IHostCommandLineInvocation
+        where TExecution : class, ICommandLineHostedExecution
     {
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(command);
 #else
         _ = command ?? throw new ArgumentNullException(nameof(command));
 #endif
-        command.Action = new HostBuilderCommandLineAction<TInvocation>(
+        command.Action = new HostBuilderCommandLineAction<TExecution>(
             configureHost
             );
         return command;
     }
 
-    public static RootCommand UseHost<TInvocation>(
+    public static Command UseHostExecution(
+        this Command command,
+        Action<IHostBuilder> configureHost,
+        Func<IServiceProvider, CancellationToken, Task<int>> invokeAsync
+        )
+        where TInvocation : class, IHostCommandLineInvocation
+    {
+        UseHostExecution<InlineCommandLineHostedExecution>(
+            command,
+            configureHost + AddInvocationSingleton
+            );
+        return command;
+    }
+
+        void AddInvocationSingleton(IHostBuilder builder)
+    {
+            builder.ConfigureServices(services => services.AddSingleton<
+                ICommandLineHostedExecution,
+                InlineCommandLineHostedExecution
+                >(sp => new(sp, invokeAsync)));
+        }
+    }
+
+    public static Command UseHostExecution<TExecution>(
+        this Command command,
+        Action<HostApplicationBuilder> configureHost
+        )
+        where TExecution : class, ICommandLineHostedExecution
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(command);
+#else
+        _ = command ?? throw new ArgumentNullException(nameof(command));
+#endif
+        command.Action = new HostApplicationBuilderCommandLineAction<TExecution>(
+            configureHost
+            );
+        return command;
+    }
+
+    public static Command UseHostExecution(
+        this Command command,
+        Action<HostApplicationBuilder> configureHost,
+        Func<IServiceProvider, CancellationToken, Task<int>> invokeAsync
+        )
+    {
+        UseHostExecution<InlineCommandLineHostedExecution>(
+            command,
+            configureHost + AddInvocationSingleton
+            );
+        return command;
+
+        void AddInvocationSingleton(HostApplicationBuilder builder)
+        {
+            builder.Services.AddSingleton<
+                ICommandLineHostedExecution,
+                InlineCommandLineHostedExecution
+                >(sp => new(sp, invokeAsync));
+        }
+    }
+
+    public static RootCommand UseHostExecution<TExecution>(
         this RootCommand command,
         Func<string[], IHostBuilder> createHostBuilder,
         Action<IHostBuilder> configureHost
         )
-        where TInvocation : class, IHostCommandLineInvocation
+        where TExecution : class, ICommandLineHostedExecution
     {
-        UseHost<TInvocation>((Command)command, createHostBuilder, configureHost);
+        UseHostExecution<TExecution>((Command)command, createHostBuilder, configureHost);
         return command;
     }
 
-    public static RootCommand UseHost<TInvocation>(
+    public static RootCommand UseHostExecution(
+        this RootCommand command,
+        Func<string[], IHostBuilder> createHostBuilder,
+        Action<IHostBuilder> configureHost,
+        Func<IServiceProvider, CancellationToken, Task<int>> invokeAsync
+        )
+    {
+        UseHostExecution((Command)command, createHostBuilder, configureHost, invokeAsync);
+        return command;
+    }
+
+    public static RootCommand UseHostExecution<TExecution>(
         this RootCommand command,
         Action<IHostBuilder> configureHost
         )
-        where TInvocation : class, IHostCommandLineInvocation
+        where TExecution : class, ICommandLineHostedExecution
     {
-        UseHost<TInvocation>((Command)command, configureHost);
+        UseHostExecution<TExecution>((Command)command, configureHost);
         return command;
     }
 
-    public static Command UseHostApplicationBuilder<TInvocation>(
-        this Command command,
-        Action<HostApplicationBuilder> configureHost
+    public static RootCommand UseHostExecution(
+        this RootCommand command,
+        Action<IHostBuilder> configureHost,
+        Func<IServiceProvider, CancellationToken, Task<int>> invokeAsync
         )
-        where TInvocation : class, IHostCommandLineInvocation
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(command);
-#else
-        _ = command ?? throw new ArgumentNullException(nameof(command));
-#endif
-        command.Action = new HostApplicationBuilderCommandLineAction<TInvocation>(
-            configureHost
-            );
+        UseHostExecution((Command)command, configureHost, invokeAsync);
         return command;
     }
 
-    public static RootCommand UseHostApplicationBuilder<TInvocation>(
+    public static RootCommand UseHostExecution<TExecution>(
         this RootCommand command,
         Action<HostApplicationBuilder> configureHost
         )
-        where TInvocation : class, IHostCommandLineInvocation
+        where TExecution : class, ICommandLineHostedExecution
     {
-        UseHostApplicationBuilder<TInvocation>((Command)command, configureHost);
+        UseHostExecution<TExecution>((Command)command, configureHost);
+        return command;
+    }
+
+    public static RootCommand UseHostExecution(
+        this RootCommand command,
+        Action<HostApplicationBuilder> configureHost,
+        Func<IServiceProvider, CancellationToken, Task<int>> invokeAsync
+        )
+    {
+        UseHostExecution((Command)command, configureHost, invokeAsync);
         return command;
     }
 }

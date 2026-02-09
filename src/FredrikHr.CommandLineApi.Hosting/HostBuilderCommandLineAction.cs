@@ -2,16 +2,17 @@ using Microsoft.Extensions.Hosting;
 
 namespace System.CommandLine.Hosting;
 
-public class HostBuilderCommandLineAction<TInvocation>(
+public class HostBuilderCommandLineAction<TExecution>(
     Func<string[], IHostBuilder>? hostBuilderFactory,
     Action<IHostBuilder> configureHostBuilder
     )
-    : HostCommandLineAction<IHostBuilder, TInvocation>(
+    : HostCommandLineAction<IHostBuilder, TExecution>(
         hostBuilderFactory ?? Host.CreateDefaultBuilder,
         configureHostBuilder,
-        static hostBuilder => hostBuilder
+        static hostBuilder => hostBuilder,
+        static hostBuilder => hostBuilder.Build()
         )
-    where TInvocation : class, IHostCommandLineInvocation
+    where TExecution : class, ICommandLineHostedExecution
 {
     public HostBuilderCommandLineAction(
         Action<IHostBuilder> configureHostBuilder

@@ -15,12 +15,13 @@ public abstract class HostCommandLineAction
     internal Action<IServiceCollection>? ConfigureSymbolServices { get; set; }
 }
 
-public abstract class HostCommandLineAction<TBuilder, TInvocation>(
+public abstract class HostCommandLineAction<TBuilder, TExecution>(
     Func<string[], TBuilder> hostBuilderFactory,
     Action<TBuilder> configureHostBuilder,
-    Func<TBuilder, IHostBuilder> builderAsHostBuilder
+    Func<TBuilder, IHostBuilder> builderAsHostBuilder,
+    Func<TBuilder, IHost> hostBuilderBuild
     ) : HostCommandLineAction()
-    where TInvocation : class, IHostCommandLineInvocation
+    where TExecution : class, ICommandLineHostedExecution
 {
     private readonly Func<TBuilder, IHostBuilder> _builderAsHostBuilder =
         builderAsHostBuilder ?? throw new ArgumentNullException(nameof(builderAsHostBuilder));
@@ -53,8 +54,8 @@ public abstract class HostCommandLineAction<TBuilder, TInvocation>(
             services.AddSingleton(parseResult);
             services.AddSingleton(parseResult.Configuration);
             services.AddSingleton<
-                IHostCommandLineInvocation,
-                TInvocation
+                ICommandLineHostedExecution,
+                TExecution
                 >();
             services.AddHostedService<HostCommandLineService>();
             ConfigureSymbolServices?.Invoke(services);
@@ -62,10 +63,12 @@ public abstract class HostCommandLineAction<TBuilder, TInvocation>(
 
         ConfigureBuilder?.Invoke(typedBuilder);
 
-        using var host = hostBuilder.Build();
+        using var host = hostBuilderBuild is not null
+            ? hostBuilderBuild(typedBuilder)
+            : hostBuilder.Build();
         await host.StartAsync(cancellationToken)
             .ConfigureAwait(continueOnCapturedContext: false);
-        var resultTask = GetInvocationExecutionResult(host, cancellationToken);
+        var resultTask = GetExecutionResult(host, cancellationToken);
 
         await host.WaitForShutdownAsync(cancellationToken)
             .ConfigureAwait(continueOnCapturedContext: false);
@@ -114,36 +117,37 @@ public abstract class HostCommandLineAction<TBuilder, TInvocation>(
         }
     }
 
-    private static async Task<int> GetInvocationExecutionResult(
+    private static async Task<int> GetExecutionResult(
         IHost host, CancellationToken cancelToken
         )
     {
         IServiceProvider serviceProvider = host.Services;
-        var invocationTasks = serviceProvider.GetServices<IHostedService>()
+        var executeTasks = serviceProvider.GetServices<IHostedService>()
             .OfType<HostCommandLineService>()
             .Select(s => s.ExecuteTask!).ToList();
         int[] invocationResults;
         try
         {
-            invocationResults = await Task.WhenAll(invocationTasks)
+            invocationResults = await Task.WhenAll(executeTasks)
                 .ConfigureAwait(continueOnCapturedContext: false);
         }
         finally
         {
             invocationResults = [
-                ..invocationTasks.Where(IsTaskSuccessful).Select(t => t.Result)
+                ..executeTasks.Where(IsTaskSuccessful).Select(t => t.Result)
             ];
-
-            static bool IsTaskSuccessful(Task t) =>
-#if NET6_0_OR_GREATER
-                    t.IsCompletedSuccessfully
-#else
-                    t.IsCompleted && !(t.IsCanceled || t.IsFaulted)
-#endif
-                ;
         }
         await host.StopAsync(cancelToken)
             .ConfigureAwait(continueOnCapturedContext: false);
         return invocationResults.FirstOrDefault(r => r != default);
+
+        static bool IsTaskSuccessful(Task t)
+        {
+#if NET6_0_OR_GREATER
+            return t.IsCompletedSuccessfully;
+#else
+            return t.IsCompleted && !(t.IsCanceled || t.IsFaulted);
+#endif
+        }
     }
 }

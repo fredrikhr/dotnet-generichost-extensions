@@ -1,6 +1,6 @@
 ﻿namespace System.CommandLine.Hosting;
 
-public interface IHostCommandLineInvocation
+public interface ICommandLineHostedExecution
 {
     Task<int> InvokeAsync(CancellationToken cancelToken = default);
 }
