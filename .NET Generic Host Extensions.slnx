@@ -10,6 +10,11 @@
   <Folder Name="/.github/">
     <File Path=".github/dependabot.yml" />
   </Folder>
+  <Folder Name="/sample/">
+    <File Path="sample/Directory.Build.props" />
+    <File Path="sample/Directory.Packages.props" />
+    <Project Path="sample/FredrikHr.CommandLineHostingSample.MsalCli/FredrikHr.CommandLineHostingSample.MsalCli.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <File Path="src/Directory.Build.props" />
     <File Path="src/Directory.Packages.props" />
