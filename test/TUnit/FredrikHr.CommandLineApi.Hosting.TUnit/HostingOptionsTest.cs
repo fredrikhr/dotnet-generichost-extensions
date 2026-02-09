@@ -20,7 +20,7 @@ public class HostingOptionsTest
     public class HostingCommandLineInvocation(
         IOptions<HostingCommandLineOptions> options,
         TaskCompletionSource<HostingCommandLineOptions> tcs
-        ) : IHostCommandLineInvocation
+        ) : ICommandLineHostedExecution
     {
         public Task<int> InvokeAsync(CancellationToken cancelToken = default)
         {
@@ -38,7 +38,7 @@ public class HostingOptionsTest
         );
         TaskCompletionSource<HostingCommandLineOptions> optionsSource = new();
         RootCommand rootCommand = [intOption];
-        rootCommand.UseHost<HostingCommandLineInvocation>(
+        rootCommand.UseHostExecution<HostingCommandLineInvocation>(
             Host.CreateDefaultBuilder,
             hostBuilder =>
             {
