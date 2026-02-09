@@ -8,14 +8,14 @@ namespace System.CommandLine.Hosting;
 
 public static class HostSymbolExtensions
 {
-    private static void ConfigureOptionsBuilder<T, TOptions>(
+    private static void ConfigureOptionsBuilder<TOptions, TValue>(
         Symbol symbol,
         string? optionsName,
         Action<
             OptionsBuilder<TOptions>,
             Action<TOptions, ParseResult>
             > configureOptionsBuilder,
-        Action<TOptions, T?> configureOptionsInstance
+        Action<TOptions, TValue?> configureOptionsInstance
         ) where TOptions : class
     {
         switch (symbol)
@@ -53,11 +53,11 @@ public static class HostSymbolExtensions
         {
             var symbolResult = parseResult.GetResult(symbol);
             if (symbolResult is null) return;
-            T? symbolValue = (symbol, symbolResult) switch
+            TValue? symbolValue = (symbol, symbolResult) switch
             {
-                (Argument<T> argument, ArgumentResult argumentResult) =>
+                (Argument<TValue> argument, ArgumentResult argumentResult) =>
                 argumentResult.GetValue(argument),
-                (Option<T> option, OptionResult optionResult) =>
+                (Option<TValue> option, OptionResult optionResult) =>
                 optionResult.GetValue(option),
                 _ => throw new InvalidOperationException()
             };
@@ -65,9 +65,9 @@ public static class HostSymbolExtensions
         }
     }
 
-    public static Option<T> Configure<T, TOptions>(
-        this Option<T> option,
-        Action<TOptions, T?> configureOptions
+    public static Option<TValue> Configure<TOptions, TValue>(
+        this Option<TValue> option,
+        Action<TOptions, TValue?> configureOptions
         ) where TOptions : class
     {
 #if NET6_0_OR_GREATER
@@ -85,10 +85,10 @@ public static class HostSymbolExtensions
         return option;
     }
 
-    public static Option<T> Configure<T, TOptions>(
-        this Option<T> option,
+    public static Option<TValue> Configure<TOptions, TValue>(
+        this Option<TValue> option,
         string? optionsName,
-        Action<TOptions, T?> configureOptions
+        Action<TOptions, TValue?> configureOptions
         ) where TOptions : class
     {
 #if NET6_0_OR_GREATER
@@ -106,9 +106,9 @@ public static class HostSymbolExtensions
         return option;
     }
 
-    public static Option<T> PostConfigure<T, TOptions>(
-        this Option<T> option,
-        Action<TOptions, T?> configureOptions
+    public static Option<TValue> PostConfigure<TOptions, TValue>(
+        this Option<TValue> option,
+        Action<TOptions, TValue?> configureOptions
         ) where TOptions : class
     {
 #if NET6_0_OR_GREATER
@@ -126,10 +126,10 @@ public static class HostSymbolExtensions
         return option;
     }
 
-    public static Option<T> PostConfigure<T, TOptions>(
-        this Option<T> option,
+    public static Option<TValue> PostConfigure<TOptions, TValue>(
+        this Option<TValue> option,
         string? optionsName,
-        Action<TOptions, T?> configureOptions
+        Action<TOptions, TValue?> configureOptions
         ) where TOptions : class
     {
 #if NET6_0_OR_GREATER
@@ -211,17 +211,15 @@ public static class HostSymbolExtensions
         Action<IHostBuilder> configureHost,
         Func<IServiceProvider, CancellationToken, Task<int>> invokeAsync
         )
-        where TInvocation : class, IHostCommandLineInvocation
     {
         UseHostExecution<InlineCommandLineHostedExecution>(
             command,
             configureHost + AddInvocationSingleton
             );
         return command;
-    }
 
         void AddInvocationSingleton(IHostBuilder builder)
-    {
+        {
             builder.ConfigureServices(services => services.AddSingleton<
                 ICommandLineHostedExecution,
                 InlineCommandLineHostedExecution
