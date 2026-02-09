@@ -37,9 +37,9 @@ public class MsalHttpAuthorizationDelegatingHandler(
     {
         string? resource = request.GetMsalResource();
         if (resource is not null) return resource;
-        request.TryGetOptionByType(out MsalHttpAuthorizationResourceRegistry? resourceRegistry);
+        request.TryGetOptionByType(out MsalResourceScopeRegistry? resourceRegistry);
         resourceRegistry ??= GetServiceProvider(request).GetService<
-            MsalHttpAuthorizationResourceRegistry
+            MsalResourceScopeRegistry
             >();
         resource = resourceRegistry?.GetResource(request.RequestUri);
         return resource;

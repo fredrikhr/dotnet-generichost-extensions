@@ -1,6 +1,6 @@
 namespace Microsoft.Identity.Client;
 
-public sealed class MsalHttpAuthorizationResourceRegistry() : IDisposable
+public sealed class MsalResourceScopeRegistry() : IDisposable
 {
     private readonly ReaderWriterLockSlim _lock = new();
     private readonly List<(Uri requestUri, string resource)> _entries =
