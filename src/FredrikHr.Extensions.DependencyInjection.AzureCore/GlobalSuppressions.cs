@@ -14,5 +14,10 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage(
     "Style",
     "IDE0130: Namespace does not match folder structure",
+    Scope = "namespace", Target = "~N:Azure.Core"
+    )]
+[assembly: SuppressMessage(
+    "Style",
+    "IDE0130: Namespace does not match folder structure",
     Scope = "namespace", Target = "~N:Azure.Core.Diagnostics"
     )]

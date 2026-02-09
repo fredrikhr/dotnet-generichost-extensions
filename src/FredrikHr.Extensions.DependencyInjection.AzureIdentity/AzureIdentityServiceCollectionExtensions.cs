@@ -1,3 +1,4 @@
+using Azure.Core;
 using Azure.Core.Diagnostics;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -21,12 +22,7 @@ public static class AzureIdentityServiceCollectionExtensions
         services.AddOptions();
         services.AddLogging(logging => logging.ForwardAzureEventSource());
         services.AddHttpClient();
-        services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<
-                IConfigureOptions<TokenCredentialOptions>,
-                HttpClientTransportAzureTokenCredentialConfigureOptions<TokenCredentialOptions>
-                >()
-            );
+        services.ConfigureAllUseHttpClientFactory<TokenCredentialOptions>();
 
         services.TryAddSingleton<AzureTokenCredentialFactory>();
         services.TryAddSingleton<

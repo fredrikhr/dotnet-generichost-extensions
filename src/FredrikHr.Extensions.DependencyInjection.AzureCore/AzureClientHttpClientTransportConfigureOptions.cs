@@ -1,12 +1,12 @@
-using Azure.Core.Pipeline;
-
 using Microsoft.Extensions.Options;
 
-namespace Azure.Identity;
+using Azure.Core.Pipeline;
 
-internal sealed class HttpClientTransportAzureTokenCredentialConfigureOptions<TOptions>(
+namespace Azure.Core;
+
+internal sealed class AzureClientHttpClientTransportConfigureOptions<TOptions>(
         IHttpClientFactory httpFactory
-    ) : IConfigureNamedOptions<TOptions> where TOptions : TokenCredentialOptions
+    ) : IConfigureNamedOptions<TOptions> where TOptions : ClientOptions
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Reliability",
