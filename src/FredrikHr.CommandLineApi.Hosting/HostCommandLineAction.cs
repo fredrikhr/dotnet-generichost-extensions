@@ -16,7 +16,7 @@ public abstract class HostCommandLineAction
 }
 
 public abstract class HostCommandLineAction<TBuilder, TExecution>(
-    Func<string[], TBuilder> hostBuilderFactory,
+    Func<string[], ParseResult, TBuilder> hostBuilderFactory,
     Action<TBuilder> configureHostBuilder,
     Func<TBuilder, IHostBuilder> builderAsHostBuilder,
     Func<TBuilder, IHost> hostBuilderBuild
@@ -40,7 +40,7 @@ public abstract class HostCommandLineAction<TBuilder, TExecution>(
 #endif
 
         string[] unmatchedTokens = parseResult.UnmatchedTokens?.ToArray() ?? [];
-        TBuilder typedBuilder = hostBuilderFactory(unmatchedTokens);
+        TBuilder typedBuilder = hostBuilderFactory(unmatchedTokens, parseResult);
         IHostBuilder hostBuilder = _builderAsHostBuilder(typedBuilder);
         hostBuilder.Properties[typeof(ParseResult)] = parseResult;
 

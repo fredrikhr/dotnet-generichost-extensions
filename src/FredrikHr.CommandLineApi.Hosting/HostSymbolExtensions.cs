@@ -166,9 +166,51 @@ public static class HostSymbolExtensions
         return command;
     }
 
+    public static Command UseHostExecution<TExecution>(
+        this Command command,
+        Func<string[], ParseResult, IHostBuilder>? createHostBuilder,
+        Action<IHostBuilder> configureHost
+        )
+        where TExecution : class, ICommandLineHostedExecution
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(command);
+#else
+        _ = command ?? throw new ArgumentNullException(nameof(command));
+#endif
+        command.Action = new HostBuilderCommandLineAction<TExecution>(
+            createHostBuilder,
+            configureHost
+            );
+        return command;
+    }
+
     public static Command UseHostExecution(
         this Command command,
         Func<string[], IHostBuilder>? createHostBuilder,
+        Action<IHostBuilder> configureHost,
+        Func<IServiceProvider, CancellationToken, Task<int>> invokeAsync
+        )
+    {
+        UseHostExecution<InlineCommandLineHostedExecution>(
+            command,
+            createHostBuilder,
+            configureHost + AddInvocationSingleton
+            );
+        return command;
+
+        void AddInvocationSingleton(IHostBuilder builder)
+        {
+            builder.ConfigureServices(services => services.AddSingleton<
+                ICommandLineHostedExecution,
+                InlineCommandLineHostedExecution
+                >(sp => new(sp, invokeAsync)));
+        }
+    }
+
+    public static Command UseHostExecution(
+        this Command command,
+        Func<string[], ParseResult, IHostBuilder>? createHostBuilder,
         Action<IHostBuilder> configureHost,
         Func<IServiceProvider, CancellationToken, Task<int>> invokeAsync
         )
@@ -276,9 +318,31 @@ public static class HostSymbolExtensions
         return command;
     }
 
+    public static RootCommand UseHostExecution<TExecution>(
+        this RootCommand command,
+        Func<string[], ParseResult, IHostBuilder> createHostBuilder,
+        Action<IHostBuilder> configureHost
+        )
+        where TExecution : class, ICommandLineHostedExecution
+    {
+        UseHostExecution<TExecution>((Command)command, createHostBuilder, configureHost);
+        return command;
+    }
+
     public static RootCommand UseHostExecution(
         this RootCommand command,
         Func<string[], IHostBuilder> createHostBuilder,
+        Action<IHostBuilder> configureHost,
+        Func<IServiceProvider, CancellationToken, Task<int>> invokeAsync
+        )
+    {
+        UseHostExecution((Command)command, createHostBuilder, configureHost, invokeAsync);
+        return command;
+    }
+
+    public static RootCommand UseHostExecution(
+        this RootCommand command,
+        Func<string[], ParseResult, IHostBuilder> createHostBuilder,
         Action<IHostBuilder> configureHost,
         Func<IServiceProvider, CancellationToken, Task<int>> invokeAsync
         )
