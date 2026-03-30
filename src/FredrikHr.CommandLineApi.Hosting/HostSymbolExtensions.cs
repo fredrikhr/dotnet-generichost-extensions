@@ -315,6 +315,7 @@ public static class HostSymbolExtensions
         where TExecution : class, ICommandLineHostedExecution
     {
         UseHostExecution<TExecution>((Command)command, createHostBuilder, configureHost);
+        command.ApplyHostExecutionSettings();
         return command;
     }
 
@@ -326,6 +327,7 @@ public static class HostSymbolExtensions
         where TExecution : class, ICommandLineHostedExecution
     {
         UseHostExecution<TExecution>((Command)command, createHostBuilder, configureHost);
+        command.ApplyHostExecutionSettings();
         return command;
     }
 
@@ -337,6 +339,7 @@ public static class HostSymbolExtensions
         )
     {
         UseHostExecution((Command)command, createHostBuilder, configureHost, invokeAsync);
+        command.ApplyHostExecutionSettings();
         return command;
     }
 
@@ -348,6 +351,7 @@ public static class HostSymbolExtensions
         )
     {
         UseHostExecution((Command)command, createHostBuilder, configureHost, invokeAsync);
+        command.ApplyHostExecutionSettings();
         return command;
     }
 
@@ -358,6 +362,7 @@ public static class HostSymbolExtensions
         where TExecution : class, ICommandLineHostedExecution
     {
         UseHostExecution<TExecution>((Command)command, configureHost);
+        command.ApplyHostExecutionSettings();
         return command;
     }
 
@@ -368,6 +373,7 @@ public static class HostSymbolExtensions
         )
     {
         UseHostExecution((Command)command, configureHost, invokeAsync);
+        command.ApplyHostExecutionSettings();
         return command;
     }
 
@@ -378,6 +384,7 @@ public static class HostSymbolExtensions
         where TExecution : class, ICommandLineHostedExecution
     {
         UseHostExecution<TExecution>((Command)command, configureHost);
+        command.ApplyHostExecutionSettings();
         return command;
     }
 
@@ -388,6 +395,17 @@ public static class HostSymbolExtensions
         )
     {
         UseHostExecution((Command)command, configureHost, invokeAsync);
+        command.ApplyHostExecutionSettings();
         return command;
+    }
+
+    private static void ApplyHostExecutionSettings(
+        this RootCommand? command
+        )
+    {
+        if (command is null) return;
+        command.TreatUnmatchedTokensAsErrors = false;
+        command.Directives.Add(new EnvironmentVariablesDirective());
+        command.Directives.Add(new HostConfigurationDirective());
     }
 }
