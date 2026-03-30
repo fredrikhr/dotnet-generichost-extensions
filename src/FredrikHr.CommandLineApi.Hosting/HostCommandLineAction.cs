@@ -64,7 +64,7 @@ public abstract class HostCommandLineAction<TBuilder, TExecution>(
 
         ConfigureBuilder?.Invoke(typedBuilder);
 
-        using var host = hostBuilderBuild is not null
+        IHost host = hostBuilderBuild is not null
             ? hostBuilderBuild(typedBuilder)
             : hostBuilder.Build();
         await host.StartAsync(cancellationToken)
@@ -74,8 +74,10 @@ public abstract class HostCommandLineAction<TBuilder, TExecution>(
         await host.WaitForShutdownAsync(cancellationToken)
             .ConfigureAwait(continueOnCapturedContext: false);
 
-        return await resultTask
+        int resultValue = await resultTask
             .ConfigureAwait(continueOnCapturedContext: false);
+        host.Dispose();
+        return resultValue;
     }
 
     private static void TryApplyHostConfigurationDirective(
@@ -123,19 +125,22 @@ public abstract class HostCommandLineAction<TBuilder, TExecution>(
         )
     {
         IServiceProvider serviceProvider = host.Services;
-        var executeTasks = serviceProvider.GetServices<IHostedService>()
+        var cmdServices = serviceProvider.GetServices<IHostedService>()
             .OfType<HostCommandLineService>()
-            .Select(s => s.ExecuteTask!).ToList();
+            .ToList();
         int[] invocationResults;
         try
         {
-            invocationResults = await Task.WhenAll(executeTasks)
+            await Task.WhenAll([.. cmdServices.Select<BackgroundService, Task>(s => s.ExecuteTask!)])
                 .ConfigureAwait(continueOnCapturedContext: false);
         }
         finally
         {
             invocationResults = [
-                ..executeTasks.Where(IsTaskSuccessful).Select(t => t.Result)
+                ..cmdServices
+                .Select(s => s.ExecuteTask!)
+                .Where(IsTaskSuccessful)
+                .Select(t => t.Result)
             ];
         }
         await host.StopAsync(cancelToken)
