@@ -42,6 +42,7 @@ public abstract class HostCommandLineAction<TBuilder, TExecution>(
         string[] unmatchedTokens = parseResult.UnmatchedTokens?.ToArray() ?? [];
         TBuilder typedBuilder = hostBuilderFactory(unmatchedTokens);
         IHostBuilder hostBuilder = _builderAsHostBuilder(typedBuilder);
+        hostBuilder.Properties[typeof(ParseResult)] = parseResult;
 
         // As long as done before first await,
         // configuration modification is respected
