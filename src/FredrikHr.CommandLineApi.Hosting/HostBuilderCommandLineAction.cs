@@ -12,7 +12,7 @@ public class HostBuilderCommandLineAction<TExecution>(
         static hostBuilder => hostBuilder,
         static hostBuilder => hostBuilder.Build()
         )
-    where TExecution : class, ICommandLineHostedExecution
+    where TExecution : class, IHostedCommandExecution
 {
     public HostBuilderCommandLineAction(
         Action<IHostBuilder> configureHostBuilder

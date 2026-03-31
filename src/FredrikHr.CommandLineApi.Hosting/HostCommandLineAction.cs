@@ -21,7 +21,7 @@ public abstract class HostCommandLineAction<TBuilder, TExecution>(
     Func<TBuilder, IHostBuilder> builderAsHostBuilder,
     Func<TBuilder, IHost> hostBuilderBuild
     ) : HostCommandLineAction()
-    where TExecution : class, ICommandLineHostedExecution
+    where TExecution : class, IHostedCommandExecution
 {
     private readonly Func<TBuilder, IHostBuilder> _builderAsHostBuilder =
         builderAsHostBuilder ?? throw new ArgumentNullException(nameof(builderAsHostBuilder));
@@ -55,10 +55,10 @@ public abstract class HostCommandLineAction<TBuilder, TExecution>(
             services.AddSingleton(parseResult);
             services.AddSingleton(parseResult.Configuration);
             services.AddSingleton<
-                ICommandLineHostedExecution,
+                IHostedCommandExecution,
                 TExecution
                 >();
-            services.AddHostedService<HostCommandLineService>();
+            services.AddHostedService<HostCommandExecutionService>();
             ConfigureSymbolServices?.Invoke(services);
         });
 
@@ -125,19 +125,19 @@ public abstract class HostCommandLineAction<TBuilder, TExecution>(
         )
     {
         IServiceProvider serviceProvider = host.Services;
-        var cmdServices = serviceProvider.GetServices<IHostedService>()
-            .OfType<HostCommandLineService>()
+        var services = serviceProvider.GetServices<IHostedService>()
+            .OfType<HostCommandExecutionService>()
             .ToList();
         int[] invocationResults;
         try
         {
-            await Task.WhenAll([.. cmdServices.Select<BackgroundService, Task>(s => s.ExecuteTask!)])
+            await Task.WhenAll([.. services.Select<BackgroundService, Task>(s => s.ExecuteTask!)])
                 .ConfigureAwait(continueOnCapturedContext: false);
         }
         finally
         {
             invocationResults = [
-                ..cmdServices
+                ..services
                 .Select(s => s.ExecuteTask!)
                 .Where(IsTaskSuccessful)
                 .Select(t => t.Result)

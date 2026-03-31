@@ -152,7 +152,7 @@ public static class HostSymbolExtensions
         Func<string[], IHostBuilder>? createHostBuilder,
         Action<IHostBuilder> configureHost
         )
-        where TExecution : class, ICommandLineHostedExecution
+        where TExecution : class, IHostedCommandExecution
     {
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(command);
@@ -171,7 +171,7 @@ public static class HostSymbolExtensions
         Func<string[], ParseResult, IHostBuilder>? createHostBuilder,
         Action<IHostBuilder> configureHost
         )
-        where TExecution : class, ICommandLineHostedExecution
+        where TExecution : class, IHostedCommandExecution
     {
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(command);
@@ -202,7 +202,7 @@ public static class HostSymbolExtensions
         void AddInvocationSingleton(IHostBuilder builder)
         {
             builder.ConfigureServices(services => services.AddSingleton<
-                ICommandLineHostedExecution,
+                IHostedCommandExecution,
                 InlineCommandLineHostedExecution
                 >(sp => new(sp, invokeAsync)));
         }
@@ -225,7 +225,7 @@ public static class HostSymbolExtensions
         void AddInvocationSingleton(IHostBuilder builder)
         {
             builder.ConfigureServices(services => services.AddSingleton<
-                ICommandLineHostedExecution,
+                IHostedCommandExecution,
                 InlineCommandLineHostedExecution
                 >(sp => new(sp, invokeAsync)));
         }
@@ -235,7 +235,7 @@ public static class HostSymbolExtensions
         this Command command,
         Action<IHostBuilder> configureHost
         )
-        where TExecution : class, ICommandLineHostedExecution
+        where TExecution : class, IHostedCommandExecution
     {
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(command);
@@ -263,7 +263,7 @@ public static class HostSymbolExtensions
         void AddInvocationSingleton(IHostBuilder builder)
         {
             builder.ConfigureServices(services => services.AddSingleton<
-                ICommandLineHostedExecution,
+                IHostedCommandExecution,
                 InlineCommandLineHostedExecution
                 >(sp => new(sp, invokeAsync)));
         }
@@ -273,7 +273,7 @@ public static class HostSymbolExtensions
         this Command command,
         Action<HostApplicationBuilder> configureHost
         )
-        where TExecution : class, ICommandLineHostedExecution
+        where TExecution : class, IHostedCommandExecution
     {
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(command);
@@ -301,7 +301,7 @@ public static class HostSymbolExtensions
         void AddInvocationSingleton(HostApplicationBuilder builder)
         {
             builder.Services.AddSingleton<
-                ICommandLineHostedExecution,
+                IHostedCommandExecution,
                 InlineCommandLineHostedExecution
                 >(sp => new(sp, invokeAsync));
         }
@@ -312,7 +312,7 @@ public static class HostSymbolExtensions
         Func<string[], IHostBuilder> createHostBuilder,
         Action<IHostBuilder> configureHost
         )
-        where TExecution : class, ICommandLineHostedExecution
+        where TExecution : class, IHostedCommandExecution
     {
         UseHostExecution<TExecution>((Command)command, createHostBuilder, configureHost);
         command.ApplyHostExecutionSettings();
@@ -324,7 +324,7 @@ public static class HostSymbolExtensions
         Func<string[], ParseResult, IHostBuilder> createHostBuilder,
         Action<IHostBuilder> configureHost
         )
-        where TExecution : class, ICommandLineHostedExecution
+        where TExecution : class, IHostedCommandExecution
     {
         UseHostExecution<TExecution>((Command)command, createHostBuilder, configureHost);
         command.ApplyHostExecutionSettings();
@@ -359,7 +359,7 @@ public static class HostSymbolExtensions
         this RootCommand command,
         Action<IHostBuilder> configureHost
         )
-        where TExecution : class, ICommandLineHostedExecution
+        where TExecution : class, IHostedCommandExecution
     {
         UseHostExecution<TExecution>((Command)command, configureHost);
         command.ApplyHostExecutionSettings();
@@ -381,7 +381,7 @@ public static class HostSymbolExtensions
         this RootCommand command,
         Action<HostApplicationBuilder> configureHost
         )
-        where TExecution : class, ICommandLineHostedExecution
+        where TExecution : class, IHostedCommandExecution
     {
         UseHostExecution<TExecution>((Command)command, configureHost);
         command.ApplyHostExecutionSettings();

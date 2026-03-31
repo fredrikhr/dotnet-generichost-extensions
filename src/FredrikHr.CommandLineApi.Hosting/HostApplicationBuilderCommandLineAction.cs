@@ -11,7 +11,7 @@ public class HostApplicationBuilderCommandLineAction<TExecution>(
         HostApplicationBuilderUnsafeAccessor.AsHostBuilder,
         static hostBuilder => hostBuilder.Build()
         )
-    where TExecution : class, ICommandLineHostedExecution
+    where TExecution : class, IHostedCommandExecution
 {
     public HostApplicationBuilderCommandLineAction(
         Action<HostApplicationBuilder> configureHostBuilder

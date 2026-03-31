@@ -3,7 +3,7 @@ namespace System.CommandLine.Hosting;
 internal sealed class InlineCommandLineHostedExecution(
     IServiceProvider serviceProvider,
     Func<IServiceProvider, CancellationToken, Task<int>> invokeAsync
-    ) : ICommandLineHostedExecution
+    ) : IHostedCommandExecution
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider ??
         throw new ArgumentNullException(nameof(serviceProvider));
