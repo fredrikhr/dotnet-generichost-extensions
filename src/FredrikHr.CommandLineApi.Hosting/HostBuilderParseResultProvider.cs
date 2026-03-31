@@ -12,4 +12,13 @@ public static class HostBuilderParseResultProvider
             ) ?? false
         ? parseResult as ParseResult
         : null;
+
+    public static ParseResult? GetCommandLineParseResult(
+        this HostBuilderContext context
+        ) => context?.Properties.TryGetValue(
+            typeof(ParseResult),
+            out object? parseResult
+            ) ?? false
+        ? parseResult as ParseResult
+        : null;
 }
