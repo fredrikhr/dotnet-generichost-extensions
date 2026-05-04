@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageVersion Include="Microsoft.Extensions.Hosting">
-      <Version>9.0.3</Version>
+      <Version>10.0.7</Version>
     </PackageVersion>
     <PackageVersion Include="Microsoft.Extensions.FileProviders.Embedded">
       <Version>9.0.3</Version>
