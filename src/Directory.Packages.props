@@ -41,7 +41,7 @@
       <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
     </PackageVersion>
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions">
-      <Version>7.0.0</Version>
+      <Version>10.0.7</Version>
       <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
     </PackageVersion>
     <PackageVersion Include="Microsoft.Extensions.Http">
