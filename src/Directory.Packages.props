@@ -16,7 +16,7 @@
     </PackageVersion>
 
     <PackageVersion Include="System.CommandLine">
-      <Version>2.0.2</Version>
+      <Version>2.0.7</Version>
     </PackageVersion>
 
     <PackageVersion Include="Microsoft.Extensions.Configuration">
