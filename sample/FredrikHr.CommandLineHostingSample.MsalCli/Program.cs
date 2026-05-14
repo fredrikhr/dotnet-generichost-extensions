@@ -91,7 +91,7 @@ return await cliRoot.Parse(args ?? [])
 
 static void ConfigureHost(HostApplicationBuilder hostBuilder)
 {
-hostBuilder.Services.AddMsal()
+    hostBuilder.Services.AddMsal()
         .UseLogging(enablePiiLogging: hostBuilder.Environment.IsDevelopment())
         .UseHttpClientFactory();
 }

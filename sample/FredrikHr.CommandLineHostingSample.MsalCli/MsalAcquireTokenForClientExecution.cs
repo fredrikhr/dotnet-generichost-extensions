@@ -7,7 +7,7 @@ internal sealed class MsalAcquireTokenForClientExecution(
     IOptions<IConfidentialClientApplication> msalClientAccessor,
     IEnumerable<IConfigureOptions<AcquireTokenForClientParameterBuilder>> tokenAcquisitionConfigures,
     IEnumerable<IPostConfigureOptions<AcquireTokenForClientParameterBuilder>> tokenAcquisitionPostConfigures
-    ) : ICommandLineHostedExecution
+    ) : IHostedCommandExecution
 {
     private readonly IConfidentialClientApplication _msalClient = msalClientAccessor.Value;
 
