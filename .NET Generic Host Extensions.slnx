@@ -1,5 +1,5 @@
 <Solution>
-  <Folder Name="/~repository-root/">
+  <Folder Name="/..repository-root/">
     <File Path=".editorconfig" />
     <File Path=".gitignore" />
     <File Path="Directory.Build.props" />
