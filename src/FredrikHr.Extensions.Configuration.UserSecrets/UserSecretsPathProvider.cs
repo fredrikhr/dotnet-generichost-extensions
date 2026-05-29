@@ -16,13 +16,13 @@ internal sealed class UserSecretsPathProvider<T> : IUserSecretsPathProvider
             _ => null,
         };
 
-    private static string GetDirectoryPath()
+    private static string? GetDirectoryPath()
     {
         string userSecretsFilePath = PathHelper.GetSecretsPathFromSecretsId(
             UserSecretsId!
             );
-        return Path.GetDirectoryName(userSecretsFilePath)!;
+        return Path.GetDirectoryName(userSecretsFilePath);
     }
 
-    public string DirectoryPath { get; } = GetDirectoryPath();
+    public string? DirectoryPath { get; } = GetDirectoryPath();
 }
