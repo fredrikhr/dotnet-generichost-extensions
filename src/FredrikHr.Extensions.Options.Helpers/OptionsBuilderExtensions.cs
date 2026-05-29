@@ -12,10 +12,17 @@ public static class OptionsBuilderExtensions
         where TOptions : class, TOptionsBase
         where TOptionsBase : class
     {
-        return services
+        services = services
             .ConfigureInherit<TOptions, TOptionsBase>(name)
             .PostConfigureInherit<TOptions, TOptionsBase>(name)
             ;
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<
+            IOptionsChangeTokenSource<TOptions>,
+            InheritedNamedOptionsChangeTokenSource<TOptions, TOptionsBase>
+            >(serviceProvider => InheritedNamedOptionsChangeTokenSource
+            <TOptions, TOptionsBase>.CreateInstance(serviceProvider, name)
+            ));
+        return services;
     }
 
     public static IServiceCollection ConfigureInherit<TOptions, TOptionsBase>(
@@ -78,10 +85,15 @@ public static class OptionsBuilderExtensions
         where TOptions : class, TOptionsBase
         where TOptionsBase : class
     {
-        return services
+        services = services
             .ConfigureInheritAll<TOptions, TOptionsBase>()
             .PostConfigureInheritAll<TOptions, TOptionsBase>()
             ;
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<
+            IOptionsChangeTokenSource<TOptions>,
+            InheritedAllOptionsChangeTokenSource<TOptions, TOptionsBase>
+            >());
+        return services;
     }
 
     public static IServiceCollection ConfigureInheritAll<TOptions, TOptionsBase>(
