@@ -1,23 +1,35 @@
+using Azure.Core;
+
 using Microsoft.Extensions.Options;
 
 namespace Azure.Identity;
 
 public class ManagedIdentityCredentialOptionsFactory(
-    ManagedIdentityRegistry managedIdentityRegistry,
+    IOptionsMonitor<ManagedIdentityIdOptions> idProvider,
     IEnumerable<IConfigureOptions<ManagedIdentityCredentialOptions>> setups,
     IEnumerable<IPostConfigureOptions<ManagedIdentityCredentialOptions>> postConfigures,
     IEnumerable<IValidateOptions<ManagedIdentityCredentialOptions>> validations
     ) : OptionsFactory<ManagedIdentityCredentialOptions>(setups, postConfigures, validations)
 {
     public ManagedIdentityCredentialOptionsFactory(
-        ManagedIdentityRegistry managedIdentityRegistry,
+        IOptionsMonitor<ManagedIdentityIdOptions> idProvider,
         IEnumerable<IConfigureOptions<ManagedIdentityCredentialOptions>> setups,
         IEnumerable<IPostConfigureOptions<ManagedIdentityCredentialOptions>> postConfigures
-    ) : this(managedIdentityRegistry, setups, postConfigures, []) { }
+    ) : this(idProvider, setups, postConfigures, []) { }
 
     protected override ManagedIdentityCredentialOptions CreateInstance(string name)
     {
-        var managedIdentityId = managedIdentityRegistry.Get(name);
-        return new(managedIdentityId);
+        ManagedIdentityIdOptions idOptions = idProvider.Get(name);
+        string? idString = idOptions.Id;
+        return new(idOptions.Type switch
+        {
+            ManagedIdentityIdType.ClientId => ManagedIdentityId
+                .FromUserAssignedClientId(idString),
+            ManagedIdentityIdType.ResourceId => ManagedIdentityId
+                .FromUserAssignedResourceId(ResourceIdentifier.Parse(idString!)),
+            ManagedIdentityIdType.ObjectId => ManagedIdentityId
+                .FromUserAssignedObjectId(idString),
+            _ => ManagedIdentityId.SystemAssigned,
+        });
     }
 }

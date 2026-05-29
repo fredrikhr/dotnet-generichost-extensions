@@ -3,12 +3,6 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-#if NET8_0_OR_GREATER
-using System.Threading;
-#else
-using Lock = object;
-#endif
-
 namespace Azure.Identity;
 
 public sealed class AzureTokenCredentialFactory(
@@ -23,7 +17,8 @@ public sealed class AzureTokenCredentialFactory(
     IOptionsFactory<SharedTokenCacheCredential>,
     IOptionsFactory<VisualStudioCodeCredential>,
     IOptionsFactory<VisualStudioCredential>,
-    IOptionsFactory<WorkloadIdentityCredential>
+    IOptionsFactory<WorkloadIdentityCredential>,
+    IOptionsFactory<ManagedIdentityCredential>
 {
     private IServiceProvider? ServiceProvider { get; } = serviceProvider;
 
@@ -369,4 +364,8 @@ public sealed class AzureTokenCredentialFactory(
     WorkloadIdentityCredential IOptionsFactory<WorkloadIdentityCredential>.Create(
         string name
         ) => CreateWorkloadIdentityCredential(name);
+
+    ManagedIdentityCredential IOptionsFactory<ManagedIdentityCredential>.Create(
+        string name
+        ) => CreateManagedIdentityCredential(name);
 }

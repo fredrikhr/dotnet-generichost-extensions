@@ -23,52 +23,74 @@ public static class AzureIdentityServiceCollectionExtensions
         services.AddLogging(logging => logging.ForwardAzureEventSource());
         services.AddHttpClient();
         services.ConfigureAllUseHttpClientFactory<TokenCredentialOptions>();
+        services.TryAddTransient<AzureTokenCredentialFactory>();
 
-        services.TryAddSingleton<AzureTokenCredentialFactory>();
-        services.TryAddSingleton<
-            IOptionsFactory<DefaultAzureCredential>
-            >(SingletonTokenCredentialFactory);
-        services.TryAddSingleton<
-            IOptionsFactory<AzureCliCredential>
-            >(SingletonTokenCredentialFactory);
-        services.TryAddSingleton<
-            IOptionsFactory<AzureDeveloperCliCredential>
-            >(SingletonTokenCredentialFactory);
-        services.TryAddSingleton<
-            IOptionsFactory<AzurePowerShellCredential>
-            >(SingletonTokenCredentialFactory);
-        services.TryAddSingleton<
-            IOptionsFactory<DeviceCodeCredential>
-            >(SingletonTokenCredentialFactory);
-        services.TryAddSingleton<
-            IOptionsFactory<EnvironmentCredential>
-            >(SingletonTokenCredentialFactory);
-        services.TryAddSingleton<
-            IOptionsFactory<InteractiveBrowserCredential>
-            >(SingletonTokenCredentialFactory);
-        services.TryAddSingleton<
-            IOptionsFactory<SharedTokenCacheCredential>
-            >(SingletonTokenCredentialFactory);
-        services.TryAddSingleton<
-            IOptionsFactory<VisualStudioCodeCredential>
-            >(SingletonTokenCredentialFactory);
-        services.TryAddSingleton<
-            IOptionsFactory<VisualStudioCredential>
-            >(SingletonTokenCredentialFactory);
-        services.TryAddSingleton<
-            IOptionsFactory<WorkloadIdentityCredential>
-            >(SingletonTokenCredentialFactory);
+        TryAddTokenCredential
+            <DefaultAzureCredential, DefaultAzureCredentialOptions>
+            (services);
+        TryAddTokenCredential
+            <AzureCliCredential, AzureCliCredentialOptions>
+            (services);
+        TryAddTokenCredential
+            <AzureDeveloperCliCredential, AzureDeveloperCliCredentialOptions>
+            (services);
+        TryAddTokenCredential
+            <AzurePowerShellCredential, AzurePowerShellCredentialOptions>
+            (services);
+        TryAddTokenCredential
+            <DeviceCodeCredential, DeviceCodeCredentialOptions>
+            (services);
+        TryAddTokenCredential
+            <EnvironmentCredential, EnvironmentCredentialOptions>
+            (services);
+        TryAddTokenCredential
+            <InteractiveBrowserCredential, InteractiveBrowserCredentialOptions>
+            (services);
+        TryAddTokenCredential
+            <SharedTokenCacheCredential, SharedTokenCacheCredentialOptions>
+            (services);
+        TryAddTokenCredential
+            <VisualStudioCodeCredential, VisualStudioCodeCredentialOptions>
+            (services);
+        TryAddTokenCredential
+            <VisualStudioCredential, VisualStudioCredentialOptions>
+            (services);
+        TryAddTokenCredential
+            <WorkloadIdentityCredential, WorkloadIdentityCredentialOptions>
+            (services);
+        TryAddTokenCredential
+            <ManagedIdentityCredential, ManagedIdentityCredentialOptions>
+            (services);
 
-        services.TryAddSingleton<ManagedIdentityRegistry>();
-        services.TryAddTransient <
+        services.TryAddEnumerable(ServiceDescriptor.Transient<
+            IOptionsChangeTokenSource<ManagedIdentityCredentialOptions>,
+            InheritedAllOptionsChangeTokenSource<ManagedIdentityCredentialOptions, ManagedIdentityIdOptions>
+            >());
+        services.TryAddTransient<
             IOptionsFactory<ManagedIdentityCredentialOptions>,
             ManagedIdentityCredentialOptionsFactory
             >();
 
         return services;
-
-        static AzureTokenCredentialFactory SingletonTokenCredentialFactory(
-            IServiceProvider serviceProvider
-            ) => serviceProvider.GetRequiredService<AzureTokenCredentialFactory>();
     }
+
+    private static void TryAddTokenCredential<T, TOptions>(
+        IServiceCollection services
+        ) where T : TokenCredential
+        where TOptions : TokenCredentialOptions
+    {
+        services.InheritAll<TOptions, TokenCredentialOptions>();
+        services.TryAddEnumerable(ServiceDescriptor.Transient<
+            IOptionsChangeTokenSource<T>,
+            InheritedAllOptionsChangeTokenSource<T, TOptions>
+            >());
+        services.TryAdd(ServiceDescriptor.Transient(
+            typeof(IOptionsFactory<T>),
+            SingletonTokenCredentialFactory
+            ));
+    }
+
+    private static AzureTokenCredentialFactory SingletonTokenCredentialFactory(
+        IServiceProvider serviceProvider
+        ) => serviceProvider.GetRequiredService<AzureTokenCredentialFactory>();
 }
