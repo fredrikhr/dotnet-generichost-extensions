@@ -19,49 +19,26 @@
       <Version>2.0.0</Version>
     </PackageVersion>
 
-    <PackageVersion Include="Microsoft.Extensions.Configuration">
-      <Version>7.0.0</Version>
-      <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
-    </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions">
+    <PackageVersion
+      Include="
+        Microsoft.Extensions.Configuration;
+        Microsoft.Extensions.Configuration.Abstractions;
+        Microsoft.Extensions.DependencyInjection;
+        Microsoft.Extensions.Hosting;
+        Microsoft.Extensions.Hosting.Abstractions;
+        Microsoft.Extensions.Http;
+        Microsoft.Extensions.Logging;
+        Microsoft.Extensions.Logging.Abstractions;
+        Microsoft.Extensions.Logging.Debug;
+        Microsoft.Extensions.Options;
+        "
+    >
       <Version>7.0.0</Version>
       <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
     </PackageVersion>
     <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets">
       <Version>9.0.0</Version>
       <Version Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">8.0.0</Version>
-      <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
-    </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection">
-      <Version>7.0.0</Version>
-      <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
-    </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Hosting">
-      <Version>7.0.0</Version>
-      <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
-    </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions">
-      <Version>7.0.0</Version>
-      <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
-    </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Http">
-      <Version>7.0.0</Version>
-      <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
-    </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Logging">
-      <Version>7.0.0</Version>
-      <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
-    </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions">
-      <Version>7.0.0</Version>
-      <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
-    </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Logging.Debug">
-      <Version>7.0.0</Version>
-      <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
-    </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.Options">
-      <Version>7.0.0</Version>
       <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
     </PackageVersion>
 
@@ -72,12 +49,13 @@
       <Version>1.13.0</Version>
     </PackageVersion>
 
-    <PackageVersion Include="Microsoft.Identity.Client">
-      <Version>4.61.3</Version>
-    </PackageVersion>
-    <PackageVersion Include="Microsoft.Identity.Client.Extensions.Msal">
-      <Version>4.61.3</Version>
-    </PackageVersion>
+    <PackageVersion
+      Include="
+        Microsoft.Identity.Client;
+        Microsoft.Identity.Client.Extensions.Msal;
+        "
+      Version="4.61.3"
+    />
     <PackageVersion Include="Microsoft.IdentityModel.LoggingExtensions">
       <Version>6.19.0</Version>
     </PackageVersion>
