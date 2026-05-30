@@ -6,48 +6,10 @@ using Microsoft.IdentityModel.LoggingExtensions;
 
 namespace Microsoft.Identity.Client;
 
-public class MsalClientServiceCollectionBuilder
+public class MsalClientServiceCollectionBuilder(IServiceCollection services)
 {
-    public IServiceCollection Services { get; }
-
-    public MsalClientServiceCollectionBuilder(IServiceCollection services)
-    {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(services);
-        Services = services;
-#else
-        Services = services ?? throw new ArgumentNullException(nameof(services));
-#endif
-
-        services.AddOptions();
-        services.TryAddSingleton<
-            IOptionsFactory<PublicClientApplicationBuilder>,
-            PublicClientApplicationBuilderFactory
-            >();
-        services.TryAddSingleton<
-            IOptionsFactory<IPublicClientApplication>,
-            PublicClientApplicationFactory
-            >();
-
-        services.TryAddSingleton<
-            IOptionsFactory<ConfidentialClientApplicationBuilder>,
-            ConfidentialClientApplicationBuilderFactory
-            >();
-        services.TryAddSingleton<
-            IOptionsFactory<IConfidentialClientApplication>,
-            ConfidentialClientApplicationFactory
-            >();
-
-        services.TryAddSingleton(AppConfig.ManagedIdentityId.SystemAssigned);
-        services.TryAddSingleton<
-            IOptionsFactory<ManagedIdentityApplicationBuilder>,
-            ManagedIdentityApplicationBuilderFactory
-            >();
-        services.TryAddSingleton<
-            IOptionsFactory<IManagedIdentityApplication>,
-            ManagedIdentityApplicationFactory
-            >();
-    }
+    public IServiceCollection Services { get; } = services
+        ?? throw new ArgumentNullException(nameof(services));
 
     public MsalClientServiceCollectionBuilder ConfigureAllBrokerOptions(
         BrokerOptions.OperatingSystems enabledOn,

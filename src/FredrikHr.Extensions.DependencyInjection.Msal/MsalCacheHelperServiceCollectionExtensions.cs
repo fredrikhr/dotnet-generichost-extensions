@@ -12,15 +12,28 @@ public static class MsalCacheHelperServiceCollectionExtensions
     {
         services.AddOptions();
         services.AddLogging();
+
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<
+            IOptionsChangeTokenSource<StorageCreationPropertiesBuilder>,
+            InheritedAllOptionsChangeTokenSource<StorageCreationPropertiesBuilder, StorageCreationParameters>
+            >());
         services.TryAddSingleton<
             IOptionsFactory<StorageCreationPropertiesBuilder>,
             StorageCreationPropertiesBuilderFactory
             >();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<
+            IOptionsChangeTokenSource<StorageCreationProperties>,
+            InheritedAllOptionsChangeTokenSource<StorageCreationProperties, StorageCreationPropertiesBuilder>
+            >());
         services.TryAddSingleton<
             IOptionsFactory<StorageCreationProperties>,
             StorageCreationPropertiesFactory
             >();
         services.TryAddSingleton<MsalCacheHelperFactory>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<
+            IOptionsChangeTokenSource<Task<MsalCacheHelper>>,
+            InheritedAllOptionsChangeTokenSource<Task<MsalCacheHelper>, StorageCreationProperties>
+            >());
         services.TryAddSingleton<
             IOptionsFactory<Task<MsalCacheHelper>>
             >(static sp => sp.GetRequiredService<MsalCacheHelperFactory>());

@@ -14,6 +14,7 @@ internal sealed class ConfidentialClientApplicationFactory(
     protected override IConfidentialClientApplication CreateInstance(string name)
     {
         ConfidentialClientApplicationBuilder builder = builderProvider.Get(name);
-        return builder.Build();
+        IConfidentialClientApplication client = builder.Build();
+        return client;
     }
 }
