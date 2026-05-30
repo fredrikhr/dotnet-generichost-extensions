@@ -8,12 +8,12 @@ namespace FredrikHr.Extensions.DependencyInjection.DataverseClient;
 
 public class ServiceClientFactory(
     IHttpClientFactory httpClientFactory,
-    IOptionsMonitor<IOrganizationServiceAsync> orgSvcProvider,
     IOptionsMonitor<OrganizationServiceClientOptions> orgSvcOptionsProvider,
     IEnumerable<IConfigureOptions<ServiceClient>> setups,
     IEnumerable<IPostConfigureOptions<ServiceClient>> postConfigures,
     IEnumerable<IValidateOptions<ServiceClient>> validations,
-    ILoggerFactory? loggerFactory = null
+    ILoggerFactory? loggerFactory = null,
+    IHttpMessageHandlerFactory? httpMessageHandlerFactory = null
     ) : OptionsFactory<ServiceClient>(setups, postConfigures, validations)
 {
     private readonly ILoggerFactory _loggerFactory = loggerFactory ??
@@ -21,11 +21,18 @@ public class ServiceClientFactory(
 
     protected override ServiceClient CreateInstance(string name)
     {
-        var orgSvc = orgSvcProvider.Get(name);
+        OrganizationServiceClientOptions orgSvcOpts = orgSvcOptionsProvider.Get(name);
+        string httpClientName = orgSvcOpts.HttpClientHandlerName ?? name;
+        IOrganizationServiceAsync orgSvc = OrganizationWebProxyClientConstructorHelper
+            .CreateWebProxyClient(
+                httpClientName,
+                orgSvcOpts,
+                httpMessageHandlerFactory
+            );
         var orgClient = (ClientBase<IOrganizationServiceAsync>)orgSvc;
-        var httpClientName = orgSvcOptionsProvider.Get(name).HttpClientHandlerName ?? name;
+        string baseConnectUrl = orgClient.Endpoint?.Address?.Uri?.ToString()
+            ?? orgSvcOpts.ServiceUrl;
         HttpClient httpClient = httpClientFactory.CreateClient(httpClientName);
-        string baseConnectUrl = orgClient.Endpoint.Address.Uri.ToString();
         Version? targetVersion = default;
         return ServiceClientConstructorHelper.CreateServiceClient(
             orgSvc,

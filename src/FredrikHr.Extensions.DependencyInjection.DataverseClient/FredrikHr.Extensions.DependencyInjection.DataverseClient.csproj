@@ -12,12 +12,19 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging" />
     <PackageReference Include="Microsoft.Extensions.Options" />
-    <PackageReference Condition="$([MSBuild]::GetTargetFrameworkIdentifier('$(TargetFramework)')) == '.NETFramework'" Include="System.Net.Http" />
+    <PackageReference
+      Include="System.Net.Http"
+      Condition="$([MSBuild]::GetTargetFrameworkIdentifier('$(TargetFramework)')) == '.NETFramework'"
+    />
     <PackageReference Include="Microsoft.PowerPlatform.Dataverse.Client" />
   </ItemGroup>
 
   <ItemGroup Condition="$([MSBuild]::GetTargetFrameworkIdentifier('$(TargetFramework)')) == '.NETFramework'">
     <Reference Include="System.ServiceModel" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FredrikHr.Extensions.Options.Helpers\FredrikHr.Extensions.Options.Helpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

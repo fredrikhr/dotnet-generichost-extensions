@@ -10,3 +10,10 @@ using System.Diagnostics.CodeAnalysis;
     "IDE0079: Remove unnecessary suppression",
     Justification = "false positive"
     )]
+[assembly: SuppressMessage(
+    "Design",
+    "CA1034: Nested types should not be visible",
+    Scope = "type",
+    Target = "~T:FredrikHr.Extensions.DependencyInjection.DataverseClient.DataverseClientServiceCollectionExtensions",
+    Justification = "extension block"
+    )]

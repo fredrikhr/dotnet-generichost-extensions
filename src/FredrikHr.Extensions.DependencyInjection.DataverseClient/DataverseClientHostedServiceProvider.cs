@@ -6,63 +6,57 @@ using Microsoft.PowerPlatform.Dataverse.Client;
 
 namespace FredrikHr.Extensions.DependencyInjection.DataverseClient;
 
-internal sealed partial class DataverseClientHostedServiceProvider(
-    IServiceProvider serviceProvider,
-    ILoggerFactory? loggerFactory = null
-    ) : BackgroundService
+internal sealed partial class DataverseClientHostedServiceProvider
+    : BackgroundService
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Design",
-        "CA1031: Do not catch general exception types",
-        Justification = nameof(ILogger)
-        )]
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        TaskCompletionSource<object?> tcs = new();
-        using var stopRegistration = stoppingToken.Register(
-            CompleteTask,
-            tcs
-            );
+    private const string TargetTypeName = "Microsoft.PowerPlatform.Dataverse.Client.Utils.ClientServiceProviders";
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILoggerFactory? _loggerFactory;
+    private readonly Type? _targetType;
+    private readonly FieldInfo? _targetField;
 
-        Type? targetType = typeof(ServiceClient).Assembly.GetType(
-            "Microsoft.PowerPlatform.Dataverse.Client.Utils.ClientServiceProviders",
+    public DataverseClientHostedServiceProvider(
+        IServiceProvider serviceProvider,
+        ILoggerFactory? loggerFactory = null
+        )
+    {
+        _serviceProvider = serviceProvider;
+        _loggerFactory = loggerFactory;
+        _targetType = typeof(ServiceClient).Assembly.GetType(
+            TargetTypeName,
             throwOnError: false
             );
-        if (targetType is null) return;
-
-        FieldInfo? targetField = targetType.GetField(
+        _targetField = _targetType?.GetField(
             name: "_instance",
             BindingFlags.Static |
             BindingFlags.Public |
             BindingFlags.NonPublic
             );
-        if (targetField is null) return;
+    }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "CA1031: Do not catch general exception types",
+        Justification = nameof(ILogger)
+        )]
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
         try
         {
-            targetField.SetValue(null, serviceProvider);
+            _targetField?.SetValue(null, _serviceProvider);
         }
         catch (Exception fieldSettingExcept)
         {
-            var logger = loggerFactory?.CreateLogger(targetType.FullName!) ??
+            ILogger logger = _loggerFactory?.CreateLogger(_targetType?.FullName ?? TargetTypeName) ??
                 Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
-            LogSetFieldFailure(logger, fieldSettingExcept);
-            return;
+            LogSetFieldFailure(logger, fieldSettingExcept switch
+            {
+                TargetInvocationException tiExcept => tiExcept.InnerException,
+                _ => fieldSettingExcept
+            });
         }
 
-        await tcs.Task.ConfigureAwait(continueOnCapturedContext: false);
-
-        object? storedServiceProvider = targetField.GetValue(null);
-        if (ReferenceEquals(storedServiceProvider, serviceProvider))
-        {
-            targetField.SetValue(null, null);
-        }
-
-        static void CompleteTask(object? state)
-        {
-            var tcs = (TaskCompletionSource<object?>)state!;
-            tcs.TrySetResult(default);
-        }
+        return Task.CompletedTask;
     }
 
     [LoggerMessage(
@@ -70,5 +64,34 @@ internal sealed partial class DataverseClientHostedServiceProvider(
         EventId = 1, EventName = "StoreServiceProviderFailure",
         Message = "Failed to store .NET Generic Host Service Provider with Dataverse Client library."
         )]
-    private static partial void LogSetFieldFailure(ILogger logger, Exception exception);
+    private static partial void LogSetFieldFailure(ILogger logger, Exception? exception);
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "CA1031: Do not catch general exception types",
+        Justification = nameof(ILogger)
+        )]
+    public override void Dispose()
+    {
+        base.Dispose();
+        if (_targetField is null) return;
+        try
+        {
+            object? storedServiceProvider = _targetField.GetValue(null);
+            if (ReferenceEquals(storedServiceProvider, _serviceProvider))
+            {
+                _targetField.SetValue(null, null);
+            }
+        }
+        catch (Exception fieldSettingExcept)
+        {
+            ILogger logger = _loggerFactory?.CreateLogger(_targetType?.FullName ?? TargetTypeName) ??
+                Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+            LogSetFieldFailure(logger, fieldSettingExcept switch
+            {
+                TargetInvocationException tiExcept => tiExcept.InnerException,
+                _ => fieldSettingExcept
+            });
+        }
+    }
 }
