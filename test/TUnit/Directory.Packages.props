@@ -15,7 +15,7 @@
       <Version>9.0.3</Version>
     </PackageVersion>
     <PackageVersion Include="Microsoft.Identity.Client">
-      <Version>4.67.2</Version>
+      <Version>4.84.2</Version>
     </PackageVersion>
     <PackageVersion Include="Microsoft.Identity.Client.Extensions.Msal">
       <Version>4.67.2</Version>
