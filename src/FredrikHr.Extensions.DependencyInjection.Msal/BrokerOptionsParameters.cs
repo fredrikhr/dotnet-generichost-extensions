@@ -6,7 +6,7 @@ internal sealed class BrokerOptionsParameters()
 
     public BrokerOptionsParameters(
         BrokerOptions.OperatingSystems enabledOn
-    ) : this()
+        ) : this()
     {
         EnabledOn = enabledOn;
     }

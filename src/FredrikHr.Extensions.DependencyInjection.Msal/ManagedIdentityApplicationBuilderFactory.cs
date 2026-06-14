@@ -1,21 +1,22 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Identity.Client;
 
 internal sealed class ManagedIdentityApplicationBuilderFactory(
-    IServiceProvider serviceProvider,
     IOptionsMonitor<ManagedIdentityApplicationOptions> optionsProvider,
     IEnumerable<IConfigureOptions<ManagedIdentityApplicationBuilder>> setups,
-    IEnumerable<IPostConfigureOptions<ManagedIdentityApplicationBuilder>> postConfigures
+    IEnumerable<IPostConfigureOptions<ManagedIdentityApplicationBuilder>> postConfigures,
+    AppConfig.ManagedIdentityId? managedIdentityId = default
     ) : OptionsFactory<ManagedIdentityApplicationBuilder>(setups, postConfigures)
 {
+    private AppConfig.ManagedIdentityId ManagedIdentityId { get; } = managedIdentityId
+        ?? AppConfig.ManagedIdentityId.SystemAssigned;
+
     protected override ManagedIdentityApplicationBuilder CreateInstance(string name)
     {
-        AppConfig.ManagedIdentityId managedIdentityId =
+        AppConfig.ManagedIdentityId mii =
             optionsProvider.Get(name).ManagedIdentityId
-            ?? serviceProvider.GetService<AppConfig.ManagedIdentityId>()
-            ?? AppConfig.ManagedIdentityId.SystemAssigned;
-        return ManagedIdentityApplicationBuilder.Create(managedIdentityId);
+            ?? ManagedIdentityId;
+        return ManagedIdentityApplicationBuilder.Create(mii);
     }
 }
