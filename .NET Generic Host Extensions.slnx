@@ -24,6 +24,7 @@
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.AzureCore/FredrikHr.Extensions.DependencyInjection.AzureCore.csproj" />
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.AzureIdentity/FredrikHr.Extensions.DependencyInjection.AzureIdentity.csproj" />
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.DataverseClient/FredrikHr.Extensions.DependencyInjection.DataverseClient.csproj" />
+    <Project Path="src/FredrikHr.Extensions.DependencyInjection.Http/FredrikHr.Extensions.DependencyInjection.Http.csproj" />
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.Msal/FredrikHr.Extensions.DependencyInjection.Msal.csproj" />
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.OData/FredrikHr.Extensions.DependencyInjection.OData.csproj" />
     <Project Path="src/FredrikHr.Extensions.DependencyInjection.SharePointOnline/FredrikHr.Extensions.DependencyInjection.SharePointOnline.csproj" />
