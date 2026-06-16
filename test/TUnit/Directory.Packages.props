@@ -8,17 +8,21 @@
   <Import Project="$(MSBuildThisFileDirectory)..\..\$(MSBuildThisFileName)$(MSBuildThisFileExtension)" />
 
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Extensions.Hosting">
+    <PackageVersion
+      Include="
+        Microsoft.Extensions.Hosting;
+        Microsoft.Extensions.FileProviders.Embedded;
+        "
+    >
       <Version>9.0.3</Version>
     </PackageVersion>
-    <PackageVersion Include="Microsoft.Extensions.FileProviders.Embedded">
-      <Version>9.0.3</Version>
-    </PackageVersion>
-    <PackageVersion Include="Microsoft.Identity.Client">
-      <Version>4.67.2</Version>
-    </PackageVersion>
-    <PackageVersion Include="Microsoft.Identity.Client.Extensions.Msal">
-      <Version>4.67.2</Version>
+    <PackageVersion
+      Include="
+        Microsoft.Identity.Client;
+        Microsoft.Identity.Client.Extensions.Msal;
+        "
+    >
+      <Version>4.79.0</Version>
     </PackageVersion>
     <PackageVersion Include="Microsoft.IdentityModel.LoggingExtensions">
       <Version>8.3.1</Version>
