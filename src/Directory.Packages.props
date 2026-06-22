@@ -24,7 +24,7 @@
         "
       Include="System.Text.Json"
     >
-      <Version>10.0.2</Version>
+      <Version>10.0.9</Version>
     </PackageVersion>
     <PackageVersion
       Condition="
