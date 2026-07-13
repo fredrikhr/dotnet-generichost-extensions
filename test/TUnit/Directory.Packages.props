@@ -32,7 +32,7 @@
   <ItemGroup>
     <PackageReference Include="TUnit" />
     <PackageVersion Include="TUnit">
-      <Version>0.18.26</Version>
+      <Version>1.59.0</Version>
     </PackageVersion>
   </ItemGroup>
 
