@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk">
-      <Version>17.13.0</Version>
+      <Version>18.8.0</Version>
     </PackageVersion>
     <PackageVersion Include="xunit.v3">
       <Version>3.0.0</Version>
