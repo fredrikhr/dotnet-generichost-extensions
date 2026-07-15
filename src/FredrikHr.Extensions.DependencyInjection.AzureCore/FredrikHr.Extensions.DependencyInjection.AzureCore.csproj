@@ -11,5 +11,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging" />
 
     <PackageReference Include="Azure.Core" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
   </ItemGroup>
 </Project>
