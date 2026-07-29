@@ -81,7 +81,7 @@
       Version="4.79.0"
     />
     <PackageVersion Include="Microsoft.IdentityModel.LoggingExtensions">
-      <Version>6.19.0</Version>
+      <Version>8.22.0</Version>
     </PackageVersion>
 
     <PackageVersion Include="Microsoft.PowerPlatform.Dataverse.Client">
