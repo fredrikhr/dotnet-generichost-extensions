@@ -15,7 +15,7 @@ internal sealed class HostingStartupAssemblyLoadContext(
     protected override Assembly? Load(AssemblyName assemblyName)
     {
         Func<AssemblyName, bool> assemblyNameMatcher =
-            HostingStartupHostBuilderExtensions.GetMatcherFunc(assemblyName);
+            HostingStartupHostBuilder.GetMatcherFunc(assemblyName);
         if (excludeAssemblies?.Any(assemblyNameMatcher) ?? false)
             return null;
 
@@ -27,7 +27,7 @@ internal sealed class HostingStartupAssemblyLoadContext(
 
         AssemblyName nameFromPath = AssemblyName.GetAssemblyName(path);
         Func<AssemblyName, bool> assemblyPathMatcher =
-            HostingStartupHostBuilderExtensions.GetMatcherFunc(nameFromPath);
+            HostingStartupHostBuilder.GetMatcherFunc(nameFromPath);
         return excludeAssemblies?.Any(assemblyPathMatcher) ?? false
             ? null
             : LoadFromAssemblyPath(path);

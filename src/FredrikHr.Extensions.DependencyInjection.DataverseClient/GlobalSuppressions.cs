@@ -14,6 +14,6 @@ using System.Diagnostics.CodeAnalysis;
     "Design",
     "CA1034: Nested types should not be visible",
     Scope = "type",
-    Target = "~T:FredrikHr.Extensions.DependencyInjection.DataverseClient.DataverseClientServiceCollectionExtensions",
+    Target = "~T:FredrikHr.Extensions.DependencyInjection.DataverseClient.DataverseClientDependencyInjection",
     Justification = "extension block"
     )]

@@ -1,0 +1,176 @@
+using System.Reflection;
+using System.Runtime.Loader;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+
+namespace FredrikHr.Extensions.HostingStartup;
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Design",
+    "CA1034: Nested types should not be visible",
+    Justification = "extension block")]
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Naming",
+    "CA1708: Identifiers should differ by more than case",
+    Justification = "extension block")]
+public static class HostingStartupHostBuilder
+{
+    extension(HostApplicationBuilder hostBuilder)
+    {
+        public HostApplicationBuilder UseHostingStartupAssemblyLoading()
+        {
+            ArgumentNullException.ThrowIfNull(hostBuilder);
+            IHostBuilder hostBuilderWrapper = HostApplicationBuilderUnsafeAccessor
+                .AsHostBuilder(hostBuilder);
+            UseHostingStartupAssemblyLoading(hostBuilderWrapper);
+            return hostBuilder;
+        }
+    }
+
+    extension(IHostBuilder hostBuilder)
+    {
+        public IHostBuilder UseHostingStartupAssemblyLoading()
+        {
+            ArgumentNullException.ThrowIfNull(hostBuilder);
+            return hostBuilder.ConfigureHostConfiguration(config =>
+            {
+                IConfigurationRoot dynamicConfig;
+                if (config is IConfigurationRoot configManager)
+                {
+                    dynamicConfig = configManager;
+                }
+                else
+                {
+                    ConfigurationBuilder dynamicConfigBuilder = new();
+                    foreach (var configSource in config.Sources)
+                    {
+                        dynamicConfigBuilder.Add(configSource);
+                    }
+                    dynamicConfig = dynamicConfigBuilder.Build();
+                }
+                try
+                {
+                    if (ParseBooleanLikeValue(dynamicConfig[HostingStartupDefaults.PreventHostingStartupKey]) ?? false)
+                    {
+                        return;
+                    }
+
+                    AssemblyLoadContext parentLoadCtx = AssemblyLoadContext
+                        .GetLoadContext(typeof(HostingStartupHostBuilder).Assembly)
+                        ?? AssemblyLoadContext.Default;
+                    StringComparer cmp = StringComparer.OrdinalIgnoreCase;
+                    List<AssemblyName> excludeAssembyNames = [
+                        .. ParseSemicolonSeparatedList(dynamicConfig[HostingStartupDefaults.HostingStartupExcludeAssembliesKey])
+                        .Distinct(cmp)
+                        .Select(nameString => new AssemblyName(nameString))
+                        ];
+                    HashSet<string> loadAssemblies = new(
+                        ParseSemicolonSeparatedList(dynamicConfig[HostingStartupDefaults.HostingStartupAssembliesKey]),
+                        cmp
+                        );
+
+                    foreach (var assemblyName in loadAssemblies.Select(n => new AssemblyName(n)))
+                    {
+                        HostingStartupAssemblyLoadContext assemblyCtx = new(
+                            name: $"HostingStartup: {assemblyName}",
+                            path: AppContext.BaseDirectory,
+                            parentLoadCtx,
+                            excludeAssembyNames
+                            );
+                        Assembly assembly = assemblyCtx.LoadFromAssemblyName(assemblyName);
+                        ProcessHostingStartupAssembly(assembly, hostBuilder);
+                    }
+
+                    loadAssemblies = new(
+                        ParseSemicolonSeparatedList(dynamicConfig[HostingStartupDefaults.HostingStartupAssemblyFilePathsKey]),
+                        cmp
+                        );
+                    foreach (var assemblyFilePath in loadAssemblies)
+                    {
+                        HostingStartupAssemblyLoadContext assemblyCtx = new(
+                            name: $"HostingStartup: {assemblyFilePath}",
+                            path: Path.GetDirectoryName(assemblyFilePath)
+                                ?? AppContext.BaseDirectory,
+                            parentLoadCtx,
+                            excludeAssembyNames
+                            );
+                        var assemblyName = AssemblyName.GetAssemblyName(assemblyFilePath);
+                        if (excludeAssembyNames.Any(GetMatcherFunc(assemblyName)))
+                            continue;
+                        Assembly assembly = assemblyCtx.LoadFromAssemblyPath(assemblyFilePath);
+                        ProcessHostingStartupAssembly(assembly, hostBuilder);
+                    }
+                }
+                finally
+                {
+                    (dynamicConfig as IDisposable)?.Dispose();
+                }
+            });
+        }
+    }
+
+    internal static Func<AssemblyName, bool> GetMatcherFunc(AssemblyName assemblyName)
+        => assemblyNameCandidate => AssemblyName.ReferenceMatchesDefinition(
+            assemblyNameCandidate,
+            assemblyName
+            );
+
+    private static void ProcessHostingStartupAssembly(
+        Assembly assembly,
+        IHostBuilder hostBuilder)
+    {
+        IEnumerable<HostingStartupAttribute> hostingStartupMarkers =
+            assembly.GetCustomAttributes<HostingStartupAttribute>();
+        foreach (var hostingStartupMarker in hostingStartupMarkers)
+        {
+            Type hostingStartupType = hostingStartupMarker.HostingStartupType;
+            var hostingStartupInstance =
+                Activator.CreateInstance(hostingStartupType)
+                as IHostingStartup;
+            hostingStartupInstance?.Configure(hostBuilder);
+        }
+    }
+
+    private static bool? ParseBooleanLikeValue(string? value)
+    {
+        const StringComparison cmp = StringComparison.OrdinalIgnoreCase;
+
+        if (string.IsNullOrEmpty(value)) return null;
+
+        ReadOnlySpan<char> valueSpan = value.AsSpan().Trim();
+        if (valueSpan.IsEmpty) return null;
+
+        if (bool.TrueString.AsSpan().Equals(valueSpan, cmp))
+        {
+            return true;
+        }
+        if (bool.FalseString.AsSpan().Equals(valueSpan, cmp))
+        {
+            return false;
+        }
+        const System.Globalization.NumberStyles style = System.Globalization.NumberStyles.Integer;
+        System.Globalization.CultureInfo inv = System.Globalization.CultureInfo.InvariantCulture;
+        if (int.TryParse(valueSpan, style, inv, out int parsedInt))
+        {
+            switch (parsedInt)
+            {
+                case 0:
+                    return false;
+                case 1:
+                    return true;
+            }
+        }
+
+        return null;
+    }
+
+    private static string[] ParseSemicolonSeparatedList(string? value)
+    {
+        const StringSplitOptions splitOpts =
+            StringSplitOptions.TrimEntries |
+            StringSplitOptions.RemoveEmptyEntries;
+        return value?.Split(';', splitOpts)
+            ?? [];
+    }
+}

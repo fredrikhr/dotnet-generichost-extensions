@@ -18,8 +18,8 @@ internal sealed class AzureEventSourceLoggingForwarder : ILoggerProvider
     public AzureEventSourceLoggingForwarder(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
-        _listener = new(OnEventWritten, EventLevel.LogAlways);
         _loggerCreate = CreateLogger;
+        _listener = new(OnEventWritten, EventLevel.LogAlways);
     }
 
     private ILogger CreateLogger(string eventSourceName)

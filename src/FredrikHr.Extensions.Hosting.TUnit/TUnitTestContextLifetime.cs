@@ -38,7 +38,7 @@ public sealed partial class TUnitTestContextLifetime(
         _applicationStoppingRegistration = appLifetime.ApplicationStopping
             .Register(ApplicationStopptingCallback, this);
 
-        context.Events.OnTestEnd += OnTestEnd;
+        context.Events.OnTestEnd?.Add(OnTestEnd);
         return Task.CompletedTask;
 
         static void ApplicationStartedCallback(object? state)
@@ -63,16 +63,16 @@ public sealed partial class TUnitTestContextLifetime(
         LogApplicationStopping();
     }
 
-    private Task OnTestEnd(object sender, TestContext context)
+    private ValueTask OnTestEnd(object sender, TestContext context)
     {
         appLifetime.StopApplication();
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = $"Hosting environment: {{{nameof(EnvName)}}}", EventId = 1, EventName = nameof(appLifetime.ApplicationStarted))]
     private partial void LogHostingEnvironment(string EnvName);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = $"Content root path: {{{nameof(ContentRootPath)}}}", EventId = 2, EventName = nameof(appLifetime.ApplicationStarted))]
+    [LoggerMessage(Level = LogLevel.Information, Message = $"Content root path: {{{nameof(ContentRootPath)}}}", EventId = 2, EventName = "ApplicationContentRootPath")]
     private partial void LogContentRootPath(string ContentRootPath);
 
     [LoggerMessage(Level = LogLevel.Information, Message = $"Application is shutting down...", EventId = 99, EventName = nameof(appLifetime.ApplicationStopping))]

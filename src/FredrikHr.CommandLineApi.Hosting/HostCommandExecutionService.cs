@@ -12,16 +12,19 @@ internal sealed class HostCommandExecutionService(
     IHostedCommandExecution invocation
     ) : BackgroundService()
 {
-    private Task<int>? _executeTask;
-    public new Task<int>? ExecuteTask => base.ExecuteTask switch
+    public new Task<int>? ExecuteTask
     {
-        Task<int> task => task,
-        _ => _executeTask,
-    };
+        get => base.ExecuteTask switch
+        {
+            Task<int> task => task,
+            _ => field,
+        };
+        private set;
+    }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return _executeTask = ExecuteCoreAsync(stoppingToken);
+        return ExecuteTask = ExecuteCoreAsync(stoppingToken);
     }
 
     private async Task WaitUntilApplicationStartedAsync(CancellationToken cancelToken)
@@ -73,7 +76,7 @@ internal sealed class HostCommandExecutionService(
     {
         var tcs = (TaskCompletionSource<object>)state!;
 #if NET6_0_OR_GREATER
-            tcs.SetCanceled(CancellationToken.None);
+        tcs.SetCanceled(CancellationToken.None);
 #else
         tcs.SetCanceled();
 #endif
