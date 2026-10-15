@@ -54,12 +54,11 @@
         Microsoft.Extensions.Options;
         "
     >
-      <Version>7.0.0</Version>
+      <Version>8.0.0</Version>
       <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
     </PackageVersion>
     <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets">
       <Version>9.0.0</Version>
-      <Version Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">8.0.0</Version>
       <Version Condition="'$(TargetFramework)' == 'net461'">6.0.0</Version>
     </PackageVersion>
 
@@ -108,7 +107,7 @@
     </PackageVersion>
 
     <PackageVersion Include="TUnit.Core">
-      <Version>0.13.0</Version>
+      <Version>1.0.0</Version>
     </PackageVersion>
   </ItemGroup>
 
