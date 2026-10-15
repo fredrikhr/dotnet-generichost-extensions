@@ -2,16 +2,14 @@ namespace Microsoft.SharePoint.Client;
 
 public class HttpClientWebRequestExecutorFactory(
     string? name,
-    IHttpClientFactory httpFactory
-    )
+    IHttpClientFactory httpFactory)
     : WebRequestExecutorFactory()
 {
     public override WebRequestExecutor CreateWebRequestExecutor(
         ClientRuntimeContext context,
-        string requestUrl
-        )
+        string requestUrl)
     {
-        _ = context ?? throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         return new HttpClientWebRequestExecutor(
             name is not null

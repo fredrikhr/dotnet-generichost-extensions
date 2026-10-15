@@ -16,8 +16,8 @@ public class DataServiceContextFactory<T> : OptionsFactory<T>
         IOptionsMonitor<DataServiceContextConstructorOptions> optionsProvider,
         IEnumerable<IConfigureOptions<T>> setups,
         IEnumerable<IPostConfigureOptions<T>> postConfigures,
-        IEnumerable<IValidateOptions<T>> validations
-    ) : base(setups, postConfigures, validations)
+        IEnumerable<IValidateOptions<T>> validations)
+        : base(setups, postConfigures, validations)
     {
         _optionsProvider = optionsProvider;
         _setups = setups;
@@ -29,8 +29,8 @@ public class DataServiceContextFactory<T> : OptionsFactory<T>
         DataServiceContextConstructorOptions constructorOptions,
         IEnumerable<IConfigureOptions<T>> setups,
         IEnumerable<IPostConfigureOptions<T>> postConfigures,
-        IEnumerable<IValidateOptions<T>> validations
-    ) : base(setups, postConfigures, validations)
+        IEnumerable<IValidateOptions<T>> validations)
+        : base(setups, postConfigures, validations)
     {
         _inlineOptions = constructorOptions;
         _setups = setups;

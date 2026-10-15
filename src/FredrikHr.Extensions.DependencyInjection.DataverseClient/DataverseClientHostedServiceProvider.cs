@@ -9,7 +9,8 @@ namespace FredrikHr.Extensions.DependencyInjection.DataverseClient;
 internal sealed partial class DataverseClientHostedServiceProvider
     : BackgroundService
 {
-    private const string TargetTypeName = "Microsoft.PowerPlatform.Dataverse.Client.Utils.ClientServiceProviders";
+    private const string TargetTypeName =
+        "Microsoft.PowerPlatform.Dataverse.Client.Utils.ClientServiceProviders";
     private readonly IServiceProvider _serviceProvider;
     private readonly ILoggerFactory? _loggerFactory;
     private readonly Type? _targetType;
@@ -17,8 +18,7 @@ internal sealed partial class DataverseClientHostedServiceProvider
 
     public DataverseClientHostedServiceProvider(
         IServiceProvider serviceProvider,
-        ILoggerFactory? loggerFactory = null
-        )
+        ILoggerFactory? loggerFactory = null)
     {
         _serviceProvider = serviceProvider;
         _loggerFactory = loggerFactory;
@@ -37,8 +37,7 @@ internal sealed partial class DataverseClientHostedServiceProvider
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Design",
         "CA1031: Do not catch general exception types",
-        Justification = nameof(ILogger)
-        )]
+        Justification = nameof(ILogger))]
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
@@ -62,15 +61,13 @@ internal sealed partial class DataverseClientHostedServiceProvider
     [LoggerMessage(
         Level = LogLevel.Warning,
         EventId = 1, EventName = "StoreServiceProviderFailure",
-        Message = "Failed to store .NET Generic Host Service Provider with Dataverse Client library."
-        )]
+        Message = "Failed to store .NET Generic Host Service Provider with Dataverse Client library.")]
     private static partial void LogSetFieldFailure(ILogger logger, Exception? exception);
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Design",
         "CA1031: Do not catch general exception types",
-        Justification = nameof(ILogger)
-        )]
+        Justification = nameof(ILogger))]
     public override void Dispose()
     {
         base.Dispose();

@@ -13,8 +13,8 @@ public class ServiceClientFactory(
     IEnumerable<IPostConfigureOptions<ServiceClient>> postConfigures,
     IEnumerable<IValidateOptions<ServiceClient>> validations,
     ILoggerFactory? loggerFactory = null,
-    IHttpMessageHandlerFactory? httpMessageHandlerFactory = null
-    ) : OptionsFactory<ServiceClient>(setups, postConfigures, validations)
+    IHttpMessageHandlerFactory? httpMessageHandlerFactory = null)
+    : OptionsFactory<ServiceClient>(setups, postConfigures, validations)
 {
     private readonly ILoggerFactory _loggerFactory = loggerFactory ??
         Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance;
@@ -27,8 +27,7 @@ public class ServiceClientFactory(
             .CreateWebProxyClient(
                 httpClientName,
                 orgSvcOpts,
-                httpMessageHandlerFactory
-            );
+                httpMessageHandlerFactory);
         var orgClient = (ClientBase<IOrganizationServiceAsync>)orgSvc;
         string baseConnectUrl = orgClient.Endpoint?.Address?.Uri?.ToString()
             ?? orgSvcOpts.ServiceUrl;
@@ -39,7 +38,6 @@ public class ServiceClientFactory(
             httpClient,
             baseConnectUrl,
             targetVersion,
-            _loggerFactory.CreateLogger<ServiceClient>()
-            );
+            _loggerFactory.CreateLogger<ServiceClient>());
     }
 }

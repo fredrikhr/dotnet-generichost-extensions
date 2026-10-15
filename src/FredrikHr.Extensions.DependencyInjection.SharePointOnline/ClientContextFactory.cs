@@ -14,8 +14,8 @@ public sealed class ClientContextFactory : OptionsFactory<ClientContext>
         IOptionsMonitor<ClientContextConstructorOptions> optionsProvider,
         IEnumerable<IConfigureOptions<ClientContext>> setups,
         IEnumerable<IPostConfigureOptions<ClientContext>> postConfigures,
-        IEnumerable<IValidateOptions<ClientContext>> validations
-    ) : base(setups, postConfigures, validations)
+        IEnumerable<IValidateOptions<ClientContext>> validations)
+        : base(setups, postConfigures, validations)
     {
         _optionsProvider = optionsProvider;
         _setups = setups;
@@ -27,8 +27,8 @@ public sealed class ClientContextFactory : OptionsFactory<ClientContext>
         ClientContextConstructorOptions webUrlOptions,
         IEnumerable<IConfigureOptions<ClientContext>> setups,
         IEnumerable<IPostConfigureOptions<ClientContext>> postConfigures,
-        IEnumerable<IValidateOptions<ClientContext>> validations
-    ) : base(setups, postConfigures, validations)
+        IEnumerable<IValidateOptions<ClientContext>> validations)
+        : base(setups, postConfigures, validations)
     {
         _inlineOptions = webUrlOptions;
         _setups = setups;
@@ -51,8 +51,7 @@ public sealed class ClientContextFactory : OptionsFactory<ClientContext>
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Design",
         "CA1054: URI-like parameters should not be strings",
-        Justification = nameof(ClientContext)
-        )]
+        Justification = nameof(ClientContext))]
     public ClientContext CreateWithWebUrl(string webUrl, string? name = default)
     {
         ClientContextFactory inlineFactory = new(

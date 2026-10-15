@@ -6,8 +6,8 @@ namespace FredrikHr.Extensions.DependencyInjection.MicrosoftIdentity;
 
 public class TokenAcquirerService(
     ITokenAcquirerFactory acquirerFactory,
-    IAuthenticationSchemeInformationProvider? authSchemeInformationProvider = null
-    ) : ITokenAcquirer
+    IAuthenticationSchemeInformationProvider? authSchemeInformationProvider = null)
+    : ITokenAcquirer
 {
     private readonly ITokenAcquirerFactory _acquirerFactory = acquirerFactory
         ?? throw new ArgumentNullException(nameof(acquirerFactory));

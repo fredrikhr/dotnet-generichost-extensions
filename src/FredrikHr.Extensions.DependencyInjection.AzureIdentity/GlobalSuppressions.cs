@@ -8,15 +8,12 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage(
     "Style",
     "IDE0130: Namespace does not match folder structure",
-    Scope = "namespace", Target = "~N:Azure.Core.Diagnostics"
-    )]
+    Scope = "namespace", Target = "~N:Azure.Core.Diagnostics")]
 [assembly: SuppressMessage(
     "Style",
     "IDE0130: Namespace does not match folder structure",
-    Scope = "namespace", Target = "~N:Azure.Identity"
-    )]
+    Scope = "namespace", Target = "~N:Azure.Identity")]
 [assembly: SuppressMessage(
     "Performance",
     "CA1812: Avoid uninstantiated internal classes",
-    Justification = nameof(Microsoft.Extensions.DependencyInjection)
-    )]
+    Justification = nameof(Microsoft.Extensions.DependencyInjection))]

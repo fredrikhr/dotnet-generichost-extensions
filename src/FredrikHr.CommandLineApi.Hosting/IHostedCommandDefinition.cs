@@ -25,5 +25,4 @@ public interface IHostedCommandDefinition<TSelf> : IHostedCommandDefinition
 {
     static abstract TSelf Instance { get; }
 }
-
 #endif

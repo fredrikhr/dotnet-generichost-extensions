@@ -12,20 +12,15 @@ public class MsalClientServiceCollectionBuilder(IServiceCollection services)
         ?? throw new ArgumentNullException(nameof(services));
 
     public MsalClientServiceCollectionBuilder ConfigureAllBrokerOptions(
-        BrokerOptions.OperatingSystems enabledOn,
-        Action<string?, BrokerOptions>? configureOptions = null
-        ) => ConfigureAllBrokerOptions(_ => enabledOn, configureOptions);
+        BrokerOptions.OperatingSystems enabledOn = ~BrokerOptions.OperatingSystems.None,
+        Action<string?, BrokerOptions>? configureOptions = null)
+        => ConfigureAllBrokerOptions(_ => enabledOn, configureOptions);
 
     public MsalClientServiceCollectionBuilder ConfigureAllBrokerOptions(
         Func<string?, BrokerOptions.OperatingSystems> enabledOn,
-        Action<string?, BrokerOptions>? configureOptions = null
-        )
+        Action<string?, BrokerOptions>? configureOptions = null)
     {
-#if NET6_0_OR_GREATER
-        ArgumentNullException.ThrowIfNull(enabledOn);
-#else
-        _ = enabledOn ?? throw new ArgumentNullException(nameof(enabledOn));
-#endif
+        enabledOn ??= static (_) => ~BrokerOptions.OperatingSystems.None;
 
         Services.AddOptions();
         Services.ConfigureAll<BrokerOptionsParameters>(
@@ -43,8 +38,7 @@ public class MsalClientServiceCollectionBuilder(IServiceCollection services)
     }
 
     public MsalClientServiceCollectionBuilder UseLogging(
-        bool enablePiiLogging = false
-        )
+        bool enablePiiLogging = false)
     {
         Services.AddLogging();
         Services.ConfigureAll<PublicClientApplicationBuilder, ILoggerFactory>(
@@ -112,176 +106,154 @@ public class MsalClientServiceCollectionBuilder(IServiceCollection services)
     }
 
     public MsalClientServiceCollectionBuilder ConfigureAllApplicationOptions(
-        Action<ApplicationOptions> configureOptions
-        )
+        Action<ApplicationOptions> configureOptions)
     {
         Services.ConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder ConfigureAllApplicationOptions(
-        Action<string?, ApplicationOptions> configureOptions
-        )
+        Action<string?, ApplicationOptions> configureOptions)
     {
         Services.ConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder PostConfigureAllApplicationOptions(
-        Action<ApplicationOptions> configureOptions
-        )
+        Action<ApplicationOptions> configureOptions)
     {
         Services.PostConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder PostConfigureAllApplicationOptions(
-        Action<string?, ApplicationOptions> configureOptions
-        )
+        Action<string?, ApplicationOptions> configureOptions)
     {
         Services.PostConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder ConfigureAllPublicClientApplicationOptions(
-        Action<PublicClientApplicationOptions> configureOptions
-        )
+        Action<PublicClientApplicationOptions> configureOptions)
     {
         Services.ConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder ConfigureAllPublicClientApplicationOptions(
-        Action<string?, PublicClientApplicationOptions> configureOptions
-        )
+        Action<string?, PublicClientApplicationOptions> configureOptions)
     {
         Services.ConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder PostConfigureAllPublicClientApplicationOptions(
-        Action<PublicClientApplicationOptions> configureOptions
-        )
+        Action<PublicClientApplicationOptions> configureOptions)
     {
         Services.PostConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder PostConfigureAllPublicClientApplicationOptions(
-        Action<string?, PublicClientApplicationOptions> configureOptions
-        )
+        Action<string?, PublicClientApplicationOptions> configureOptions)
     {
         Services.PostConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder ConfigureAllConfidentialClientApplicationOptions(
-        Action<ConfidentialClientApplicationOptions> configureOptions
-        )
+        Action<ConfidentialClientApplicationOptions> configureOptions)
     {
         Services.ConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder ConfigureAllConfidentialClientApplicationOptions(
-        Action<string?, ConfidentialClientApplicationOptions> configureOptions
-        )
+        Action<string?, ConfidentialClientApplicationOptions> configureOptions)
     {
         Services.ConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder PostConfigureAllConfidentialClientApplicationOptions(
-        Action<ConfidentialClientApplicationOptions> configureOptions
-        )
+        Action<ConfidentialClientApplicationOptions> configureOptions)
     {
         Services.PostConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder PostConfigureAllConfidentialClientApplicationOptions(
-        Action<string?, ConfidentialClientApplicationOptions> configureOptions
-        )
+        Action<string?, ConfidentialClientApplicationOptions> configureOptions)
     {
         Services.PostConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder ConfigureAllManagedIdentityApplicationOptions(
-        Action<ManagedIdentityApplicationOptions> configureOptions
-        )
+        Action<ManagedIdentityApplicationOptions> configureOptions)
     {
         Services.ConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder ConfigureAllManagedIdentityApplicationOptions(
-        Action<string?, ManagedIdentityApplicationOptions> configureOptions
-        )
+        Action<string?, ManagedIdentityApplicationOptions> configureOptions)
     {
         Services.ConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder PostConfigureAllManagedIdentityApplicationOptions(
-        Action<ManagedIdentityApplicationOptions> configureOptions
-        )
+        Action<ManagedIdentityApplicationOptions> configureOptions)
     {
         Services.PostConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder PostConfigureAllManagedIdentityApplicationOptions(
-        Action<string?, ManagedIdentityApplicationOptions> configureOptions
-        )
+        Action<string?, ManagedIdentityApplicationOptions> configureOptions)
     {
         Services.PostConfigureAll(configureOptions);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder ConfigureAllPublicClientApplications(
-        Action<string?, PublicClientApplicationBuilder> configureBuilders
-        )
+        Action<string?, PublicClientApplicationBuilder> configureBuilders)
     {
         Services.ConfigureAll(configureBuilders);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder ConfigureAllConfidentialClientApplications(
-        Action<string?, ConfidentialClientApplicationBuilder> configureBuilders
-        )
+        Action<string?, ConfidentialClientApplicationBuilder> configureBuilders)
     {
         Services.ConfigureAll(configureBuilders);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder ConfigureAllManagedIdentityApplications(
-        Action<string?, ManagedIdentityApplicationBuilder> configureBuilders
-        )
+        Action<string?, ManagedIdentityApplicationBuilder> configureBuilders)
     {
         Services.ConfigureAll(configureBuilders);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder PostConfigureAllPublicClientApplications(
-        Action<string?, PublicClientApplicationBuilder> configureBuilders
-        )
+        Action<string?, PublicClientApplicationBuilder> configureBuilders)
     {
         Services.PostConfigureAll(configureBuilders);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder PostConfigureAllConfidentialClientApplications(
-        Action<string?, ConfidentialClientApplicationBuilder> configureBuilders
-        )
+        Action<string?, ConfidentialClientApplicationBuilder> configureBuilders)
     {
         Services.PostConfigureAll(configureBuilders);
         return this;
     }
 
     public MsalClientServiceCollectionBuilder PostConfigureAllManagedIdentityApplications(
-        Action<string?, ManagedIdentityApplicationBuilder> configureBuilders
-        )
+        Action<string?, ManagedIdentityApplicationBuilder> configureBuilders)
     {
         Services.PostConfigureAll(configureBuilders);
         return this;
@@ -289,8 +261,7 @@ public class MsalClientServiceCollectionBuilder(IServiceCollection services)
 
     public MsalClientServiceCollectionBuilder ConfigurePublicClientApplication(
         string? name,
-        Action<PublicClientApplicationBuilder> configureBuilder
-        )
+        Action<PublicClientApplicationBuilder> configureBuilder)
     {
         Services.Configure(name, configureBuilder);
         return this;
@@ -298,8 +269,7 @@ public class MsalClientServiceCollectionBuilder(IServiceCollection services)
 
     public MsalClientServiceCollectionBuilder ConfigureConfidentialClientApplication(
         string? name,
-        Action<ConfidentialClientApplicationBuilder> configureBuilder
-        )
+        Action<ConfidentialClientApplicationBuilder> configureBuilder)
     {
         Services.Configure(name, configureBuilder);
         return this;
@@ -307,8 +277,7 @@ public class MsalClientServiceCollectionBuilder(IServiceCollection services)
 
     public MsalClientServiceCollectionBuilder ConfigureManagedIdentityApplication(
         string? name,
-        Action<ManagedIdentityApplicationBuilder> configureBuilder
-        )
+        Action<ManagedIdentityApplicationBuilder> configureBuilder)
     {
         Services.Configure(name, configureBuilder);
         return this;
@@ -316,8 +285,7 @@ public class MsalClientServiceCollectionBuilder(IServiceCollection services)
 
     public MsalClientServiceCollectionBuilder PostConfigurePublicClientApplication(
         string? name,
-        Action<PublicClientApplicationBuilder> configureBuilder
-        )
+        Action<PublicClientApplicationBuilder> configureBuilder)
     {
         Services.PostConfigure(name, configureBuilder);
         return this;
@@ -325,8 +293,7 @@ public class MsalClientServiceCollectionBuilder(IServiceCollection services)
 
     public MsalClientServiceCollectionBuilder PostConfigureConfidentialClientApplication(
         string? name,
-        Action<ConfidentialClientApplicationBuilder> configureBuilder
-        )
+        Action<ConfidentialClientApplicationBuilder> configureBuilder)
     {
         Services.PostConfigure(name, configureBuilder);
         return this;
@@ -334,8 +301,7 @@ public class MsalClientServiceCollectionBuilder(IServiceCollection services)
 
     public MsalClientServiceCollectionBuilder PostConfigureManagedIdentityApplication(
         string? name,
-        Action<ManagedIdentityApplicationBuilder> configureBuilder
-        )
+        Action<ManagedIdentityApplicationBuilder> configureBuilder)
     {
         Services.PostConfigure(name, configureBuilder);
         return this;

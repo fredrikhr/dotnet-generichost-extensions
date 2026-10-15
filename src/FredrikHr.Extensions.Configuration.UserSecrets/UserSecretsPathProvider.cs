@@ -5,8 +5,7 @@ namespace Microsoft.Extensions.Configuration.UserSecrets;
 [System.Diagnostics.CodeAnalysis.SuppressMessage(
     "Performance",
     "CA1812: Avoid uninstantiated internal classes",
-    Justification = nameof(DependencyInjection)
-    )]
+    Justification = nameof(DependencyInjection))]
 internal sealed class UserSecretsPathProvider<T> : IUserSecretsPathProvider
 {
     private static readonly string? UserSecretsId = typeof(T).Assembly

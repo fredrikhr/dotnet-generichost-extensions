@@ -13,8 +13,7 @@ internal static class ServiceClientConstructorHelper
         HttpClient httpClient,
         string baseConnectUrl,
         Version? targetVersion = null,
-        ILogger? logger = null
-        )
+        ILogger? logger = null)
     {
         var client = ServiceClientCtor(
             orgSvc,
@@ -34,20 +33,17 @@ internal static class ServiceClientConstructorHelper
 
 #if NET8_0_OR_GREATER
     [System.Runtime.CompilerServices.UnsafeAccessor(
-        System.Runtime.CompilerServices.UnsafeAccessorKind.Constructor
-        )]
+        System.Runtime.CompilerServices.UnsafeAccessorKind.Constructor)]
     private extern static ServiceClient ServiceClientCtor(
         IOrganizationService orgSvc,
         HttpClient httpClient,
         string baseConnectUrl,
         Version? targetVersion = null,
-        ILogger? logger = null
-        );
+        ILogger? logger = null);
 
     [System.Runtime.CompilerServices.UnsafeAccessor(
         System.Runtime.CompilerServices.UnsafeAccessorKind.Field,
-        Name = "_connectionSvc"
-        )]
+        Name = "_connectionSvc")]
     private extern static object GetConnectionService(ServiceClient serviceClient);
 #else
     private static readonly Type[] ServiceClientCtorParamTypes = [
@@ -106,8 +102,7 @@ internal static class ServiceClientConstructorHelper
     private static readonly Type? ConnectionServiceType = Type.GetType(
         "Microsoft.PowerPlatform.Dataverse.Client.ConnectionService, " +
         typeof(ServiceClient).Assembly.FullName,
-        throwOnError: false
-        );
+        throwOnError: false);
     private static readonly Lazy<FieldInfo?> ConnectionServiceActiveAuthenticationTypeField =
         new(() => ConnectionServiceType?.GetField(
             "_eAuthType",
@@ -127,19 +122,13 @@ internal static class ServiceClientConstructorHelper
         "Microsoft.PowerPlatform.Dataverse.Client.Connector.OrganizationWebProxyClientAsync" +
         ", " +
         typeof(ServiceClient).Assembly.FullName,
-        throwOnError: false
-        );
+        throwOnError: false);
 
     private static void SetConnectionServiceActiveAuthenticationType(
         object connectionService,
-        Microsoft.PowerPlatform.Dataverse.Client.AuthenticationType authenticationType
-        )
+        Microsoft.PowerPlatform.Dataverse.Client.AuthenticationType authenticationType)
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(connectionService);
-#else
-        _ = connectionService ?? throw new ArgumentNullException(nameof(connectionService));
-#endif
 
         Type connectionServiceType = connectionService.GetType();
         connectionServiceType = ConnectionServiceType?.IsAssignableFrom(connectionServiceType) ?? true
@@ -170,16 +159,10 @@ internal static class ServiceClientConstructorHelper
 
     private static void SetConnectionServiceOrganizationServiceClient(
         object connectionService,
-        IOrganizationServiceAsync organizationService
-        )
+        IOrganizationServiceAsync organizationService)
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(connectionService);
         ArgumentNullException.ThrowIfNull(organizationService);
-#else
-        _ = connectionService ?? throw new ArgumentNullException(nameof(connectionService));
-        _ = organizationService ?? throw new ArgumentNullException(nameof(organizationService));
-#endif
 
         Type connectionServiceType = connectionService.GetType();
         connectionServiceType = ConnectionServiceType?.IsAssignableFrom(connectionServiceType) ?? true

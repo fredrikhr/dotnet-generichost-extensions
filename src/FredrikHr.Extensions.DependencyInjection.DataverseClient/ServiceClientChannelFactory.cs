@@ -6,14 +6,11 @@ using Microsoft.PowerPlatform.Dataverse.Client;
 namespace FredrikHr.Extensions.DependencyInjection.DataverseClient;
 
 internal sealed class ServiceClientChannelFactory(
-    Func<HttpClientHandler, HttpMessageHandler> httpFactory
-    ) : ChannelFactory<IOrganizationServiceAsync2>(
-        GetServiceEndpoint(httpFactory)
-    )
+    Func<HttpClientHandler, HttpMessageHandler> httpFactory)
+    : ChannelFactory<IOrganizationServiceAsync2>(GetServiceEndpoint(httpFactory))
 {
     private static ServiceEndpoint GetServiceEndpoint(
-        Func<HttpClientHandler, HttpMessageHandler> httpFactory
-        )
+        Func<HttpClientHandler, HttpMessageHandler> httpFactory)
     {
         var binding = GetBinding(null!, TimeSpan.FromMinutes(1));
         ServiceEndpoint endpoint = new(

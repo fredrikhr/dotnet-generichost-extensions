@@ -30,14 +30,9 @@ public abstract class HostCommandLineAction<TBuilder, TExecution>(
 
     public override sealed async Task<int> InvokeAsync(
         ParseResult parseResult,
-        CancellationToken cancellationToken = default
-        )
+        CancellationToken cancellationToken = default)
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(parseResult);
-#else
-        _ = parseResult ?? throw new ArgumentNullException(nameof(parseResult));
-#endif
 
         string[] unmatchedTokens = parseResult.UnmatchedTokens?.ToArray() ?? [];
         TBuilder typedBuilder = hostBuilderFactory(unmatchedTokens, parseResult);

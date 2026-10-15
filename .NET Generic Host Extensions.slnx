@@ -34,6 +34,9 @@
     <Project Path="src/FredrikHr.Extensions.HostingStartup/FredrikHr.Extensions.HostingStartup.csproj" />
     <Project Path="src/FredrikHr.Extensions.Options.Helpers/FredrikHr.Extensions.Options.Helpers.csproj" />
   </Folder>
+<Folder Name="/src/Common/">
+    <File Path="src/Common/ArgumentExceptionThrowHelper.cs" />
+  </Folder>
   <Folder Name="/src/FredrikHr.Extensions.Hosting.Helpers/">
     <File Path="src/FredrikHr.Extensions.Hosting.Helpers/HostApplicationBuilderUnsafeAccessor.cs" />
   </Folder>

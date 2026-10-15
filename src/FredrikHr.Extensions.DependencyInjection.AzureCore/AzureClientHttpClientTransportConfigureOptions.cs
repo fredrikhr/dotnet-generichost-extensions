@@ -11,12 +11,10 @@ internal sealed class AzureClientHttpClientTransportConfigureOptions<TOptions>(
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Reliability",
         "CA2000: Dispose objects before losing scope",
-        Justification = nameof(HttpClientTransport)
-        )]
+        Justification = nameof(IHttpClientFactory))]
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "CodeQuality",
-        "IDE0079: Remove unnecessary suppression"
-        )]
+        "IDE0079: Remove unnecessary suppression")]
     public void Configure(string? name, TOptions options)
     {
         if (options.Transport is IDisposable previousTransport)

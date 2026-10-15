@@ -70,11 +70,7 @@ public static class HostSymbolExtensions
         Action<TOptions, TValue?> configureOptions
         ) where TOptions : class
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(option);
-#else
-        _ = option ?? throw new ArgumentNullException(nameof(option));
-#endif
         ConfigureOptionsBuilder(
             option,
             default,
@@ -91,11 +87,7 @@ public static class HostSymbolExtensions
         Action<TOptions, TValue?> configureOptions
         ) where TOptions : class
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(option);
-#else
-        _ = option ?? throw new ArgumentNullException(nameof(option));
-#endif
         ConfigureOptionsBuilder(
             option,
             optionsName,
@@ -111,11 +103,7 @@ public static class HostSymbolExtensions
         Action<TOptions, TValue?> configureOptions
         ) where TOptions : class
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(option);
-#else
-        _ = option ?? throw new ArgumentNullException(nameof(option));
-#endif
         ConfigureOptionsBuilder(
             option,
             default,
@@ -132,11 +120,7 @@ public static class HostSymbolExtensions
         Action<TOptions, TValue?> configureOptions
         ) where TOptions : class
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(option);
-#else
-        _ = option ?? throw new ArgumentNullException(nameof(option));
-#endif
         ConfigureOptionsBuilder(
             option,
             optionsName,
@@ -154,11 +138,7 @@ public static class HostSymbolExtensions
         )
         where TExecution : class, IHostedCommandExecution
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(command);
-#else
-        _ = command ?? throw new ArgumentNullException(nameof(command));
-#endif
         command.Action = new HostBuilderCommandLineAction<TExecution>(
             createHostBuilder,
             configureHost
@@ -173,11 +153,7 @@ public static class HostSymbolExtensions
         )
         where TExecution : class, IHostedCommandExecution
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(command);
-#else
-        _ = command ?? throw new ArgumentNullException(nameof(command));
-#endif
         command.Action = new HostBuilderCommandLineAction<TExecution>(
             createHostBuilder,
             configureHost
@@ -237,11 +213,7 @@ public static class HostSymbolExtensions
         )
         where TExecution : class, IHostedCommandExecution
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(command);
-#else
-        _ = command ?? throw new ArgumentNullException(nameof(command));
-#endif
         command.Action = new HostBuilderCommandLineAction<TExecution>(
             configureHost
             );
@@ -275,11 +247,7 @@ public static class HostSymbolExtensions
         )
         where TExecution : class, IHostedCommandExecution
     {
-#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(command);
-#else
-        _ = command ?? throw new ArgumentNullException(nameof(command));
-#endif
         command.Action = new HostApplicationBuilderCommandLineAction<TExecution>(
             configureHost
             );

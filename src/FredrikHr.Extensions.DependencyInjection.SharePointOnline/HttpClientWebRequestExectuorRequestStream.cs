@@ -1,9 +1,9 @@
-﻿namespace Microsoft.SharePoint.Client;
+namespace Microsoft.SharePoint.Client;
 
 internal sealed class HttpClientWebRequestExectuorRequestStream(
     Stream httpRequestStream,
-    TaskCompletionSource<object?> taskCompletion
-    ) : Stream()
+    TaskCompletionSource<object?> taskCompletion)
+    : Stream()
 {
     private bool _disposed;
     public override bool CanRead => false;

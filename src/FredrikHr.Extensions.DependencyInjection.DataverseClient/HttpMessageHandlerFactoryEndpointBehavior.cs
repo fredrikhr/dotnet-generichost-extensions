@@ -5,22 +5,19 @@ using System.ServiceModel.Dispatcher;
 namespace FredrikHr.Extensions.DependencyInjection.DataverseClient;
 
 internal sealed class HttpMessageHandlerFactoryEndpointBehavior(
-    Func<HttpClientHandler, HttpMessageHandler> httpFactory
-    )
+    Func<HttpClientHandler, HttpMessageHandler> httpFactory)
     : IEndpointBehavior
 {
     public void AddBindingParameters(
         ServiceEndpoint endpoint,
-        BindingParameterCollection bindingParameters
-        )
+        BindingParameterCollection bindingParameters)
     {
         bindingParameters.Add(httpFactory);
     }
 
     void IEndpointBehavior.ApplyClientBehavior(
         ServiceEndpoint endpoint,
-        ClientRuntime clientRuntime
-        )
+        ClientRuntime clientRuntime)
     { }
 
     void IEndpointBehavior.ApplyDispatchBehavior(

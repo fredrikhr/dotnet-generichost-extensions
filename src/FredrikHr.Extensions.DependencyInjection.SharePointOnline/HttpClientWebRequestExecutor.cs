@@ -183,8 +183,7 @@ public class HttpClientWebRequestExecutor : WebRequestExecutor
     private sealed class HttpClientWebHeaderCollection() : WebHeaderCollection()
     {
         public void AddHeaders(
-            IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers
-            )
+            IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers)
         {
             foreach (var namerHeaderLinesPair in headers)
             {

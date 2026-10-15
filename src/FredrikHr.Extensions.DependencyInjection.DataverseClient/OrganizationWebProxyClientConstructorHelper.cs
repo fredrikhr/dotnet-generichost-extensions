@@ -13,8 +13,7 @@ internal static class OrganizationWebProxyClientConstructorHelper
     internal static IOrganizationServiceAsync CreateWebProxyClient(
         string name,
         OrganizationServiceClientOptions options,
-        IHttpMessageHandlerFactory? httpHandlerFactory = null
-        )
+        IHttpMessageHandlerFactory? httpHandlerFactory = null)
     {
         Uri serviceUrl = new(options.ServiceUrl);
         object[] ctorArgs = (options.Timeout, options.StrongTypesAssembly) switch
