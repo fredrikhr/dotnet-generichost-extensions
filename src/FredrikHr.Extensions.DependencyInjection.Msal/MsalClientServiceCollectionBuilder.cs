@@ -82,13 +82,13 @@ public class MsalClientServiceCollectionBuilder(IServiceCollection services)
     public MsalClientServiceCollectionBuilder UseHttpClientFactory()
     {
         Services.AddHttpClient();
-        Services.ConfigureAll<PublicClientApplicationBuilder, IHttpMessageHandlerFactory>(
+        Services.ConfigureAll<PublicClientApplicationBuilder, IHttpClientFactory>(
             ConfigureBuilderHttpClientFactory<PublicClientApplicationBuilder, PublicClientApplication>
             );
-        Services.ConfigureAll<ConfidentialClientApplicationBuilder, IHttpMessageHandlerFactory>(
+        Services.ConfigureAll<ConfidentialClientApplicationBuilder, IHttpClientFactory>(
             ConfigureBuilderHttpClientFactory<ConfidentialClientApplicationBuilder, ConfidentialClientApplication>
             );
-        Services.ConfigureAll<ManagedIdentityApplicationBuilder, IHttpMessageHandlerFactory>(
+        Services.ConfigureAll<ManagedIdentityApplicationBuilder, IHttpClientFactory>(
             ConfigureBuilderHttpClientFactory<ManagedIdentityApplicationBuilder, ManagedIdentityApplication>
             );
 
@@ -97,8 +97,8 @@ public class MsalClientServiceCollectionBuilder(IServiceCollection services)
         static void ConfigureBuilderHttpClientFactory<TBuilder, TApplication>(
             string? name,
             TBuilder builder,
-            IHttpMessageHandlerFactory httpFactory
-            ) where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
+            IHttpClientFactory httpFactory)
+            where TBuilder : BaseAbstractApplicationBuilder<TBuilder>
         {
             MsalHttpClientFactory msalHttpFactory = new(httpFactory, name);
             builder.WithHttpClientFactory(msalHttpFactory);

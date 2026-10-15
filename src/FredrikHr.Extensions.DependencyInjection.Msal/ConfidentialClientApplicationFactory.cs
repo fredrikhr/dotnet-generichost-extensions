@@ -1,20 +1,24 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Identity.Client;
 
-internal sealed class ConfidentialClientApplicationFactory(
-    IOptionsMonitor<ConfidentialClientApplicationBuilder> builderProvider,
-    IEnumerable<IConfigureOptions<IConfidentialClientApplication>> setups,
-    IEnumerable<IPostConfigureOptions<IConfidentialClientApplication>> postConfigures,
-    IEnumerable<IValidateOptions<IConfidentialClientApplication>> validations
-    ) : OptionsFactory<IConfidentialClientApplication>(
-        setups, postConfigures, validations
-        )
+public sealed class ConfidentialClientApplicationFactory(
+    IServiceProvider serviceProvider)
+    : IOptionsFactory<IConfidentialClientApplication>
 {
-    protected override IConfidentialClientApplication CreateInstance(string name)
+    private readonly ConfidentialClientApplicationManager _instanceManager =
+        serviceProvider.GetRequiredService<ConfidentialClientApplicationManager>();
+
+    public IConfidentialClientApplication Create(string name)
     {
-        ConfidentialClientApplicationBuilder builder = builderProvider.Get(name);
-        IConfidentialClientApplication client = builder.Build();
-        return client;
+        IConfidentialClientApplication clientApplication =
+            _instanceManager.Get(name);
+        ConfidentialClientApplicationHosted hostedClientApplication = new(
+            name,
+            serviceProvider,
+            clientApplication
+            );
+        return hostedClientApplication;
     }
 }

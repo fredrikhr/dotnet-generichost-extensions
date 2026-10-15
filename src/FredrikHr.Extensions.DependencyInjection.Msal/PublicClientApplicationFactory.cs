@@ -1,19 +1,24 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Identity.Client;
 
-internal sealed class PublicClientApplicationFactory(
-    IOptionsMonitor<PublicClientApplicationBuilder> builderProvider,
-    IEnumerable<IConfigureOptions<IPublicClientApplication>> setups,
-    IEnumerable<IPostConfigureOptions<IPublicClientApplication>> postConfigures,
-    IEnumerable<IValidateOptions<IPublicClientApplication>> validations
-    ) : OptionsFactory<IPublicClientApplication>(
-        setups, postConfigures, validations
-        )
+public sealed class PublicClientApplicationFactory(
+    IServiceProvider serviceProvider
+    ) : IOptionsFactory<IPublicClientApplication>
 {
-    protected override IPublicClientApplication CreateInstance(string name)
+    private readonly PublicClientApplicationManager _instanceManager =
+        serviceProvider.GetRequiredService<PublicClientApplicationManager>();
+
+    public IPublicClientApplication Create(string name)
     {
-        PublicClientApplicationBuilder builder = builderProvider.Get(name);
-        return builder.Build();
+        IPublicClientApplication clientApplication =
+            _instanceManager.Get(name);
+        PublicClientApplicationHosted hostedClientApplication = new(
+            name,
+            serviceProvider,
+            clientApplication
+            );
+        return hostedClientApplication;
     }
 }

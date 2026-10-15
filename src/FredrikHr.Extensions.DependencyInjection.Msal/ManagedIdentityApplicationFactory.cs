@@ -1,19 +1,24 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Identity.Client;
 
-internal sealed class ManagedIdentityApplicationFactory(
-    IOptionsMonitor<ManagedIdentityApplicationBuilder> builderProvider,
-    IEnumerable<IConfigureOptions<IManagedIdentityApplication>> setups,
-    IEnumerable<IPostConfigureOptions<IManagedIdentityApplication>> postConfigures,
-    IEnumerable<IValidateOptions<IManagedIdentityApplication>> validations
-    ) : OptionsFactory<IManagedIdentityApplication>(
-        setups, postConfigures, validations
-        )
+public sealed class ManagedIdentityApplicationFactory(
+    IServiceProvider serviceProvider
+    ) : IOptionsFactory<IManagedIdentityApplication>
 {
-    protected override IManagedIdentityApplication CreateInstance(string name)
+    private readonly ManagedIdentityApplicationManager _instanceManager =
+        serviceProvider.GetRequiredService<ManagedIdentityApplicationManager>();
+
+    public IManagedIdentityApplication Create(string name)
     {
-        ManagedIdentityApplicationBuilder builder = builderProvider.Get(name);
-        return builder.Build();
+        IManagedIdentityApplication clientApplication =
+            _instanceManager.Get(name);
+        ManagedIdentityApplicationHosted hostedClientApplication = new(
+            name,
+            serviceProvider,
+            clientApplication
+            );
+        return hostedClientApplication;
     }
 }
